@@ -161,8 +161,6 @@ Route::middleware(['auth','role:admin'])
         Route::get('/fee-concession', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'index'])->name('admin.fee-concession.index');
         Route::post('/fee-concession/store', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'store'])->name('admin.fee-concession.store');
         Route::post('/fee-concession/bulk-store', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'bulkStore'])->name('admin.fee-concession.bulk-store');
-        Route::get('/fee-concession/{id}/edit', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'edit'])->name('fee.concession.edit');
-        Route::delete('/fee-concession/{id}', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'destroy'])->name('fee.concession.delete');
         Route::get('/late-fine', [\App\Http\Controllers\Admin\LateFineController::class, 'index'])->name('admin.late-fine.index');
         Route::post('/late-fine/store', [\App\Http\Controllers\Admin\LateFineController::class, 'store'])->name('admin.late-fine.store');
         Route::post('/late-fine/delete/{id}', [\App\Http\Controllers\Admin\LateFineController::class, 'destroy'])->name('admin.late-fine.delete');
