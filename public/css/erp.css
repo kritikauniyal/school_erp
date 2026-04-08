@@ -1,6 +1,17 @@
                    
 
-before::after{margin:0;padding:0;box-sizing:border-box}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* form-control alias for Bootstrap compatibility */
+.form-control{
+  padding:9px 12px;border:1px solid #e3e9f4;border-radius:8px;
+  background:#fff;color:#0f1e3c;font-size:.87rem;
+  font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;
+  width:100%;
+}
+.form-control:focus{border-color:#3d84f5;box-shadow:0 0 0 3px rgba(61,132,245,.12);}
+.form-control[readonly]{background:#f2f5fb;cursor:default;}
+
 
 :root{
   /* Sidebar */

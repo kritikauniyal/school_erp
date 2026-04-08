@@ -46,8 +46,8 @@
     .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; margin-bottom: 20px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group label { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-    .form-group input, .form-group select, .form-group textarea { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 14px; font-size: 0.9rem; transition: 0.3s; }
-    .form-group input:focus { border-color: var(--primary-blue); background: white; box-shadow: 0 0 0 4px rgba(72,143,228,0.1); }
+    #studentAdmissionForm .form-group input, #studentAdmissionForm .form-group select, #studentAdmissionForm .form-group textarea { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 14px; font-size: 0.9rem; transition: 0.3s; }
+    #studentAdmissionForm .form-group input:focus, #studentAdmissionForm .form-group select:focus { border-color: var(--primary-blue); background: white; box-shadow: 0 0 0 4px rgba(72,143,228,0.1); }
 
     .action-buttons { 
         padding: 24px 30px; border-top: 1px solid #f1f5f9; background: #fff; 
@@ -332,12 +332,12 @@
                     </tr>
                 </thead>
                 <tbody id="admissionFeeTableBody">
-                    @foreach($admissionFeeTypes as $ft)
-                    <tr data-name="{{ $ft->name }}">
-                        <td style="font-weight: 700;">{{ $FT_name = $ft->name }}</td>
-                        <td><input type="number" step="0.01" class="form-control fee-amount" value="0.00" onchange="calcTotal(this)"></td>
+                @foreach($admissionFeeTypes as $ft)
+                    <tr data-name="{{ $ft->name }}" data-default="{{ $ft->default_amount ?? '0.00' }}">
+                        <td style="font-weight: 700;">{{ $ft->name }}</td>
+                        <td><input type="number" step="0.01" class="form-control fee-amount" value="{{ $ft->default_amount ?? '0.00' }}" onchange="calcTotal(this)"></td>
                         <td><input type="number" step="0.01" class="form-control fee-concession" value="0.00" onchange="calcTotal(this)"></td>
-                        <td><input type="number" step="0.01" class="form-control fee-total" value="0.00" readonly></td>
+                        <td><input type="number" step="0.01" class="form-control fee-total" value="{{ $ft->default_amount ?? '0.00' }}" readonly></td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -367,7 +367,8 @@
     // Modal Control
     function openModal() { 
         studentModal.classList.add('open'); 
-        document.body.style.overflow = 'hidden'; 
+        document.body.style.overflow = 'hidden';
+        switchTab('basic'); // ensure nav btn dataset is set
     }
     function closeModal() { 
         studentModal.classList.remove('open'); 
@@ -436,44 +437,85 @@
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
 
-    document.querySelectorAll('.next-tab').forEach(btn => {
-        btn.addEventListener('click', () => { if(btn.dataset.next) switchTab(btn.dataset.next); });
-    });
+    const nextActionBtn = document.getElementById('nextActionBtn');
+    if(nextActionBtn) {
+        nextActionBtn.addEventListener('click', function() {
+            if(this.dataset.next) switchTab(this.dataset.next);
+        });
+    }
 
-    document.querySelectorAll('.prev-tab').forEach(btn => {
-        btn.addEventListener('click', () => { if(btn.dataset.prev) switchTab(btn.dataset.prev); });
-    });
+    const prevActionBtn = document.getElementById('prevActionBtn');
+    if(prevActionBtn) {
+        prevActionBtn.addEventListener('click', function() {
+            if(this.dataset.prev) switchTab(this.dataset.prev);
+        });
+    }
 
-    // Registration Auto-fill
-    document.getElementById('registrationDropdown').addEventListener('change', function() {
-        const option = this.options[this.selectedIndex];
-        if(!option.value) return;
+    // Registration No Auto-fill via AJAX
+    const regInput = document.getElementById('registrationDropdown');
+    let regLookupTimeout = null;
+    if(regInput) {
+        regInput.addEventListener('input', function() {
+            clearTimeout(regLookupTimeout);
+            const val = this.value.trim();
+            if(!val) return;
+            regLookupTimeout = setTimeout(() => lookupRegistration(val), 600);
+        });
+        regInput.addEventListener('blur', function() {
+            const val = this.value.trim();
+            if(val) lookupRegistration(val);
+        });
+    }
 
-        document.getElementById('registration_student_id').value = option.dataset.id;
-        document.getElementById('adm_student_name').value = option.dataset.name;
-        document.getElementById('adm_dob').value = option.dataset.dob;
-        document.getElementById('adm_gender').value = option.dataset.gender;
-        document.getElementById('adm_mobile').value = option.dataset.father_mobile;
-        document.getElementById('adm_email').value = option.dataset.email;
-        document.getElementById('adm_address').value = option.dataset.address1 + ' ' + (option.dataset.address2 || '') + ' ' + option.dataset.city;
-        
-        document.getElementById('adm_father_name').value = option.dataset.father_name;
-        document.getElementById('adm_father_mobile').value = option.dataset.father_mobile;
-        document.getElementById('adm_mother_name').value = option.dataset.mother_name;
-        document.getElementById('adm_mother_mobile').value = option.dataset.mother_mobile;
-        
-        document.getElementById('adm_prev_school').value = option.dataset.previous_school;
-
-        // Auto select class if matches
-        const className = option.dataset.class;
-        const classSelect = document.getElementById('admissionClass');
-        for(let i=0; i<classSelect.options.length; i++) {
-            if(classSelect.options[i].text === className) {
-                classSelect.selectedIndex = i;
-                break;
+    function lookupRegistration(regNo) {
+        fetch(`{{ url('admin/registration') }}/lookup?reg_no=` + encodeURIComponent(regNo), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success && data.student) {
+                const s = data.student;
+                // Auto-fill Basic Info
+                document.getElementById('registration_student_id').value = s.id || '';
+                document.getElementById('adm_student_name').value = s.student_name || s.name || '';
+                document.getElementById('adm_dob').value = s.dob || s.date_of_birth || '';
+                document.getElementById('adm_gender').value = s.gender || 'Male';
+                document.getElementById('adm_mobile').value = s.father_mobile || s.mobile || '';
+                document.getElementById('adm_email').value = s.email || '';
+                document.getElementById('adm_address').value = [s.address1, s.address2, s.city].filter(Boolean).join(' ');
+                // Auto-fill Parent Info
+                document.getElementById('adm_father_name').value = s.father_name || '';
+                document.getElementById('adm_father_mobile').value = s.father_mobile || '';
+                document.getElementById('adm_mother_name').value = s.mother_name || '';
+                document.getElementById('adm_mother_mobile').value = s.mother_mobile || '';
+                // Auto-fill previous school
+                if(document.getElementById('adm_prev_school'))
+                    document.getElementById('adm_prev_school').value = s.previous_school || s.last_school || '';
+                // Auto-select class
+                const className = s.class_name || s.class || '';
+                const classSelect = document.getElementById('admissionClass');
+                if(classSelect && className) {
+                    for(let i=0; i<classSelect.options.length; i++) {
+                        if(classSelect.options[i].text.trim() === className.trim()) {
+                            classSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                // Visual feedback
+                regInput.style.borderColor = '#22c55e';
+                regInput.style.boxShadow = '0 0 0 3px rgba(34,197,94,0.15)';
+            } else {
+                // Invalid reg no
+                regInput.style.borderColor = '#ef4444';
+                regInput.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)';
+                document.getElementById('registration_student_id').value = '';
             }
-        }
-    });
+        })
+        .catch(() => {
+            // Silently fail if endpoint doesn't exist
+        });
+    }
 
     // Photo Preview
     function previewImage(input) {
@@ -670,29 +712,29 @@
             currentFeeStudentId = this.dataset.id;
             document.getElementById('feeStudentName').innerText = this.dataset.student;
             
-            // Fetch existing fees
             Swal.fire({ title: 'Loading Fees...', didOpen: () => { Swal.showLoading(); } });
             fetch(`{{ url('admin/student-admission') }}/${currentFeeStudentId}/get-fees`)
                 .then(res => res.json())
                 .then(data => {
                     Swal.close();
-                    if(data.success && data.fees) {
-                        // Reset table and fill with data
-                        document.querySelectorAll('#admissionFeeTableBody tr').forEach(tr => {
-                            const matchingFee = data.fees.find(f => f.fee_name === tr.dataset.name);
-                            if(matchingFee) {
-                                tr.querySelector('.fee-amount').value = matchingFee.amount;
-                                tr.querySelector('.fee-concession').value = matchingFee.concession;
-                                tr.querySelector('.fee-total').value = matchingFee.total;
-                            } else {
-                                tr.querySelector('.fee-amount').value = '0.00';
-                                tr.querySelector('.fee-concession').value = '0.00';
-                                tr.querySelector('.fee-total').value = '0.00';
-                            }
-                        });
-                    }
+                    document.querySelectorAll('#admissionFeeTableBody tr').forEach(tr => {
+                        const feeName = tr.dataset.name;
+                        const matchingFee = data.success && data.fees ? data.fees.find(f => f.fee_name === feeName) : null;
+                        if(matchingFee) {
+                            tr.querySelector('.fee-amount').value = matchingFee.amount;
+                            tr.querySelector('.fee-concession').value = matchingFee.concession;
+                            tr.querySelector('.fee-total').value = matchingFee.total;
+                        } else {
+                            // Auto-load default amount from fee structure if available
+                            const defaultAmt = tr.dataset.default || '0.00';
+                            tr.querySelector('.fee-amount').value = defaultAmt;
+                            tr.querySelector('.fee-concession').value = '0.00';
+                            tr.querySelector('.fee-total').value = defaultAmt;
+                        }
+                    });
                     feeModal.classList.add('open');
-                });
+                })
+                .catch(() => { Swal.close(); feeModal.classList.add('open'); });
         });
     });
 

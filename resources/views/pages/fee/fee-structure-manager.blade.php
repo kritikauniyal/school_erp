@@ -41,17 +41,18 @@
         margin-left: 10px;
         font-size: 1.05rem;
     }
-    /* Action Row */
-    .action-row {
+    .action-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px;
-        gap: 20px;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
     }
     .action-left {
         display: flex;
-        gap: 15px;
+        flex-wrap: wrap;
+        gap: 12px;
     }
     .btn {
         background: white;
@@ -89,98 +90,66 @@
         color: var(--primary-orange);
         box-shadow: 0 8px 20px rgba(255, 145, 59, 0.3);
     }
-    /* Fee Types Grid */
-    .fee-types-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 24px;
-        margin-bottom: 40px;
+    /* Fee Types List */
+    .fee-types-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 30px;
+        background: #f8fcff;
+        border-radius: 28px;
+        padding: 20px;
     }
     .fee-type-card {
-        background: #ffffff;
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        border: 1px solid #edf2f7;
+        background: white;
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        flex: 1 1 250px;
+        border: 1px solid #e0e7f0;
         position: relative;
-        transition: all 0.3s ease;
+        transition: all 0.2s;
     }
     .fee-type-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
         border-color: var(--primary-blue);
     }
     .fee-type-card h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
+        font-size: 1.1rem;
         color: var(--primary-blue);
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
-    .fee-type-card .months-list {
+    .fee-type-card .months {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 20px;
+        gap: 4px;
     }
-    .month-tag {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #f28b32;
-        padding: 5px 12px;
-        background: #fff8f1;
-        border-radius: 12px;
-        border: 1px solid #ffe8d1;
-        transition: all 0.2s;
+    .month-badge {
+        background: var(--orange-light);
+        color: var(--primary-orange);
+        padding: 2px 8px;
+        border-radius: 30px;
+        font-size: 0.7rem;
+        font-weight: 600;
     }
-    .month-tag:hover {
-        background: #f28b32;
-        color: white;
-    }
-    .card-actions {
+    .fee-type-card .actions {
         display: flex;
-        gap: 15px;
+        gap: 12px;
         justify-content: flex-end;
-        border-top: 1px solid #f1f5f9;
-        padding-top: 15px;
     }
-    .card-actions i {
+    .fee-type-card .actions i {
         cursor: pointer;
-        color: #94a3b8;
-        font-size: 1.1rem;
-        transition: color 0.2s;
+        color: var(--text-muted);
+        transition: 0.2s;
     }
-    .card-actions i:hover {
+    .fee-type-card .actions i:hover {
         color: var(--primary-orange);
     }
-    /* Dynamic Table */
-    .table-container {
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-        border: 1px solid #e2e8f0;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th {
-        background: var(--primary-blue);
-        color: white;
-        padding: 18px 15px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        text-align: left;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    td {
-        padding: 12px 15px;
-        border: 1px solid #edf2f7;
-        font-size: 0.95rem;
-        color: var(--text-dark);
-        background: white;
-    }
+
     .class-name-cell {
         font-weight: 800;
         color: var(--primary-blue);
@@ -254,24 +223,7 @@
         margin-bottom: 6px;
         display: block;
     }
-    .form-group input,
-    .form-group select {
-        width: 100%;
-        background: var(--bg-light);
-        border: 2px solid #edf2f7;
-        border-radius: 16px;
-        padding: 14px 18px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        outline: none;
-        transition: all 0.2s ease;
-    }
-    .form-group input:focus,
-    .form-group select:focus {
-        border-color: var(--primary-orange);
-        background: white;
-        box-shadow: 0 0 0 4px rgba(255,145,59,0.1);
-    }
+
     .month-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -280,43 +232,14 @@
     }
     .month-item {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 12px;
-        cursor: pointer;
-        user-select: none;
-        position: relative;
+        gap: 6px;
+        font-size: 0.9rem;
     }
     .month-item input[type="checkbox"] {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-    }
-    .month-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #f8fafc;
-        border: 2px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-    }
-    .month-item input[type="checkbox"]:checked + .month-circle {
-        background: #fff;
-        border: 4px solid var(--primary-orange);
-        box-shadow: 0 0 0 6px rgba(255,145,59,0.1);
-    }
-    .month-name {
-        font-size: 0.7rem;
-        font-weight: 800;
-        color: var(--primary-blue);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-orange);
     }
     .modal-actions {
         display: flex;
@@ -356,27 +279,21 @@
     </div>
 
     <!-- Fee Types List -->
-    <div class="fee-types-grid" id="feeTypesContainer">
+    <div class="fee-types-list" id="feeTypesContainer">
         <!-- populated by JS -->
     </div>
 
     <!-- Action Bar -->
-    <div class="action-row">
+    <div class="action-bar">
         <div class="action-left">
             <button class="btn btn-orange" id="addFeeTypeBtn"><i class="fas fa-plus-circle"></i> Add New Fee Type</button>
             <button class="btn" id="historyBtn"><i class="fas fa-history"></i> Fee Update History</button>
         </div>
-        <div class="action-right" style="display:flex; align-items:center; gap:15px;">
-            <div style="display:flex; align-items:center; gap:10px; background:#f0f7ff; padding:8px 15px; border-radius:15px; border:1px solid var(--blue-light);">
-                <label style="font-size:0.75rem; font-weight:700; color:var(--primary-blue); text-transform:uppercase;">Effective From:</label>
-                <input type="date" id="effectiveDate" value="{{ date('Y-m-01') }}" style="border:none; background:transparent; font-weight:600; color:var(--text-dark); outline:none;">
-            </div>
-            <button class="btn" id="saveAllBtn"><i class="fas fa-save"></i> Save All Changes</button>
-        </div>
+        <button class="btn" id="saveAllBtn"><i class="fas fa-save"></i> Save All Changes</button>
     </div>
 
     <!-- Fee Structure Table -->
-    <div class="table-container">
+    <div class="table-wrap">
         <table id="feeTable">
             <thead id="tableHeader">
                 <!-- populated by JS -->
@@ -397,15 +314,15 @@
         </div>
         <div class="form-group" style="margin-bottom: 25px;">
             <label style="color:var(--primary-blue); font-weight: 800; font-size: 0.75rem; text-transform: uppercase;">Fee Type Name *</label>
-            <input type="text" id="feeNameInput" placeholder="e.g., Tuition Fee" style="margin-top: 8px;">
+            <input type="text" id="feeNameInput" class="form-control" placeholder="e.g., Tuition Fee" style="margin-top: 8px;">
         </div>
         <div class="form-group" style="margin-bottom: 25px;">
             <label style="color:var(--primary-blue); font-weight: 800; font-size: 0.75rem; text-transform: uppercase;">Default Amount (₹) *</label>
-            <input type="number" id="defaultAmountInput" value="0" step="0.01" style="margin-top: 8px;">
+            <input type="number" id="defaultAmountInput" class="form-control" value="0" step="0.01" style="margin-top: 8px;">
         </div>
         <div class="form-group">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <label style="color:var(--primary-blue); font-weight: 800; font-size: 0.75rem; text-transform: uppercase;">Applicable Months *</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <label>Applicable Months (Academic Year: April – March)</label>
                 <div style="font-size:0.75rem; font-weight: 600;">
                     <a href="javascript:void(0)" onclick="toggleAllMonths(true)" style="color:var(--primary-blue); text-decoration:none;">Select All</a> <span style="color:#cbd5e1;">|</span> 
                     <a href="javascript:void(0)" onclick="toggleAllMonths(false)" style="color:var(--primary-orange); text-decoration:none;">Clear All</a>
@@ -479,11 +396,10 @@
 
     function renderMonthCheckboxes() {
         monthCheckboxesDiv.innerHTML = fullMonthNames.map((name, i) => `
-            <label class="month-item" for="month_${i}">
+            <div class="month-item">
                 <input type="checkbox" value="${i}" id="month_${i}">
-                <div class="month-circle"></div>
-                <div class="month-name">${name}</div>
-            </label>
+                <label for="month_${i}" style="cursor:pointer">${name}</label>
+            </div>
         `).join('');
     }
 
@@ -501,11 +417,11 @@
             
             card.innerHTML = `
                 <h3>${ft.name}</h3>
-                <div class="months-list">
-                    ${sortedMonths.map(m => `<span class="month-tag">${monthNames[m]}</span>`).join('')}
+                <div class="months">
+                    ${sortedMonths.map(m => `<span class="month-badge">${monthNames[m]}</span>`).join('')}
                     ${sortedMonths.length === 0 ? '<span style="color:red; font-size:0.7rem;">No Months Defined</span>' : ''}
                 </div>
-                <div class="card-actions">
+                <div class="actions">
                     <i class="fas fa-edit" onclick="editFeeType(${ft.id})" title="Edit"></i>
                     <i class="fas fa-trash" onclick="deleteFeeType(${ft.id})" title="Delete"></i>
                 </div>

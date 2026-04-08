@@ -108,6 +108,7 @@ Route::middleware(['auth','role:admin'])
         Route::put('/registration-manager/{id}', [\App\Http\Controllers\Admin\RegistrationManagerController::class, 'update'])->name('registration.update');
         Route::delete('/registration-manager/{id}', [\App\Http\Controllers\Admin\RegistrationManagerController::class, 'destroy'])->name('registration.delete');
         Route::post('/registration-manager/{id}/confirm-admission', [\App\Http\Controllers\Admin\RegistrationManagerController::class, 'confirmAdmission'])->name('registration.confirm-admission');
+        Route::get('/registration/lookup', [\App\Http\Controllers\Admin\RegistrationManagerController::class, 'lookup'])->name('registration.lookup');
         Route::get('/admission-report', [\App\Http\Controllers\Admin\AdmissionReportController::class, 'index'])->name('admin.admission-report.index');
         Route::get('/admission-report/create', [\App\Http\Controllers\Admin\AdmissionReportController::class, 'create'])->name('admin.admission-report.create');
         Route::post('/admission-report', [\App\Http\Controllers\Admin\AdmissionReportController::class, 'store'])->name('admin.admission-report.store');
@@ -158,6 +159,10 @@ Route::middleware(['auth','role:admin'])
         Route::post('/fee-structure-manager/fee-type/update/{id}', [\App\Http\Controllers\Admin\FeeStructureManagerController::class, 'updateFeeType'])->name('admin.fee-structure-manager.fee-type.update');
         Route::post('/fee-structure-manager/fee-type/delete/{id}', [\App\Http\Controllers\Admin\FeeStructureManagerController::class, 'destroyFeeType'])->name('admin.fee-structure-manager.fee-type.delete');
         Route::get('/fee-concession', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'index'])->name('admin.fee-concession.index');
+        Route::post('/fee-concession/store', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'store'])->name('admin.fee-concession.store');
+        Route::post('/fee-concession/bulk-store', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'bulkStore'])->name('admin.fee-concession.bulk-store');
+        Route::get('/fee-concession/{id}/edit', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'edit'])->name('fee.concession.edit');
+        Route::delete('/fee-concession/{id}', [\App\Http\Controllers\Admin\FeeConcessionController::class, 'destroy'])->name('fee.concession.delete');
         Route::get('/late-fine', [\App\Http\Controllers\Admin\LateFineController::class, 'index'])->name('admin.late-fine.index');
         Route::post('/late-fine/store', [\App\Http\Controllers\Admin\LateFineController::class, 'store'])->name('admin.late-fine.store');
         Route::post('/late-fine/delete/{id}', [\App\Http\Controllers\Admin\LateFineController::class, 'destroy'])->name('admin.late-fine.delete');

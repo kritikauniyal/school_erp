@@ -218,4 +218,50 @@ class RegistrationManagerController extends Controller
             return redirect()->back()->with('error', 'Error converting to admission: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Lookup a registration by reg_no for auto-fill in student admission form.
+     */
+    public function lookup(Request $request)
+    {
+        $regNo = trim($request->get('reg_no', ''));
+        if (!$regNo) {
+            return response()->json(['success' => false, 'message' => 'Registration number required']);
+        }
+
+        // Search in the registrations table by reg_no
+        $registration = Registration::with('students')->where('reg_no', $regNo)->first();
+
+        if (!$registration) {
+            return response()->json(['success' => false, 'message' => 'Registration not found']);
+        }
+
+        // Get first student from registration
+        $student = $registration->students->first();
+
+        return response()->json([
+            'success' => true,
+            'student' => [
+                'id'               => $student ? $student->id : null,
+                'student_name'     => $student ? $student->name : '',
+                'name'             => $student ? $student->name : '',
+                'dob'              => $student ? ($student->dob ?? '') : '',
+                'date_of_birth'    => $student ? ($student->dob ?? '') : '',
+                'gender'           => $student ? ($student->gender ?? 'Male') : 'Male',
+                'class_name'       => $student ? ($student->class ?? '') : '',
+                'class'            => $student ? ($student->class ?? '') : '',
+                'mobile'           => $registration->father_mobile ?? '',
+                'father_mobile'    => $registration->father_mobile ?? '',
+                'father_name'      => $registration->father_name ?? '',
+                'mother_name'      => $registration->mother_name ?? '',
+                'mother_mobile'    => $registration->mother_mobile ?? '',
+                'email'            => $registration->email ?? '',
+                'address1'         => $registration->address1 ?? '',
+                'address2'         => $registration->address2 ?? '',
+                'city'             => $registration->city ?? '',
+                'previous_school'  => $student ? ($student->previous_school ?? '') : '',
+                'last_school'      => $student ? ($student->previous_school ?? '') : '',
+            ]
+        ]);
+    }
 }

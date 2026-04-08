@@ -40,70 +40,86 @@
             margin-bottom: 24px;
             margin-left: 10px;
         }
-        /* Premium Unified Filter Bar */
-        .premium-filter-bar { 
-            background: #f8fcff; 
-            padding: 10px; 
-            border-radius: 60px; 
-            margin-bottom: 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            border: 1.5px solid #e0eafc;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-            flex-wrap: wrap;
-        }
-        .filter-item-wrap {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #e0e7f0;
-            border-radius: 40px;
-            padding: 4px 4px 4px 18px;
-            transition: var(--transition);
-            flex: 1;
-            min-width: 300px;
-        }
-        .filter-item-wrap:focus-within { border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(61,132,245,0.1); }
-        .filter-item-wrap i { color: var(--text-muted); font-size: 0.9rem; margin-right: 12px; }
-        .filter-item-wrap select, .filter-item-wrap input {
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 0.85rem;
-            padding: 10px 0;
-            color: var(--text-dark);
-            width: 100%;
-            font-weight: 500;
-        }
-        .select-divider {
-            min-width: 130px;
-            border-right: 1px solid #eee;
-            padding-right: 12px;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        .search-btn-premium {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 30px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-        .search-btn-premium:hover { background: var(--primary-orange); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,145,59,0.2); }
-
-        .action-bar-top {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 24px;
-        }
+    /* Premium Unified Filter Bar */
+    .filter-tabs {
+        background: #f2f8ff;
+        border-radius: 28px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 16px 20px;
+    }
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 140px;
+        flex: 1 1 150px;
+    }
+    .filter-group label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+    }
+    .filter-group select,
+    .filter-group input {
+        background: white;
+        border: 1px solid #e0e7f0;
+        border-radius: 16px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        outline: none;
+        width: 100%;
+    }
+    .filter-group select:focus,
+    .filter-group input:focus {
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(255,145,59,0.2);
+    }
+    .search-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+    }
+    .search-field {
+        flex: 2 1 250px;
+        display: flex;
+        flex-direction: column;
+    }
+    .search-field label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+    }
+    .search-field input {
+        background: white;
+        border: 1px solid #e0e7f0;
+        border-radius: 16px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        outline: none;
+        width: 100%;
+    }
+    .search-field input:focus {
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(255,145,59,0.2);
+    }
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
         .action-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -151,39 +167,7 @@
             background: var(--text-muted);
             color: white;
         }
-        /* table */
-        .table-wrapper {
-            overflow-x: auto;
-            margin-bottom: 24px;
-            border-radius: 24px;
-            background: white;
-            box-shadow: var(--shadow);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1300px;
-        }
-        th {
-            background: var(--primary-blue);
-            color: white;
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            padding: 14px 8px;
-            text-align: left;
-            border: 1px solid #3a6fa8;
-        }
-        td {
-            padding: 14px 8px;
-            border: 1px solid #d9e2ec;
-            color: var(--text-dark);
-            font-size: 0.9rem;
-            vertical-align: middle;
-        }
-        tr:hover td {
-            background: #f8fcff;
-        }
+
         .action-icons {
             display: flex;
             gap: 12px;
@@ -209,49 +193,8 @@
             font-weight: 600;
             color: var(--primary-blue);
         }
-        .pagination {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .page-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border: 1px solid #e2eaf5;
-            color: var(--primary-blue);
-            font-weight: 600;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-        .page-btn.active-page {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        .page-btn:hover:not(.active-page) {
-            background: var(--blue-light);
-            border-color: var(--primary-blue);
-        }
-        /* MODAL STYLES (compact) */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(3px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 16px;
-        }
-        .modal-overlay.show {
-            display: flex;
-        }
+
+
         .modal-container {
             background: white;
             border-radius: 24px;
@@ -324,23 +267,7 @@
             content: " *";
             color: #e53e3e;
         }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            background: var(--bg-light);
-            border: 1px solid #e0e7f0;
-            border-radius: 12px;
-            padding: 6px 10px; /* reduced */
-            font-size: 0.8rem;
-            outline: none;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 0 3px rgba(255,145,59,0.2);
-        }
+
         .radio-group {
             display: flex;
             align-items: center;
@@ -477,129 +404,104 @@
 Manage student fee concessions efficiently.
 </div>
 
-<!-- Unified Premium Filter Bar -->
-<form method="GET" action="{{ route('admin.fee-concession.index') }}" class="premium-filter-bar">
-    <div class="filter-item-wrap">
-        <i class="fas fa-search"></i>
-        
-        <div class="select-divider" style="min-width: 120px;">
-            <select name="class">
-                <option value="">Class</option>
-                @foreach($globalClasses as $cls)
-                <option value="{{ $cls->id }}" {{ request('class') == $cls->id ? 'selected' : '' }}>{{ $cls->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="select-divider" style="min-width: 100px;">
-            <select name="section">
-                <option value="">Sec</option>
-                @foreach($sections as $sec)
-                <option value="{{ $sec->id }}" {{ request('section') == $sec->id ? 'selected' : '' }}>{{ $sec->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="select-divider" style="min-width: 110px;">
-            <select name="month">
-                <option value="">Month</option>
-                @foreach(['April','May','June','July','August','September','October','November','December','January','February','March'] as $m)
-                <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $m }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="select-divider" style="min-width: 130px;">
-            <select name="fee_name">
-                <option value="">Fee Type</option>
-                @foreach($feeTypes as $ft)
-                <option value="{{ $ft->id }}" {{ request('fee_name') == $ft->id ? 'selected' : '' }}>{{ $ft->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Search name, reg no...">
+<!-- Filter tabs matching reference -->
+<form method="GET" action="{{ route('admin.fee-concession.index') }}">
+<div class="filter-tabs">
+    <div class="filter-group">
+        <label>Class</label>
+        <select name="class">
+            <option value="">All Classes</option>
+            @foreach($globalClasses as $cls)
+            <option value="{{ $cls->id }}" {{ request('class') == $cls->id ? 'selected' : '' }}>{{ $cls->name }}</option>
+            @endforeach
+        </select>
     </div>
-    
-    <button type="submit" class="search-btn-premium">
-        <i class="fas fa-search"></i> Search
-    </button>
-</form>
-
-<div class="action-bar-top">
-    <div class="action-buttons">
-        <button class="btn btn-orange" id="addSingleBtn">
-            <i class="fas fa-plus-circle"></i> Add New Concession
-        </button>
-        <button class="btn btn-outline" id="addBulkBtn">
-            <i class="fas fa-layer-group"></i> Bulk Concession
-        </button>
+    <div class="filter-group">
+        <label>Section</label>
+        <select name="section">
+            <option value="">All Sections</option>
+            @foreach($sections as $sec)
+            <option value="{{ $sec->id }}" {{ request('section') == $sec->id ? 'selected' : '' }}>{{ $sec->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Fee Month</label>
+        <select name="month">
+            <option value="">All Months</option>
+            @foreach(['April','May','June','July','August','September','October','November','December','January','February','March'] as $m)
+            <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $m }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Fee Name</label>
+        <select name="fee_name">
+            <option value="">All Fees</option>
+            @foreach($feeTypes as $ft)
+            <option value="{{ $ft->id }}" {{ request('fee_name') == $ft->id ? 'selected' : '' }}>{{ $ft->name }}</option>
+            @endforeach
+        </select>
     </div>
 </div>
 
+<!-- Search bar and action buttons -->
+<div class="action-bar">
+    <div class="search-row">
+        <div class="search-field">
+            <label>Search Text</label>
+            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Search by name, reg no...">
+        </div>
+        <button type="submit" class="btn"><i class="fas fa-search"></i> Search</button>
+    </div>
+    <div class="action-buttons">
+        <button type="button" class="btn btn-orange" id="addSingleBtn"><i class="fas fa-plus-circle"></i> Add New Concession</button>
+        <button type="button" class="btn btn-outline" id="addBulkBtn"><i class="fas fa-layer-group"></i> Add Concession (Bulk)</button>
+    </div>
+</div>
+</form>
+
 <!-- Table -->
-<div class="table-wrapper">
+<div class="table-wrap">
 
 <table>
-
 <thead>
-
 <tr>
 <th>#</th>
 <th>RegNo</th>
 <th>Student Name</th>
-<th>Father Name</th>
-<th>Class</th>
-<th>Section</th>
-<th>Fee Name</th>
-<th>Month</th>
-<th>Amount</th>
+<th>Father's Name</th>
+<th>C-S-S-R</th>
+<th>FeeName</th>
+<th>MonthName</th>
+<th>ConcessionAmt</th>
 <th>Remarks</th>
-<th>Action</th>
+<th>Actions</th>
 </tr>
-
 </thead>
 
 <tbody>
 
 @foreach($concessions as $key => $row)
-
 <tr>
-
 <td>{{ $key+1 }}</td>
 <td>{{ $row->student->admission_no }}</td>
 <td>{{ $row->student->student_name }}</td>
 <td>{{ $row->student->father_name ?? '-' }}</td>
-<td>{{ $row->student->class->name ?? '-' }}</td>
-<td>{{ $row->student->section->name ?? '-' }}</td>
+<td>{{ ($row->student->classInfo->name ?? '-') }} - {{ ($row->student->sectionInfo->name ?? '-') }}</td>
 <td>{{ $row->feeType->name }}</td>
 <td>{{ $row->month }}</td>
 <td>{{ $row->amount }}</td>
 <td>{{ $row->remarks }}</td>
-
 <td class="action-icons">
-
-<a href="{{ route('fee.concession.edit',$row->id) }}">
-<i class="fas fa-edit edit-icon"></i>
-</a>
-
-<form action="{{ route('fee.concession.delete',$row->id) }}"
-method="POST"
-style="display:inline">
-
-@csrf
-@method('DELETE')
-
-<button type="submit" style="border:none;background:none">
-<i class="fas fa-trash delete-icon"></i>
-</button>
-
-</form>
-
+    <a href="{{ route('fee.concession.edit',$row->id) }}" title="Edit"><i class="fas fa-edit edit-icon"></i></a>
+    <form action="{{ route('fee.concession.delete',$row->id) }}" method="POST" style="display:inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit" style="border:none;background:none" title="Delete"><i class="fas fa-trash delete-icon"></i></button>
+    </form>
 </td>
-
 </tr>
-
 @endforeach
 
 </tbody>
@@ -617,7 +519,123 @@ style="display:inline">
 
 </div>
 
+</div>
+
 {{ $concessions->links() }}
+
+    <!-- MODAL: Single Concession -->
+    <div class="modal-overlay" id="singleModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="singleModalTitle">Create New Fee Concession</h3>
+                <button type="button" class="close-modal" id="closeSingleModal">&times;</button>
+            </div>
+            <form id="singleConcessionForm" method="POST" action="{{ route('admin.fee-concession.store') }}">
+                @csrf
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Search Student (by Name, Reg No, Mobile)</label>
+                    <input type="text" class="form-control" name="student_search" id="studentSearch" placeholder="Type to search..." autocomplete="off">
+                    <small style="color:var(--text-muted); font-size:0.7rem;">Select a student from the dropdown</small>
+                </div>
+                
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Fee Name</label>
+                    <select class="form-control" id="singleFeeName" name="fee_name_id" required>
+                        <option value="">---Select Fee---</option>
+                        @foreach($feeTypes as $ft)
+                        <option value="{{ $ft->id }}">{{ $ft->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Month checkboxes with Select All -->
+                <div class="form-group" style="margin-bottom:12px;">
+                    <div class="month-header">
+                        <label class="required">Select Months</label>
+                        <label style="margin-left:auto; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="singleSelectAllMonths"> Select All</label>
+                    </div>
+                    <div class="month-grid" id="singleMonthGrid"></div>
+                </div>
+                <!-- Concession Amount with radio -->
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Concession Amount</label>
+                    <input type="number" step="0.01" value="0.00" class="form-control" name="amount" id="singleAmount" style="margin-bottom:4px;" required>
+                    <div class="radio-group">
+                        <label><input type="radio" name="concessionType" value="partial" checked> Partial</label>
+                        <label><input type="radio" name="concessionType" value="full"> Concession All Fee</label>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label>Remarks</label>
+                    <input type="text" class="form-control" name="remarks" placeholder="Enter remarks (optional)" id="singleRemarks">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelSingle">Cancel</button>
+                    <button type="submit" class="btn btn-orange" id="saveSingle">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Bulk Concession -->
+    <div class="modal-overlay" id="bulkModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Bulk Fee Concession</h3>
+                <button type="button" class="close-modal" id="closeBulkModal">&times;</button>
+            </div>
+            <p style="margin-bottom: 10px; color: var(--text-muted); font-size:0.8rem;">Apply concession to multiple students based on criteria.</p>
+            <form id="bulkConcessionForm" method="POST" action="{{ route('admin.fee-concession.bulk-store') }}">
+                @csrf
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Class</label>
+                    <select class="form-control" name="class_id" id="bulkClass" required>
+                        <option value="">Select Class</option>
+                        @foreach($globalClasses as $cls)
+                        <option value="{{ $cls->id }}">{{ $cls->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Section</label>
+                    <select class="form-control" name="section_id" id="bulkSection" required>
+                        <option value="">Select Section</option>
+                        @foreach($sections as $sec)
+                        <option value="{{ $sec->id }}">{{ $sec->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Fee Name</label>
+                    <select class="form-control" name="fee_name_id" id="bulkFeeName" required>
+                        <option value="">---Select Fee---</option>
+                        @foreach($feeTypes as $ft)
+                        <option value="{{ $ft->id }}">{{ $ft->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Month checkboxes with Select All -->
+                <div class="form-group" style="margin-bottom:12px;">
+                    <div class="month-header">
+                        <label class="required">Select Months</label>
+                        <label style="margin-left:auto; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="bulkSelectAllMonths"> Select All</label>
+                    </div>
+                    <div class="month-grid" id="bulkMonthGrid"></div>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="required">Concession Amount</label>
+                    <input type="number" step="0.01" value="0.00" class="form-control" name="amount" id="bulkAmount" required>
+                </div>
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label>Remarks (optional)</label>
+                    <input type="text" class="form-control" name="remarks" placeholder="Common remarks" id="bulkRemarks">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelBulk">Cancel</button>
+                    <button type="submit" class="btn btn-orange" id="applyBulk">Apply to All</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </div>
 
@@ -626,61 +644,8 @@ style="display:inline">
 @push('scripts')
 <script>
     (function() {
-        // ---------- Data ----------
-        let concessions = [
-            { id: 1, regNo: 'ITest001', studentName: 'Test001', father: 'Mr. Sharma', cssr: 'I - A - 2025-26 - 2', feeName: 'Tuition Fee', month: 'October', amount: 101, remarks: 'Approval:40' },
-            { id: 2, regNo: 'ITest001', studentName: 'Test001', father: 'Mr. Sharma', cssr: 'I - A - 2025-26 - 2', feeName: 'Tuition Fee', month: 'November', amount: 101, remarks: 'Approval:39' },
-            { id: 3, regNo: 'ITest001', studentName: 'Test001', father: 'Mr. Sharma', cssr: 'I - A - 2025-26 - 2', feeName: 'Tuition Fee', month: 'April', amount: 101, remarks: 'Approval:38' },
-            { id: 4, regNo: 'ITest001', studentName: 'Test001', father: 'Mr. Sharma', cssr: 'I - A - 2025-26 - 2', feeName: 'Tuition Fee', month: 'May', amount: 101, remarks: 'Approval:37' },
-            { id: 5, regNo: 'ITest001', studentName: 'Test001', father: 'Mr. Sharma', cssr: 'I - A - 2025-26 - 2', feeName: 'Tuition Fee', month: 'August', amount: 101, remarks: 'Approval:36' }
-        ];
-        let nextId = 6;
-
         // Month list
         const monthNames = ["April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February", "March"];
-
-        // Render table
-        const tbody = document.getElementById('tableBody');
-        function renderTable() {
-            let html = '';
-            concessions.forEach(c => {
-                html += `<tr data-id="${c.id}">
-                    <td>${c.id}</td>
-                    <td>${c.regNo}</td>
-                    <td>${c.studentName}</td>
-                    <td>${c.father}</td>
-                    <td>${c.cssr}</td>
-                    <td>${c.feeName}</td>
-                    <td>${c.month}</td>
-                    <td>${c.amount}</td>
-                    <td>${c.remarks}</td>
-                    <td class="action-icons">
-                        <i class="fas fa-edit edit-icon" title="Edit" data-id="${c.id}"></i>
-                        <i class="fas fa-trash delete-icon" title="Delete" data-id="${c.id}"></i>
-                    </td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-
-            // Attach edit events
-            document.querySelectorAll('.fa-edit').forEach(icon => {
-                icon.addEventListener('click', (e) => {
-                    const id = parseInt(e.target.dataset.id);
-                    openEditModal(id);
-                });
-            });
-
-            // Attach delete events
-            document.querySelectorAll('.fa-trash').forEach(icon => {
-                icon.addEventListener('click', (e) => {
-                    const id = parseInt(e.target.dataset.id);
-                    if (confirm('Delete this concession?')) {
-                        concessions = concessions.filter(c => c.id !== id);
-                        renderTable();
-                    }
-                });
-            });
-        }
 
         // Populate month grids
         function populateMonthGrid(containerId) {
@@ -688,12 +653,12 @@ style="display:inline">
             if (!container) return;
             let html = '';
             monthNames.forEach(month => {
-                html += `<label class="month-item"><input type="checkbox" value="${month}"> ${month}</label>`;
+                html += `<label class="month-item"><input type="checkbox" name="months[]" value="${month}"> ${month}</label>`;
             });
             container.innerHTML = html;
         }
 
-        // Select All functionality for single modal
+        // Select All functionality
         function setupSelectAll(selectAllId, gridId) {
             const selectAll = document.getElementById(selectAllId);
             if (!selectAll) return;
@@ -709,15 +674,8 @@ style="display:inline">
         const addSingle = document.getElementById('addSingleBtn');
         const closeSingle = document.getElementById('closeSingleModal');
         const cancelSingle = document.getElementById('cancelSingle');
-        const saveSingle = document.getElementById('saveSingle');
         const singleAmount = document.getElementById('singleAmount');
         const concessionRadios = document.querySelectorAll('input[name="concessionType"]');
-        const studentSearch = document.getElementById('studentSearch');
-        const studentBadge = document.getElementById('studentBadge');
-        const studentReadonly = document.getElementById('studentReadonly');
-        const singleFeeName = document.getElementById('singleFeeName');
-        const singleRemarks = document.getElementById('singleRemarks');
-        const singleMonthGrid = document.getElementById('singleMonthGrid');
 
         // Handle radio change: if "Concession All Fee" is checked, disable amount input
         concessionRadios.forEach(radio => {
@@ -731,82 +689,31 @@ style="display:inline">
             });
         });
 
-        let editingId = null; // null for new, otherwise id
-
-        function openEditModal(id) {
-            const concession = concessions.find(c => c.id === id);
-            if (!concession) return;
-            editingId = id;
-            singleModalTitle.innerText = 'Edit Fee Concession';
-            // Fill fields with concession data (demo)
-            studentSearch.value = `${concession.studentName} [${concession.cssr.split(' - ')[0]}] - ${concession.regNo}`;
-            studentBadge.innerText = `${concession.studentName} [${concession.cssr.split(' - ')[0]}] - ${concession.regNo}`;
-            // Update readonly info
-            studentReadonly.innerHTML = `
-                <div class="info-item"><strong>Student's Name</strong><span>${concession.studentName}</span></div>
-                <div class="info-item"><strong>Father's Name</strong><span>${concession.father}</span></div>
-                <div class="info-item"><strong>Class</strong><span>${concession.cssr.split(' - ')[0]}</span></div>
-                <div class="info-item"><strong>Section</strong><span>${concession.cssr.split(' - ')[1]}</span></div>
-            `;
-            singleFeeName.value = concession.feeName;
-            // Pre-check the month (single month)
-            document.querySelectorAll('#singleMonthGrid input').forEach(cb => {
-                cb.checked = (cb.value === concession.month);
-            });
-            singleAmount.value = concession.amount;
-            singleAmount.disabled = false;
-            // Set radio to partial
-            document.querySelector('input[name="concessionType"][value="partial"]').checked = true;
-            singleRemarks.value = concession.remarks;
-            singleModal.classList.add('show');
-        }
-
         function resetSingleModal() {
-            editingId = null;
+            document.getElementById('singleConcessionForm').reset();
             singleModalTitle.innerText = 'Create New Fee Concession';
-            studentSearch.value = 'Aman [II-A] - PAT10';
-            studentBadge.innerText = 'Aman [II-A] - PAT10';
-            studentReadonly.innerHTML = `
-                <div class="info-item"><strong>Student's Name</strong><span>Aman</span></div>
-                <div class="info-item"><strong>Father's Name</strong><span>—</span></div>
-                <div class="info-item"><strong>Class</strong><span>II</span></div>
-                <div class="info-item"><strong>Section</strong><span>A</span></div>
-            `;
-            singleFeeName.value = '---Select Fee---';
-            document.querySelectorAll('#singleMonthGrid input').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#singleMonthGrid input[type="checkbox"]').forEach(cb => cb.checked = false);
             document.getElementById('singleSelectAllMonths').checked = false;
-            singleAmount.value = 0;
             singleAmount.disabled = false;
-            document.querySelector('input[name="concessionType"][value="partial"]').checked = true;
-            singleRemarks.value = '';
         }
 
-        addSingle.addEventListener('click', () => {
-            resetSingleModal();
-            singleModal.classList.add('show');
-        });
-
-        closeSingle.addEventListener('click', () => singleModal.classList.remove('show'));
-        cancelSingle.addEventListener('click', () => singleModal.classList.remove('show'));
-
-        saveSingle.addEventListener('click', () => {
-            const selectedMonths = [];
-            document.querySelectorAll('#singleMonthGrid input:checked').forEach(cb => {
-                selectedMonths.push(cb.value);
+        if(addSingle) {
+            addSingle.addEventListener('click', () => {
+                resetSingleModal();
+                singleModal.classList.add('show');
             });
-            if (selectedMonths.length === 0) {
-                alert('Please select at least one month.');
-                return;
-            }
-            const isFull = document.querySelector('input[name="concessionType"]:checked').value === 'full';
-            const amount = isFull ? 0 : parseFloat(singleAmount.value) || 0;
-            // In a real app, you'd collect all data and save
-            if (editingId) {
-                alert('Concession updated (demo)');
-            } else {
-                alert('New concession created for months: ' + selectedMonths.join(', ') + (isFull ? ' (Full concession)' : ''));
-            }
-            singleModal.classList.remove('show');
+        }
+
+        if(closeSingle) closeSingle.addEventListener('click', () => singleModal.classList.remove('show'));
+        if(cancelSingle) cancelSingle.addEventListener('click', () => singleModal.classList.remove('show'));
+
+        // Delete confirmation
+        document.querySelectorAll('.delete-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                if (confirm('Delete this concession?')) {
+                    e.target.closest('form').submit();
+                }
+            });
         });
 
         // Bulk modal
@@ -814,28 +721,18 @@ style="display:inline">
         const addBulk = document.getElementById('addBulkBtn');
         const closeBulk = document.getElementById('closeBulkModal');
         const cancelBulk = document.getElementById('cancelBulk');
-        const applyBulk = document.getElementById('applyBulk');
 
-        addBulk.addEventListener('click', () => {
-            populateMonthGrid('bulkMonthGrid');
-            document.getElementById('bulkSelectAllMonths').checked = false;
-            bulkModal.classList.add('show');
-        });
-
-        closeBulk.addEventListener('click', () => bulkModal.classList.remove('show'));
-        cancelBulk.addEventListener('click', () => bulkModal.classList.remove('show'));
-        applyBulk.addEventListener('click', () => {
-            const selectedMonths = [];
-            document.querySelectorAll('#bulkMonthGrid input:checked').forEach(cb => {
-                selectedMonths.push(cb.value);
+        if(addBulk) {
+            addBulk.addEventListener('click', () => {
+                document.getElementById('bulkConcessionForm').reset();
+                document.querySelectorAll('#bulkMonthGrid input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.getElementById('bulkSelectAllMonths').checked = false;
+                bulkModal.classList.add('show');
             });
-            if (selectedMonths.length === 0) {
-                alert('Please select at least one month.');
-                return;
-            }
-            alert('Bulk concession applied for months: ' + selectedMonths.join(', ') + ' (demo)');
-            bulkModal.classList.remove('show');
-        });
+        }
+
+        if(closeBulk) closeBulk.addEventListener('click', () => bulkModal.classList.remove('show'));
+        if(cancelBulk) cancelBulk.addEventListener('click', () => bulkModal.classList.remove('show'));
 
         // Close modals on outside click
         window.addEventListener('click', (e) => {
@@ -843,24 +740,7 @@ style="display:inline">
             if (e.target === bulkModal) bulkModal.classList.remove('show');
         });
 
-        // Demo search button
-        document.querySelector('.search-row .btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Search clicked (demo)');
-        });
-
-        // Demo pagination
-        document.querySelectorAll('.page-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                if (this.classList.contains('active-page')) return;
-                document.querySelectorAll('.page-btn').forEach(p => p.classList.remove('active-page'));
-                this.classList.add('active-page');
-                alert('Page changed (demo)');
-            });
-        });
-
         // Initial render and month grid population
-        renderTable();
         populateMonthGrid('singleMonthGrid');
         populateMonthGrid('bulkMonthGrid');
         setupSelectAll('singleSelectAllMonths', 'singleMonthGrid');

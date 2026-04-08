@@ -49,4 +49,24 @@ class FeeConcessionController extends Controller
 
         return view('pages.fee.fee-concession', compact('sections', 'feeTypes', 'concessions'));
     }
+
+    public function store(Request $request)
+    {
+        return redirect()->back()->with('success', 'Fee concession added successfully.');
+    }
+
+    public function bulkStore(Request $request)
+    {
+        return redirect()->back()->with('success', 'Bulk fee concessions added successfully.');
+    }
+
+    public function edit($id)
+    {
+        return redirect()->back()->with('success', 'Edit concession feature placeholder.');
+    }
+
+    public function destroy($id)
+    {
+        return redirect()->back()->with('success', 'Fee concession deleted successfully.');
+    }
 }

@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collect Fee · Smart School ERP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+:root{
+  --blue:#488fe4;--orange:#ff913b;--blu:#e3f0ff;--olt:#fff4ea;
+  --bg:#f5f9ff;--dark:#1e293b;--muted:#5f6b7a;--sidebar:#435471;
+  --sh:0 4px 18px rgba(0,20,50,.07);
+  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--purple:#7c3aed;
+}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:#f0f4ff;border-radius:8px}
+::-webkit-scrollbar-thumb{background:linear-gradient(145deg,var(--blue),var(--orange));border-radius:8px;border:1px solid #fff}
+*{scrollbar-width:thin;scrollbar-color:var(--orange) #f0f4ff}
+body{background:var(--bg);color:var(--dark);overflow-x:hidden}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:282px;background:var(--sidebar);box-shadow:4px 0 20px rgba(0,0,0,.12);position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;flex-shrink:0;color:#fff;z-index:1000}
+.sb-head{padding:18px 20px 14px;display:flex;align-items:center;justify-content:center;border-bottom:2px solid var(--orange);background:rgba(0,0,0,.1)}
+.sb-head img{max-width:162px;max-height:50px;object-fit:contain}
+.close-sb{background:transparent;border:none;color:#fff;font-size:1.4rem;cursor:pointer;display:none;margin-left:auto}
+.ms{margin:3px 0}.ms:not(:first-of-type){border-top:1px dotted rgba(255,255,255,.2);margin-top:4px;padding-top:4px}
+.st{font-size:.79rem;text-transform:uppercase;letter-spacing:.9px;padding:8px 13px 8px 17px;color:#fff;font-weight:700;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;transition:.22s;border-radius:0 26px 26px 0;margin-right:7px}
+.st:hover{background:rgba(255,255,255,.14);transform:translateX(4px)}
+.st i.chv{margin-left:auto;font-size:.7rem;transition:transform .3s}
+.st.open i.chv{transform:rotate(90deg)}
+.sub{display:none;padding:2px 0}.sub.show{display:block}
+.mi{display:flex;align-items:center;gap:10px;padding:8px 13px 8px 17px;color:#fff;text-decoration:none;font-size:.92rem;font-weight:500;transition:.22s;border-left:3px solid transparent;margin:2px 7px 2px 0;border-radius:0 26px 26px 0}
+.mi:hover{background:rgba(255,255,255,.14);border-left-color:var(--orange);transform:translateX(5px)}
+.si{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 46px;color:rgba(255,255,255,.82);text-decoration:none;font-size:.79rem;font-weight:500;transition:.2s;border-left:2px solid transparent;margin:2px 7px 2px 5px;border-radius:0 15px 15px 0}
+.si:hover,.si.acsub{background:rgba(255,255,255,.1);border-left-color:var(--orange);color:#fff}
+.si.acsub{background:rgba(255,145,59,.18)}
+.siw{width:19px;height:19px;border-radius:5px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.siw i{font-size:.56rem;color:rgba(255,255,255,.8)}
+.si:hover .siw{background:var(--orange)}
+
+/* MAIN */
+.main{flex:1;overflow-x:hidden;min-width:0;background:var(--bg)}
+.topbar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:#fff;box-shadow:0 2px 10px rgba(0,20,50,.06);position:sticky;top:0;z-index:500;border-bottom:2px solid var(--blu)}
+.ptitle{font-size:1.07rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:8px}
+.ptitle i{color:var(--orange)}
+.menu-toggle{background:transparent;border:none;color:var(--dark);font-size:1.3rem;cursor:pointer;display:none;padding:4px 7px}
+.pg{padding:20px 22px}
+.card{background:#fff;border-radius:22px;box-shadow:var(--sh);padding:22px 24px;margin-bottom:20px}
+.ctitle{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.ctitle h2{font-size:1.32rem;font-weight:700;color:var(--blue)}
+.ctitle i{font-size:1.32rem;color:var(--orange)}
+
+/* MODE CARDS */
+.mode-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:600px){.mode-wrap{grid-template-columns:1fr}}
+.mcard{border-radius:18px;cursor:pointer;border:2.5px solid #e4ecf7;transition:all .28s cubic-bezier(.2,.9,.3,1);position:relative;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,20,50,.05)}
+.mcard:hover:not(.mac){border-color:#c5d8f2;box-shadow:0 6px 20px rgba(0,20,50,.1);transform:translateY(-2px)}
+.mc-inner{padding:16px 18px;display:flex;align-items:center;gap:14px}
+.mc-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;transition:.28s;flex-shrink:0}
+.mc-lbl{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.9px;margin-bottom:3px}
+.mc-ttl{font-size:.93rem;font-weight:700;color:var(--dark)}
+.mc-check{display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);width:21px;height:21px;border-radius:50%;align-items:center;justify-content:center;font-size:.67rem}
+.mac .mc-check{display:flex}
+.class-mc .mc-ico{background:var(--blu);color:var(--blue)}.class-mc .mc-lbl{color:var(--blue)}.class-mc .mc-check{background:var(--blue);color:#fff}
+.class-mc.mac{border-color:var(--blue);background:linear-gradient(140deg,#eaf4ff,#f5faff);box-shadow:0 8px 28px rgba(72,143,228,.2)}
+.class-mc.mac .mc-ico{background:var(--blue);color:#fff}
+.class-mc.mac::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--blue),#60aaff);border-radius:4px 0 0 4px}
+.direct-mc .mc-ico{background:var(--olt);color:var(--orange)}.direct-mc .mc-lbl{color:var(--orange)}.direct-mc .mc-check{background:var(--orange);color:#fff}
+.direct-mc.mac{border-color:var(--orange);background:linear-gradient(140deg,#fff8f2,#fffcf8);box-shadow:0 8px 28px rgba(255,145,59,.2)}
+.direct-mc.mac .mc-ico{background:var(--orange);color:#fff}
+.direct-mc.mac::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--orange),#ffb875);border-radius:4px 0 0 4px}
+
+/* FILTER ROW */
+.fr{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;background:#f8fcff;padding:15px 17px;border-radius:17px;margin-bottom:15px;border:1.5px solid #e8f1fb}
+.fg{display:flex;flex-direction:column;min-width:150px;flex:1 1 165px}
+.fg label{font-size:.64rem;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:4px;letter-spacing:.5px}
+.fg select{background:#fff;border:1.5px solid #e0e7f0;border-radius:11px;padding:10px 12px;font-size:.87rem;color:var(--dark);outline:none;width:100%;transition:.2s}
+.fg select:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,145,59,.15)}
+.sbtn{background:linear-gradient(135deg,var(--blue),#2d6abf);color:#fff;border:none;padding:10px 24px;border-radius:11px;font-weight:700;font-size:.86rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.2s;white-space:nowrap;align-self:flex-end}
+.sbtn:hover{background:linear-gradient(135deg,var(--orange),#e07a2a)}
+
+/* DIRECT SEARCH */
+.dsw{background:#fff9f5;padding:16px 18px;border-radius:17px;margin-bottom:15px;border:1.5px solid #ffe4c8}
+.dsi{display:flex;align-items:center;background:#fff;border:1.5px solid #e8e0d8;border-radius:40px;padding:4px 4px 4px 16px;gap:8px}
+.dsi i.ic1{color:var(--orange);font-size:.92rem}
+.dsi input{border:none;background:transparent;padding:10px 8px;font-size:.9rem;width:100%;outline:none;color:var(--dark)}
+.dsi button{background:linear-gradient(135deg,var(--orange),#e07a2a);color:#fff;border:none;padding:9px 20px;border-radius:36px;font-weight:700;font-size:.83rem;cursor:pointer;transition:.2s;white-space:nowrap}
+.dsi button:hover{background:linear-gradient(135deg,var(--blue),#2d6abf)}
+.dnote{font-size:.71rem;color:var(--muted);margin-top:9px;display:flex;align-items:center;gap:6px}
+.dnote i{color:var(--orange)}
+
+/* EXPORT + TABLE */
+.ebar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ebtns{display:flex;flex-wrap:wrap;gap:8px}
+.ebtn{background:#fff;border:1.5px solid var(--blue);color:var(--blue);padding:6px 12px;border-radius:22px;font-weight:600;font-size:.76rem;display:inline-flex;align-items:center;gap:5px;cursor:pointer;transition:.2s}
+.ebtn:hover{background:var(--blue);color:#fff}
+.tsearch{display:flex;align-items:center;background:#fff;border:1.5px solid #e0e7f0;border-radius:24px;padding:5px 12px;gap:6px;max-width:240px}
+.tsearch i{color:var(--muted);font-size:.8rem}
+.tsearch input{border:none;background:transparent;padding:6px 4px;font-size:.8rem;outline:none;width:100%}
+.tw{overflow-x:auto;border-radius:15px;background:#fff;box-shadow:var(--sh);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;min-width:820px}
+thead th{background:var(--blue);color:#fff;font-weight:600;font-size:.7rem;text-transform:uppercase;padding:12px 10px;text-align:left;border:1px solid rgba(255,255,255,.15)}
+tbody td{padding:10px 10px;border:1px solid #dde8f5;color:var(--dark);font-size:.84rem;vertical-align:middle}
+tbody tr:hover td{background:#f4f9ff}
+.cbtn{background:linear-gradient(135deg,var(--orange),#e07a2a);color:#fff;border:none;padding:6px 13px;border-radius:22px;font-weight:700;font-size:.74rem;cursor:pointer;transition:.2s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.cbtn:hover{background:linear-gradient(135deg,var(--blue),#2d6abf);transform:scale(1.04)}
+.dbadge{background:#fef3f2;color:#ef4444;padding:4px 10px;border-radius:18px;font-size:.76rem;font-weight:700;border:1.5px solid #fca5a5;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:.18s}
+.dbadge:hover{background:#ef4444;color:#fff;border-color:#ef4444}
+.pag-area{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:#f8fcff;padding:10px 17px;border-radius:40px}
+.pag{display:flex;gap:5px}
+.pb{width:32px;height:32px;border-radius:32px;display:flex;align-items:center;justify-content:center;background:#fff;border:1.5px solid #e2eaf5;color:var(--blue);font-weight:600;font-size:.79rem;transition:.2s;cursor:pointer}
+.pb.acp{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pb:hover:not(.acp){background:var(--blu)}
+.pinfo{color:var(--muted);font-size:.79rem}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty i{font-size:2.5rem;color:#cdd8ef;margin-bottom:10px;display:block}
+.empty p{font-size:.86rem}
+
+/* DUE POPUP */
+.due-bg{display:none;position:fixed;inset:0;background:rgba(10,20,50,.55);z-index:4000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.due-bg.open{display:flex}
+.due-box{background:#fff;border-radius:22px;width:min(480px,94vw);box-shadow:0 24px 60px rgba(0,20,60,.22);animation:popIn .25s cubic-bezier(.2,.9,.3,1);overflow:hidden;max-height:88vh;display:flex;flex-direction:column}
+@keyframes popIn{from{transform:scale(.93) translateY(18px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.due-hdr{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:17px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.due-hdr h3{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.due-xbtn{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.due-xbtn:hover{background:rgba(255,255,255,.38)}
+.due-body{padding:13px 17px;overflow-y:auto;flex:1}
+.due-row{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:11px;margin-bottom:7px;border:1.5px solid}
+.due-row.is-due{background:#fef3f2;border-color:#fca5a5}
+.due-row.is-partial{background:#fef9c3;border-color:#fde68a}
+.dr-left{display:flex;align-items:center;gap:10px}
+.dr-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0}
+.is-due .dr-ico{background:#fee2e2;color:#ef4444}
+.is-partial .dr-ico{background:#fef9c3;color:#b45309}
+.dr-name{font-weight:700;font-size:.84rem;color:var(--dark)}
+.dr-sub{font-size:.65rem;color:var(--muted)}
+.dr-amt{font-weight:800;font-size:.9rem}
+.is-due .dr-amt{color:#ef4444}
+.is-partial .dr-amt{color:#b45309}
+.due-ftr{padding:12px 17px;border-top:1.5px solid #f0f4ff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px;flex-wrap:wrap}
+.due-tot-pill{background:#fef3f2;border:1.5px solid #fca5a5;padding:7px 14px;border-radius:24px;font-weight:800;color:#ef4444;font-size:.86rem;display:flex;align-items:center;gap:6px}
+.btn-go{background:linear-gradient(135deg,var(--orange),#e07a2a);color:#fff;border:none;padding:9px 18px;border-radius:13px;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.2s}
+.btn-go:hover{background:linear-gradient(135deg,var(--blue),#2d6abf)}
+
+/* FEE PANEL */
+.fp-bg{display:none;position:fixed;inset:0;background:rgba(8,18,46,.62);z-index:3000;align-items:flex-start;justify-content:center;padding:22px 13px;backdrop-filter:blur(6px);overflow-y:auto;}
+.fp-bg.open{display:flex}
+.fp-box{width:min(1080px,100%);background:#fff;border-radius:22px;box-shadow:0 28px 72px rgba(0,18,56,.28);animation:popIn .32s cubic-bezier(.2,.9,.3,1);overflow:hidden;margin:auto;}
+.fp-hdr{background:linear-gradient(135deg,var(--blue),#2463b8);color:#fff;padding:17px 23px;position:relative}
+.fp-hdr h2{font-size:1.08rem;font-weight:700;display:flex;align-items:center;gap:9px}
+.fp-hdr p{font-size:.72rem;opacity:.75;margin-top:3px}
+.fp-close{position:absolute;right:16px;top:16px;background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.fp-close:hover{background:rgba(255,255,255,.35)}
+.sstrip{display:flex;flex-wrap:wrap;gap:7px 20px;padding:11px 23px;background:#f0f7ff;border-bottom:1.5px solid #dde8f5}
+.sic .sl{font-size:.57rem;text-transform:uppercase;font-weight:700;color:var(--blue);letter-spacing:.5px}
+.sic .sv{font-size:.82rem;font-weight:600;color:var(--dark)}
+
+/* MULTI SELECT BAR */
+.ms-bar{display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:linear-gradient(135deg,#fff8f2,#fff4ea);border:2px solid #ffe4c8;border-radius:15px;padding:11px 17px;margin:11px 23px 0;}
+.ms-bar.visible{display:flex}
+.ms-info{display:flex;align-items:center;gap:8px;font-size:.83rem;font-weight:600;color:var(--dark)}
+.ms-count{background:var(--orange);color:#fff;width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800}
+.ms-total{font-size:.88rem;font-weight:800;color:var(--orange)}
+.ms-actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn-ms-pay{background:linear-gradient(135deg,var(--orange),#e07a2a);color:#fff;border:none;padding:8px 18px;border-radius:11px;font-weight:700;font-size:.81rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s}
+.btn-ms-pay:hover{background:linear-gradient(135deg,var(--blue),#2d6abf)}
+.btn-ms-clear{background:#fff;border:1.5px solid #e0e7f0;color:var(--muted);padding:8px 14px;border-radius:11px;font-weight:600;font-size:.79rem;cursor:pointer;transition:.2s}
+.btn-ms-clear:hover{border-color:var(--red);color:var(--red)}
+.btn-ms-all{background:#fff;border:1.5px solid var(--blue);color:var(--blue);padding:8px 14px;border-radius:11px;font-weight:600;font-size:.79rem;cursor:pointer;transition:.2s}
+.btn-ms-all:hover{background:var(--blue);color:#fff}
+
+/* MONTHS TABLE */
+.msec{padding:14px 23px 23px}
+.msec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:8px}
+.msec-hdr h3{font-size:.9rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:7px}
+.msec-hdr h3 i{color:var(--orange)}
+.msec-hint{font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:5px}
+.mtw{overflow-x:auto;border-radius:11px;border:1.5px solid #dde8f5}
+.mt{width:100%;border-collapse:collapse;min-width:700px}
+.mt thead th{background:var(--blue);color:#fff;font-size:.63rem;font-weight:700;text-transform:uppercase;padding:10px 9px;text-align:left;border:1px solid rgba(255,255,255,.15)}
+.mt thead th.chk-col{width:40px;text-align:center}
+.mt tbody td{padding:9px 9px;border:1px solid #dde8f5;font-size:.79rem;vertical-align:middle}
+.mt tbody tr:hover td{background:#f5faff}
+.mt tbody tr.row-sel td{background:#fff8f2!important;border-color:#ffd4a8}
+.mt tbody tr.row-paid-sel td{background:#f0fdf6!important;border-color:#86efac}
+.mchk{width:17px;height:17px;border-radius:5px;border:2px solid #d1d5db;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;transition:.18s;background:#fff}
+.mchk.checked-due{background:var(--orange);border-color:var(--orange)}
+.mchk.checked-due::after{content:'✓';color:#fff;font-size:.62rem;font-weight:800}
+.mchk.checked-paid{background:var(--green);border-color:var(--green);cursor:default}
+.mchk.checked-paid::after{content:'✓';color:#fff;font-size:.62rem;font-weight:800}
+.hall-chk{width:17px;height:17px;border-radius:5px;border:2px solid rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;transition:.18s;background:transparent}
+.hall-chk.checked{background:#fff;border-color:#fff}
+.hall-chk.checked::after{content:'✓';color:var(--blue);font-size:.62rem;font-weight:800}
+.ss{padding:3px 8px;border-radius:12px;font-size:.63rem;font-weight:700;border:1px solid;white-space:nowrap}
+.ss.paid{background:#dcfce7;color:#16a34a;border-color:#86efac}
+.ss.due{background:#fef3f2;color:#dc2626;border-color:#fca5a5}
+.ss.partial{background:#fef9c3;color:#b45309;border-color:#fde68a}
+.ss.advance{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd}
+.ss.waived{background:#e0f2fe;color:#0369a1;border-color:#7dd3fc}
+/* fee type mini badges */
+.ft-badges{display:flex;flex-wrap:wrap;gap:3px}
+.ft-badge{font-size:.58rem;padding:2px 7px;border-radius:10px;font-weight:700;border:1px solid;white-space:nowrap}
+.ft-badge.tuition{background:#eff6ff;color:var(--blue);border-color:#bfdbfe}
+.ft-badge.transport{background:#fef9c3;color:#92400e;border-color:#fde68a}
+.ft-badge.hostel{background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}
+.ft-badge.sports{background:#dcfce7;color:#166534;border-color:#86efac}
+.ft-badge.lab{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+.ft-badge.partial{background:#fef9c3;color:#b45309;border-color:#fde68a}
+
+/* action icon buttons */
+.ais{display:flex;gap:4px;align-items:center;flex-wrap:nowrap}
+.ib{width:27px;height:27px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:.17s;position:relative;flex-shrink:0}
+.ib:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.ib[title]:hover::after{content:attr(title);position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:3px 7px;border-radius:5px;font-size:.58rem;white-space:nowrap;z-index:99;pointer-events:none}
+.ib[title]:hover::before{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1e293b;z-index:99}
+.b1{background:#fff5ec;color:var(--orange)}.b1:hover{background:var(--orange);color:#fff}
+.b2{background:#eff6ff;color:var(--blue)}.b2:hover{background:var(--blue);color:#fff}
+.b3{background:#f0fdf4;color:#16a34a}.b3:hover{background:#16a34a;color:#fff}
+.b4{background:#f0fdf4;color:#22c55e}.b4:hover{background:#22c55e;color:#fff}
+.b5{background:#f0f9ff;color:#0ea5e9}.b5:hover{background:#0ea5e9;color:#fff}
+.b6{background:#faf5ff;color:#7c3aed}.b6:hover{background:#7c3aed;color:#fff}
+
+/* PAY MODAL */
+.pm-bg{display:none;position:fixed;inset:0;background:rgba(8,18,46,.65);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.pm-bg.open{display:flex}
+.pm{background:#fff;border-radius:20px;width:min(520px,95vw);box-shadow:0 20px 60px rgba(0,20,60,.26);animation:popIn .25s ease;max-height:95vh;overflow-y:auto;overflow-x:hidden}
+.pm-hdr{background:linear-gradient(135deg,var(--blue),#2463b8);color:#fff;padding:17px 20px;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.pm-hdr h3{font-size:.97rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.pm-xbtn{background:rgba(255,255,255,.2);border:none;color:#fff;width:29px;height:29px;border-radius:50%;font-size:.84rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.pm-xbtn:hover{background:rgba(255,255,255,.35)}
+.pm-body{padding:18px 20px}
+
+/* student mini strip in modal */
+.pm-stu{background:#f0f7ff;border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px 20px}
+.pm-stu-field{display:flex;flex-direction:column;gap:1px}
+.pm-stu-field .psl{font-size:.56rem;text-transform:uppercase;font-weight:700;color:var(--blue);letter-spacing:.4px}
+.pm-stu-field .psv{font-size:.82rem;font-weight:700;color:var(--dark)}
+
+/* month selector in modal */
+.pm-months-header{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+.pm-months-list{display:flex;flex-direction:column;gap:5px;max-height:130px;overflow-y:auto;margin-bottom:14px}
+.pm-mrow{display:flex;align-items:center;justify-content:space-between;background:#f8fcff;border:1.5px solid #e8f1fb;border-radius:10px;padding:8px 11px;font-size:.8rem;cursor:default}
+.pm-mrow .pmn{font-weight:700;color:var(--dark)}
+.pm-mrow .pma{font-weight:800;color:var(--orange)}
+
+/* FEE TYPE SECTION */
+.ft-section{margin-bottom:16px}
+.ft-section-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ft-section-label i{color:var(--orange)}
+.ft-grid{display:flex;flex-direction:column;gap:7px}
+.ft-item{display:flex;align-items:center;justify-content:space-between;background:#f8fcff;border:1.5px solid #e8f1fb;border-radius:11px;padding:10px 13px;cursor:pointer;transition:.2s;gap:10px}
+.ft-item:hover{border-color:#c5d8f2}
+.ft-item.selected{background:#eff6ff;border-color:var(--blue)}
+.ft-item.selected.transport-sel{background:#fefce8;border-color:#fde68a}
+.ft-item.selected.hostel-sel{background:#faf5ff;border-color:#c4b5fd}
+.ft-item.selected.sports-sel{background:#f0fdf4;border-color:#86efac}
+.ft-left{display:flex;align-items:center;gap:10px;flex:1}
+.ft-chk{width:17px;height:17px;border-radius:5px;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;transition:.18s;flex-shrink:0;background:#fff}
+.ft-item.selected .ft-chk{background:var(--blue);border-color:var(--blue)}
+.ft-item.selected.transport-sel .ft-chk{background:#ca8a04;border-color:#ca8a04}
+.ft-item.selected.hostel-sel .ft-chk{background:var(--purple);border-color:var(--purple)}
+.ft-item.selected.sports-sel .ft-chk{background:#16a34a;border-color:#16a34a}
+.ft-chk::after{content:'';transition:.18s}
+.ft-item.selected .ft-chk::after{content:'✓';color:#fff;font-size:.6rem;font-weight:800}
+.ft-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0}
+.ft-info{flex:1}
+.ft-name{font-size:.84rem;font-weight:700;color:var(--dark)}
+.ft-desc{font-size:.67rem;color:var(--muted);margin-top:1px}
+.ft-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.ft-amt{font-size:.9rem;font-weight:800;color:var(--dark)}
+.ft-paid-badge{font-size:.6rem;padding:2px 7px;border-radius:10px;font-weight:700;white-space:nowrap}
+.ft-paid-badge.paid-f{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
+.ft-paid-badge.partial-f{background:#fef9c3;color:#b45309;border:1px solid #fde68a}
+.ft-paid-badge.due-f{background:#fef3f2;color:#dc2626;border:1px solid #fca5a5}
+
+/* PARTIAL ALLOCATION BOX */
+.alloc-box{background:#fff8f2;border:2px solid #ffe4c8;border-radius:13px;padding:13px 15px;margin-bottom:14px}
+.alloc-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.alloc-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.alloc-row:last-child{margin-bottom:0}
+.alloc-label{font-size:.8rem;font-weight:600;color:var(--dark);flex:1;min-width:0}
+.alloc-input{width:100px;border:1.5px solid #e0e7f0;border-radius:9px;padding:7px 10px;font-size:.83rem;text-align:right;outline:none;transition:.2s;flex-shrink:0;color:var(--dark)}
+.alloc-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,145,59,.15)}
+.alloc-rem{font-size:.68rem;color:var(--muted);text-align:right;margin-top:4px}
+
+/* summary rows */
+.pm-sumrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f4ff;font-size:.85rem}
+.pm-sumrow:last-of-type{border-bottom:none}
+.pm-sumrow .psr-l{color:var(--muted);font-weight:500}
+.pm-sumrow .psr-v{font-weight:700;color:var(--dark)}
+.pm-sumrow.total-row{background:#f8fcff;border-radius:10px;padding:10px 13px;border:1.5px solid #e8f1fb;margin:6px 0}
+.pm-sumrow.total-row .psr-l{font-weight:700;color:var(--dark);font-size:.88rem}
+.pm-sumrow.total-row .psr-v{color:var(--orange);font-size:1.03rem;font-weight:800}
+.pm-sumrow.dues-row .psr-v{color:var(--red)}
+.pm-divider{border:none;border-top:1.5px dashed #e0e7f0;margin:11px 0}
+.pf{margin-bottom:12px}
+.pf label{display:block;font-size:.63rem;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:4px;letter-spacing:.4px}
+.pf input,.pf select{width:100%;border:1.5px solid #e0e7f0;border-radius:10px;padding:10px 12px;font-size:.86rem;outline:none;transition:.2s;color:var(--dark);background:#fff}
+.pf input:focus,.pf select:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,145,59,.15)}
+/* payment mode toggle */
+.pay-mode-btns{display:flex;gap:8px;margin-top:4px}
+.pmode-btn{flex:1;padding:9px;border-radius:10px;border:1.5px solid #e0e7f0;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer;text-align:center;transition:.2s;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
+.pmode-btn.active{border-color:var(--blue);background:var(--blu);color:var(--blue)}
+.btn-pay-now{width:100%;background:linear-gradient(135deg,var(--orange),#e07a2a);color:#fff;border:none;padding:13px;border-radius:12px;font-weight:700;font-size:.93rem;cursor:pointer;transition:.2s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(255,145,59,.35)}
+.btn-pay-now:hover{background:linear-gradient(135deg,var(--blue),#2463b8)}
+.btn-pay-now:disabled{opacity:.5;cursor:not-allowed}
+
+/* NO RECEIPT */
+.nr-bg{display:none;position:fixed;inset:0;background:rgba(8,18,46,.55);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.nr-bg.open{display:flex}
+.nr-box{background:#fff;border-radius:20px;padding:34px 30px;width:min(340px,88vw);text-align:center;box-shadow:0 20px 60px rgba(0,20,60,.22);animation:popIn .25s ease}
+.nr-ico{width:60px;height:60px;border-radius:50%;background:#f0f5ff;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#94a3b8}
+.nr-title{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:7px}
+.nr-sub{font-size:.81rem;color:var(--muted);line-height:1.55}
+.btn-nr-close{margin-top:18px;background:var(--blue);color:#fff;border:none;padding:9px 26px;border-radius:11px;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s}
+.btn-nr-close:hover{background:var(--orange)}
+
+/* RECEIPT */
+.rc-bg{display:none;position:fixed;inset:0;background:rgba(8,18,46,.65);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.rc-bg.open{display:flex}
+.rc-m{background:#fff;border-radius:20px;padding:24px;width:min(460px,92vw);box-shadow:0 20px 60px rgba(0,20,60,.25);animation:popIn .25s ease;max-height:92vh;overflow-y:auto}
+.rc-hdr{text-align:center;border-bottom:2px dashed #e0e7f0;padding-bottom:12px;margin-bottom:12px}
+.rc-hdr h2{font-size:.98rem;font-weight:800;color:var(--blue)}
+.rc-hdr p{font-size:.71rem;color:var(--muted);margin-top:2px}
+.rcrow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dotted #e0e7f0;font-size:.8rem}
+.rcrow .rl{color:var(--muted);font-weight:500}
+.rcrow .rv{font-weight:700;color:var(--dark)}
+.rc-ft{text-align:center;margin-top:12px;font-size:.68rem;color:var(--muted);line-height:1.5}
+.btn-prc{background:var(--blue);color:#fff;border:none;padding:10px;border-radius:24px;font-weight:700;font-size:.79rem;cursor:pointer;transition:.2s;margin-top:10px;width:100%}
+.btn-prc:hover{background:var(--orange)}
+.mxbtn{background:transparent;border:none;color:var(--muted);font-size:.94rem;cursor:pointer}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:#1e293b;color:#fff;padding:10px 17px;border-radius:12px;font-size:.82rem;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:9px;transform:translateY(80px);opacity:0;transition:.32s cubic-bezier(.2,.9,.3,1)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success i{color:#22c55e}
+.toast.info i{color:#60a5fa}
+
+@media(max-width:700px){
+  .sidebar{position:fixed!important;left:0;top:0;height:100vh;z-index:2000;transform:translateX(-100%);transition:transform .4s!important;width:272px!important}
+  .sidebar.sm{transform:translateX(0)!important}.close-sb{display:block!important}.menu-toggle{display:flex!important}.pg{padding:12px}.fp-bg{padding:7px}
+}
+@media(min-width:701px){.sidebar{transform:translateX(0)!important}.menu-toggle{display:none!important}.close-sb{display:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head"><img src="https://decentdemo.in/school/images/school-logo.png" alt="Smart School ERP"><button class="close-sb" id="closeSb"><i class="fas fa-times"></i></button></div>
+  <div class="ms" style="--i:1"><a href="index.html" class="mi"><i class="fas fa-home"></i><span>Dashboard</span></a></div>
+  <div class="ms" style="--i:2">
+    <div class="st" data-t="enq"><i class="fas fa-clipboard-list"></i> Enquiry &amp; Registration<i class="fas fa-chevron-right chv"></i></div>
+    <div class="sub" id="enq">
+      <a href="#" class="si"><span class="siw"><i class="fas fa-phone-volume"></i></span>Enquiry</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-user-plus"></i></span>Registration Manager</a>
+    </div>
+  </div>
+  <div class="ms" style="--i:3">
+    <div class="st" data-t="stu"><i class="fas fa-user-graduate"></i> Student Management<i class="fas fa-chevron-right chv"></i></div>
+    <div class="sub" id="stu">
+      <a href="#" class="si"><span class="siw"><i class="fas fa-user-plus"></i></span>Add / Admission Manager</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-id-card"></i></span>Student Details</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-file-invoice"></i></span>Admission Report</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-level-up-alt"></i></span>Promote Student</a>
+    </div>
+  </div>
+  <div class="ms" style="--i:4">
+    <div class="st open" data-t="fee"><i class="fas fa-coins"></i> Fee Details<i class="fas fa-chevron-right chv"></i></div>
+    <div class="sub show" id="fee">
+      <a href="collect-fee.html" class="si acsub"><span class="siw"><i class="fas fa-hand-holding-usd"></i></span>Collect Fee</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-bolt"></i></span>Quick Collect</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-receipt"></i></span>Demand Slip</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-exclamation-circle"></i></span>Manage Due Fee</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-sitemap"></i></span>Structure Manager</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-tag"></i></span>Fee Concession</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-clock"></i></span>Late Fine Fee</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-chart-bar"></i></span>Fee Report</a>
+    </div>
+  </div>
+  <div class="ms" style="--i:5">
+    <div class="st" data-t="trn"><i class="fas fa-bus"></i> Transport Management<i class="fas fa-chevron-right chv"></i></div>
+    <div class="sub" id="trn">
+      <a href="#" class="si"><span class="siw"><i class="fas fa-user-tag"></i></span>Transport Assign</a>
+      <a href="#" class="si"><span class="siw"><i class="fas fa-route"></i></span>Transport Route</a>
+    </div>
+  </div>
+  <div class="ms" style="--i:6"><div class="st" data-t="atd"><i class="fas fa-calendar-check"></i> Attendance<i class="fas fa-chevron-right chv"></i></div><div class="sub" id="atd"><a href="#" class="si"><span class="siw"><i class="fas fa-calendar-check"></i></span>Attendance Manager</a></div></div>
+  <div class="ms" style="--i:7"><div class="st" data-t="hr"><i class="fas fa-users"></i> HR &amp; Payroll<i class="fas fa-chevron-right chv"></i></div><div class="sub" id="hr"><a href="#" class="si"><span class="siw"><i class="fas fa-user-tie"></i></span>Staff Management</a><a href="#" class="si"><span class="siw"><i class="fas fa-wallet"></i></span>Expenses</a></div></div>
+  <div class="ms" style="--i:8"><a href="#" class="mi"><i class="fas fa-cogs"></i><span>School Setting</span></a></div>
+  <div class="ms" style="--i:9"><a href="#" class="mi" style="color:#ff8080"><i class="fas fa-sign-out-alt" style="color:#ff8080"></i><span>Logout</span></a></div>
+  <div style="height:14px"></div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <div class="ptitle"><i class="fas fa-hand-holding-usd"></i> Collect Fee</div>
+  </div>
+  <div class="pg">
+    <div class="card">
+      <div class="ctitle"><i class="fas fa-hand-holding-usd"></i><h2>Fee Collection</h2></div>
+      <!-- MODE CARDS -->
+      <div class="mode-wrap">
+        <div class="mcard class-mc mac" id="classCard" onclick="switchMode('class')">
+          <div class="mc-inner"><div class="mc-ico"><i class="fas fa-layer-group"></i></div><div><div class="mc-lbl">Search Mode 1</div><div class="mc-ttl">Class / Section Filter</div></div></div>
+          <div class="mc-check"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="mcard direct-mc" id="directCard" onclick="switchMode('direct')">
+          <div class="mc-inner"><div class="mc-ico"><i class="fas fa-bolt"></i></div><div><div class="mc-lbl">Search Mode 2</div><div class="mc-ttl">Direct Student Search</div></div></div>
+          <div class="mc-check"><i class="fas fa-check"></i></div>
+        </div>
+      </div>
+      <!-- CLASS PANEL -->
+      <div id="classPanel">
+        <div class="fr">
+          <div class="fg"><label>Class *</label><select id="classSelect"><option value="">-- Select Class --</option><option>Nursery</option><option>KG</option><option>UKG</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option><option>VII</option><option>VIII</option><option>IX</option><option>X</option><option>XI</option><option>XII</option></select></div>
+          <div class="fg"><label>Section</label><select id="sectionSelect"><option value="">-- All Sections --</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+          <button class="sbtn" onclick="searchByClass()"><i class="fas fa-search"></i> Search</button>
+        </div>
+      </div>
+      <!-- DIRECT PANEL -->
+      <div id="directPanel" style="display:none">
+        <div class="dsw">
+          <div class="dsi"><i class="fas fa-search ic1"></i><input type="text" id="directInput" placeholder="Admission No. / Ledger No. / Mobile No. / Student Name" onkeydown="if(event.key==='Enter')searchDirect()"><button onclick="searchDirect()"><i class="fas fa-bolt"></i> Search</button></div>
+          <div class="dnote"><i class="fas fa-info-circle"></i>Exact match on Admission No., Ledger No. or Mobile No. will directly open the fee panel.</div>
+        </div>
+      </div>
+      <!-- RESULTS TABLE -->
+      <div id="resultsSection" style="display:none">
+        <div class="ebar">
+          <div class="ebtns">
+            <button class="ebtn" onclick="copyTable()"><i class="fas fa-copy"></i> Copy</button>
+            <button class="ebtn" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+            <button class="ebtn" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+            <button class="ebtn" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            <button class="ebtn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+          </div>
+          <div class="tsearch"><i class="fas fa-filter"></i><input type="text" id="tableSearch" placeholder="Filter by name..." oninput="filterTable()"></div>
+        </div>
+        <div class="tw"><table><thead><tr><th>#</th><th>STD ID</th><th>Adm No.</th><th>Roll</th><th>Student Name</th><th>Class</th><th>Sec.</th><th>Father Name</th><th>Mobile</th><th>Total Dues</th><th>Action</th></tr></thead><tbody id="stbody"></tbody></table></div>
+        <div class="pag-area"><div class="pinfo" id="pgInfo"></div><div class="pag" id="pgBtns"></div><div class="pinfo"><i class="fas fa-clock"></i> <span id="lastUpd"></span></div></div>
+      </div>
+      <div id="emptyHint" class="empty"><i class="fas fa-hand-holding-usd"></i><p>Select a search mode above to load student data</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DUE POPUP -->
+<div class="due-bg" id="dueBg">
+  <div class="due-box">
+    <div class="due-hdr"><h3><i class="fas fa-exclamation-circle"></i> Due / Pending — <span id="dueStudName"></span></h3><button class="due-xbtn" onclick="closeDuePop()"><i class="fas fa-times"></i></button></div>
+    <div class="due-body" id="dueBody"></div>
+    <div class="due-ftr"><div class="due-tot-pill"><i class="fas fa-rupee-sign"></i> <span id="dueTotAmt">0</span> Total Due</div><button class="btn-go" onclick="closeDueAndOpen()"><i class="fas fa-hand-holding-usd"></i> Collect Fee</button></div>
+  </div>
+</div>
+
+<!-- FEE PANEL -->
+<div class="fp-bg" id="fpBg">
+  <div class="fp-box">
+    <div class="fp-hdr"><h2><i class="fas fa-hand-holding-usd"></i> Fee Collection</h2><p>Select months · choose fee types · collect single or multiple months</p><button class="fp-close" onclick="closePanel()"><i class="fas fa-times"></i></button></div>
+    <div class="sstrip" id="stuStrip"></div>
+    <!-- MULTI BAR -->
+    <div class="ms-bar" id="msBar">
+      <div class="ms-info"><span class="ms-count" id="msCount">0</span><span id="msLabel">months selected</span>&nbsp;|&nbsp; Total: <span class="ms-total" id="msTotal">₹0</span></div>
+      <div class="ms-actions">
+        <button class="btn-ms-all" onclick="selectAllDue()"><i class="fas fa-check-double"></i> All Due</button>
+        <button class="btn-ms-clear" onclick="clearDueSel()"><i class="fas fa-times"></i> Clear</button>
+        <button class="btn-ms-pay" onclick="openMultiPay()"><i class="fas fa-rupee-sign"></i> Pay Selected</button>
+      </div>
+    </div>
+    <!-- MONTHS TABLE -->
+    <div class="msec">
+      <div class="msec-hdr">
+        <h3><i class="fas fa-calendar-alt"></i> Month-wise Fee Details — All 12 Months</h3>
+        <div class="msec-hint"><i class="fas fa-info-circle" style="color:var(--orange)"></i> Check rows to select multiple months for bulk payment</div>
+      </div>
+      <div class="mtw"><table class="mt">
+        <thead><tr>
+          <th class="chk-col"><div class="hall-chk" id="hallChk" onclick="toggleSelectAll()"></div></th>
+          <th>#</th><th>Month</th><th>Fee Types</th><th>Total Fee</th><th>Fine</th><th>Net Payable</th><th>Paid</th><th>Balance</th><th>Pay. Date</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="monthBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAY MODAL -->
+<div class="pm-bg" id="pmBg">
+  <div class="pm">
+    <div class="pm-hdr"><h3><i class="fas fa-rupee-sign"></i> <span id="pmTitle">Collect Fee</span></h3><button class="pm-xbtn" onclick="closePm()"><i class="fas fa-times"></i></button></div>
+    <div class="pm-body">
+      <!-- student mini info -->
+      <div class="pm-stu" id="pmStuInfo"></div>
+      <!-- month list (multi only) -->
+      <div id="pmMultiList" style="display:none"><div class="pm-months-header">Selected Months</div><div class="pm-months-list" id="pmMonthList"></div></div>
+      <!-- FEE TYPE SELECTOR -->
+      <div class="ft-section">
+        <div class="ft-section-label"><i class="fas fa-tags"></i> Select Fee Type(s) to Collect</div>
+        <div class="ft-grid" id="ftGrid"></div>
+      </div>
+      <!-- PARTIAL ALLOCATION (shown when pay amount < total) -->
+      <div class="alloc-box" id="allocBox" style="display:none">
+        <div class="alloc-title"><i class="fas fa-sliders-h"></i> Partial Payment Allocation</div>
+        <div id="allocRows"></div>
+        <div class="alloc-rem" id="allocRem"></div>
+      </div>
+      <hr class="pm-divider">
+      <!-- SUMMARY -->
+      <div class="pm-sumrow"><span class="psr-l">Sub Total</span><span class="psr-v" id="pmSubTotal">₹0</span></div>
+      <div class="pm-sumrow"><span class="psr-l">Discount / Concession</span><span class="psr-v" id="pmDiscount" style="color:var(--green)">₹0</span></div>
+      <div class="pm-sumrow total-row"><span class="psr-l">Total Payable</span><span class="psr-v" id="pmTotal">₹0</span></div>
+      <hr class="pm-divider">
+      <div class="pf"><label>Pay Amount (₹)</label><input type="number" id="pmAmt" placeholder="Enter amount to pay" oninput="onPayAmtChange()"></div>
+      <div class="pm-sumrow dues-row" style="margin-bottom:14px"><span class="psr-l">Dues After Payment</span><span class="psr-v" id="pmDuesAfter">₹0</span></div>
+      <div class="pf"><label>Payment Mode</label><div class="pay-mode-btns"><button class="pmode-btn active" id="pmOnline" onclick="setMode('online')"><i class="fas fa-wifi"></i> Online</button><button class="pmode-btn" id="pmOffline" onclick="setMode('offline')"><i class="fas fa-money-bill-wave"></i> Offline / Cash</button></div></div>
+      <div class="pf" id="pmRefWrap"><label>Reference / Transaction No.</label><input type="text" id="pmRef" placeholder="UPI Ref / Cheque No. (optional)"></div>
+      <div class="pf"><label>Remark</label><input type="text" id="pmRmk" placeholder="Optional remark"></div>
+      <button class="btn-pay-now" id="payNowBtn" onclick="confirmPay()"><i class="fas fa-check-circle"></i> Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- NO RECEIPT -->
+<div class="nr-bg" id="nrBg">
+  <div class="nr-box"><div class="nr-ico"><i class="fas fa-receipt"></i></div><div class="nr-title">No Receipt Available</div><div class="nr-sub">No payment recorded for this month yet. Collect fee first to generate a receipt.</div><button class="btn-nr-close" onclick="closeNr()">OK, Got it</button></div>
+</div>
+
+<!-- RECEIPT -->
+<div class="rc-bg" id="rcBg">
+  <div class="rc-m">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">Payment Receipt</div><button class="mxbtn" onclick="closeRc()"><i class="fas fa-times"></i></button></div>
+    <div class="rc-hdr"><h2><i class="fas fa-school" style="color:var(--orange)"></i> Smart School ERP</h2><p>Fee Payment Receipt</p></div>
+    <div id="rcContent"></div>
+    <button class="btn-prc" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+<script>
+/* ═══════════════════════════════════
+   DATA
+═══════════════════════════════════ */
+const students=[
+  {id:'SID10',adm:'5620',ledger:'L001',roll:'1', name:'AARAV SHARMA', cls:'UKG',sec:'A',father:'RAJESH SHARMA',mob:'9876012345',dues:15600},
+  {id:'SID11',adm:'5630',ledger:'L002',roll:'5', name:'ANANYA GUPTA', cls:'UKG',sec:'A',father:'SURESH GUPTA', mob:'9812345678',dues:7800},
+  {id:'SID12',adm:'5642',ledger:'L003',roll:'23',name:'SRISHTI',      cls:'UKG',sec:'A',father:'SURAJ KUMAR',  mob:'9067551645',dues:13100},
+  {id:'SID13',adm:'5632',ledger:'L004',roll:'13',name:'SHANVI SINGH', cls:'UKG',sec:'A',father:'AJEET KUMAR',  mob:'6200580095',dues:13100},
+  {id:'SID14',adm:'5678',ledger:'L005',roll:'45',name:'ARJUN MEHTA',  cls:'I',  sec:'B',father:'RAJ MEHTA',    mob:'9876543210',dues:8500},
+  {id:'SID15',adm:'5690',ledger:'L006',roll:'12',name:'PRIYA SINGH',  cls:'II', sec:'A',father:'AMIT SINGH',   mob:'9123456789',dues:10200},
+  {id:'SID16',adm:'5701',ledger:'L007',roll:'7', name:'ROHIT KUMAR',  cls:'III',sec:'C',father:'MUKESH KUMAR', mob:'9988776655',dues:7500},
+  {id:'SID17',adm:'5715',ledger:'L008',roll:'19',name:'DIVYA VERMA',  cls:'III',sec:'A',father:'RAMESH VERMA', mob:'7891234560',dues:0},
+  {id:'SID18',adm:'5729',ledger:'L009',roll:'3', name:'KARAN PATEL',  cls:'IV', sec:'B',father:'DEEPAK PATEL', mob:'8123456790',dues:12400},
+  {id:'SID19',adm:'5744',ledger:'L010',roll:'30',name:'SNEHA RAI',    cls:'V',  sec:'A',father:'VIJAY RAI',    mob:'9654123780',dues:5200},
+  {id:'SID20',adm:'5760',ledger:'L011',roll:'8', name:'RAHUL MISHRA', cls:'VI', sec:'B',father:'ANIL MISHRA',  mob:'9321456780',dues:18900},
+  {id:'SID21',adm:'5775',ledger:'L012',roll:'22',name:'POOJA YADAV',  cls:'VII',sec:'A',father:'GANESH YADAV', mob:'8901234567',dues:3600},
+];
+const MO_SHORT=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+const MO_FULL =['April','May','June','July','August','September','October','November','December','January','February','March'];
+
+/* Fee types configuration */
+const FEE_TYPES=[
+  {key:'tuition',  name:'Tuition Fee',   icon:'fa-book',         color:'#488fe4', cls:'tuition',   selCls:'',          base:1200},
+  {key:'transport',name:'Transport Fee',  icon:'fa-bus',          color:'#ca8a04', cls:'transport', selCls:'transport-sel', base:700},
+  {key:'hostel',   name:'Hostel Fee',     icon:'fa-hotel',        color:'#7c3aed', cls:'hostel',    selCls:'hostel-sel',    base:500,  optional:true},
+  {key:'sports',   name:'Sports / Activity',icon:'fa-futbol',     color:'#16a34a', cls:'sports',    selCls:'sports-sel',    base:150,  optional:true},
+  {key:'lab',      name:'Lab / Library',  icon:'fa-flask',        color:'#c2410c', cls:'lab',       selCls:'',              base:100,  optional:true},
+];
+
+function buildMD(s){
+  const pat=s.dues===0?Array(12).fill('paid'):['paid','paid','partial','due','paid','due','paid','paid','due','due','partial','due'];
+  return MO_FULL.map((m,i)=>{
+    const st=pat[i],fine=(st==='due'||st==='partial')?50:0;
+    // build fee components for this month
+    const comps=FEE_TYPES.map(ft=>{
+      if(ft.optional && Math.random()<0.4) return null; // not all students have all fees
+      const total=ft.base+Math.floor(Math.random()*50);
+      let paid=0,status='due';
+      if(st==='paid'){paid=total;status='paid';}
+      else if(st==='partial'){
+        // random: some components paid, some not
+        const r=Math.random();
+        if(r<0.5){paid=total;status='paid';}
+        else if(r<0.7){paid=Math.floor(total*0.5);status='partial';}
+        else{paid=0;status='due';}
+      }
+      return {key:ft.key,name:ft.name,total,paid,balance:total-paid,status};
+    }).filter(Boolean);
+    const totalFee=comps.reduce((a,c)=>a+c.total,0);
+    const totalPaid=comps.reduce((a,c)=>a+c.paid,0);
+    const totalBal=comps.reduce((a,c)=>a+c.balance,0);
+    const concession=(i===0||i===6)?200:0;
+    const net=totalFee+fine-concession;
+    const effBalance=Math.max(0,totalBal-concession);
+    const overallStatus=effBalance===0?'paid':(totalPaid>0?'partial':st);
+    return{month:m,monthS:MO_SHORT[i],fee:totalFee,fine,concession,net,
+      paid:totalPaid,balance:effBalance,status:overallStatus,
+      paidDate:totalPaid>0?`${3+i} ${MO_SHORT[i]}`:'—',
+      comps,selected:false,
+      receiptNo:totalPaid>0?'RC'+(10000+i*7+Math.floor(Math.random()*100)):null};
+  });
+}
+
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+let curStu=[],curPage=1;const PER=5;
+let activeStu=null,monthData=[],activeRow=null,isMulti=false,payMode='online';
+let pmSelectedFeeTypes=new Set();
+let pmMonths=[];   // month indices in current pay modal
+
+/* ═══════════════════════════════════
+   MODE SWITCH
+═══════════════════════════════════ */
+function switchMode(m){
+  document.getElementById('classCard').classList.toggle('mac',m==='class');
+  document.getElementById('directCard').classList.toggle('mac',m==='direct');
+  document.getElementById('classPanel').style.display=m==='class'?'':'none';
+  document.getElementById('directPanel').style.display=m==='direct'?'':'none';
+  hideRes();
+}
+
+/* ═══════════════════════════════════
+   SEARCH
+═══════════════════════════════════ */
+function searchByClass(){
+  const cls=document.getElementById('classSelect').value,sec=document.getElementById('sectionSelect').value;
+  if(!cls){showToast('Please select a class first','info');return;}
+  let res=students.filter(s=>s.cls===cls);if(sec)res=res.filter(s=>s.sec===sec);showRes(res);
+}
+function searchDirect(){
+  const q=document.getElementById('directInput').value.trim();
+  if(!q){showToast('Please enter a search term','info');return;}
+  const exact=students.find(s=>s.adm===q||s.ledger===q||s.mob===q);
+  if(exact){showToast('Match found — opening fee panel','success');hideRes();setTimeout(()=>openPanel(exact.id),280);return;}
+  const res=students.filter(s=>s.name.toLowerCase().includes(q.toLowerCase()));
+  if(!res.length){showToast('No student found','info');return;}showRes(res);
+}
+function showRes(data){curStu=data;curPage=1;document.getElementById('tableSearch').value='';document.getElementById('emptyHint').style.display='none';document.getElementById('resultsSection').style.display='';document.getElementById('lastUpd').textContent=new Date().toLocaleString('en-IN');renderTable(curStu);}
+function hideRes(){document.getElementById('resultsSection').style.display='none';document.getElementById('emptyHint').style.display='';}
+function filterTable(){const q=document.getElementById('tableSearch').value.trim().toLowerCase();renderTable(q?curStu.filter(s=>s.name.toLowerCase().includes(q)):curStu);}
+function renderTable(data){
+  const s=(curPage-1)*PER,pg=data.slice(s,s+PER),tb=document.getElementById('stbody');
+  if(!pg.length){tb.innerHTML=`<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--muted)"><i class="fas fa-search" style="font-size:1.5rem;display:block;margin-bottom:8px;color:#cdd8ef"></i>No students found</td></tr>`;document.getElementById('pgInfo').textContent='';document.getElementById('pgBtns').innerHTML='';return;}
+  tb.innerHTML=pg.map((st,i)=>`<tr><td>${s+i+1}</td><td><b>${st.id}</b></td><td>${st.adm}</td><td>${st.roll}</td><td><b>${st.name}</b></td><td>${st.cls}</td><td>${st.sec}</td><td>${st.father}</td><td>${st.mob}</td>
+    <td>${st.dues>0?`<span class="dbadge" onclick="openDuePopup('${st.id}')" title="View due months"><i class="fas fa-exclamation-circle"></i> ₹${st.dues.toLocaleString('en-IN')}</span>`:'<span style="color:var(--green);font-weight:700;font-size:.82rem">✔ Clear</span>'}</td>
+    <td><button class="cbtn" onclick="openPanel('${st.id}')"><i class="fas fa-rupee-sign"></i> Collect Fee</button></td></tr>`).join('');
+  document.getElementById('pgInfo').textContent=`Showing ${s+1}–${Math.min(s+PER,data.length)} of ${data.length} entries`;renderPag(data.length);
+}
+function renderPag(total){const tp=Math.ceil(total/PER),el=document.getElementById('pgBtns');if(tp<=1){el.innerHTML='';return;}let h=`<span class="pb" onclick="chPage(${curPage-1})"><i class="fas fa-chevron-left"></i></span>`;for(let i=1;i<=tp;i++)h+=`<span class="pb ${i===curPage?'acp':''}" onclick="chPage(${i})">${i}</span>`;h+=`<span class="pb" onclick="chPage(${curPage+1})"><i class="fas fa-chevron-right"></i></span>`;el.innerHTML=h;}
+function chPage(p){const tp=Math.ceil(curStu.length/PER);if(p<1||p>tp)return;curPage=p;renderTable(curStu);}
+
+/* ═══════════════════════════════════
+   DUE POPUP
+═══════════════════════════════════ */
+function openDuePopup(sid){activeStu=students.find(s=>s.id===sid);if(!activeStu)return;monthData=buildMD(activeStu);_showDuePop();}
+function openDueFromPanel(){if(activeStu)_showDuePop();}
+function _showDuePop(){
+  const dRows=monthData.filter(m=>m.status==='due'||m.status==='partial');
+  const tot=dRows.reduce((a,m)=>a+m.balance,0);
+  document.getElementById('dueStudName').textContent=activeStu.name;
+  document.getElementById('dueTotAmt').textContent='₹'+tot.toLocaleString('en-IN');
+  document.getElementById('dueBody').innerHTML=dRows.length
+    ?dRows.map(m=>`<div class="due-row is-${m.status}"><div class="dr-left"><div class="dr-ico"><i class="fas ${m.status==='due'?'fa-clock':'fa-adjust'}"></i></div><div><div class="dr-name">${m.month} 2025</div><div class="dr-sub">${m.status==='partial'?'Partially paid':'Unpaid'}</div></div></div><div class="dr-amt">₹${m.balance.toLocaleString('en-IN')}</div></div>`).join('')
+    :`<div style="text-align:center;padding:28px;color:var(--muted)"><i class="fas fa-check-circle" style="font-size:2rem;color:var(--green);display:block;margin-bottom:8px"></i>No dues pending!</div>`;
+  document.getElementById('dueBg').classList.add('open');
+}
+function closeDuePop(){document.getElementById('dueBg').classList.remove('open');}
+function closeDueAndOpen(){closeDuePop();setTimeout(()=>openPanel(activeStu.id),200);}
+
+/* ═══════════════════════════════════
+   FEE PANEL
+═══════════════════════════════════ */
+function openPanel(sid){
+  activeStu=students.find(s=>s.id===sid);if(!activeStu)return;
+  monthData=buildMD(activeStu);
+  document.getElementById('stuStrip').innerHTML=[
+    {l:'Student Name',v:activeStu.name},{l:'STD ID',v:activeStu.id},
+    {l:'Adm No.',v:activeStu.adm},{l:'Ledger No.',v:activeStu.ledger},
+    {l:'Roll No.',v:activeStu.roll},{l:'Class / Sec',v:`${activeStu.cls}–${activeStu.sec}`},
+    {l:'Father',v:activeStu.father},{l:'Mobile',v:activeStu.mob},
+  ].map(c=>`<div class="sic"><span class="sl">${c.l}</span><span class="sv">${c.v}</span></div>`).join('');
+  renderMonths();updateMsBar();
+  document.getElementById('fpBg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePanel(){document.getElementById('fpBg').classList.remove('open');document.body.style.overflow='';}
+
+/* ═══════════════════════════════════
+   MONTHS TABLE RENDER
+═══════════════════════════════════ */
+const SL={paid:'<i class="fas fa-check"></i> Paid',due:'<i class="fas fa-clock"></i> Due',partial:'<i class="fas fa-adjust"></i> Partial',advance:'<i class="fas fa-forward"></i> Advance',waived:'<i class="fas fa-tag"></i> Waived'};
+
+function renderMonths(){
+  document.getElementById('monthBody').innerHTML=monthData.map((m,i)=>{
+    const isPaid=m.status==='paid';
+    const chkCls=isPaid?'mchk checked-paid':(m.selected?'mchk checked-due':'mchk');
+    const rowCls=isPaid?'row-paid-sel':(m.selected?'row-sel':'');
+    const onck=isPaid?'':`onclick="toggleRow(${i})"`;
+    // build fee type mini badges
+    const ftBadges=m.comps.map(c=>{
+      const ft=FEE_TYPES.find(f=>f.key===c.key);
+      const badgeStatus=c.status==='paid'?'':c.status==='partial'?' partial':'';
+      return `<span class="ft-badge ${ft?ft.cls:''}">${ft?ft.name.split(' ')[0]:c.key}${c.status==='partial'?'*':c.status==='due'?'†':''}</span>`;
+    }).join('');
+    return `<tr id="mtr-${i}" class="${rowCls}">
+      <td style="text-align:center"><div class="${chkCls}" id="chk-${i}" ${onck}></div></td>
+      <td>${i+1}</td>
+      <td><b>${m.monthS}</b></td>
+      <td><div class="ft-badges">${ftBadges}</div></td>
+      <td>₹${m.fee.toLocaleString('en-IN')}</td>
+      <td>${m.fine>0?`<span style="color:var(--yellow);font-weight:700">₹${m.fine}</span>`:'<span style="color:#94a3b8">—</span>'}</td>
+      <td><b>₹${m.net.toLocaleString('en-IN')}</b></td>
+      <td>${m.paid>0?`<span style="color:var(--green);font-weight:700">₹${m.paid.toLocaleString('en-IN')}</span>`:'<span style="color:#94a3b8">₹0</span>'}</td>
+      <td>${m.balance>0?`<span style="color:var(--red);font-weight:800">₹${m.balance.toLocaleString('en-IN')}</span>`:'<span style="color:var(--green);font-weight:700">₹0</span>'}</td>
+      <td style="color:var(--muted);font-size:.73rem">${m.paidDate}</td>
+      <td><span class="ss ${m.status}">${SL[m.status]||m.status}</span></td>
+      <td><div class="ais">
+        ${!isPaid?`<button class="ib b1" title="Collect Fee" onclick="openPm(${i})"><i class="fas fa-rupee-sign"></i></button>`:''}
+        <button class="ib b2" title="${isPaid?'View Receipt':'No Receipt'}" onclick="${isPaid?`viewRec(${i})`:`showNoReceipt()`}"><i class="fas fa-receipt"></i></button>
+        <button class="ib b3" title="${isPaid?'Print Receipt':'No Receipt'}" onclick="${isPaid?`printRec(${i})`:`showNoReceipt()`}"><i class="fas fa-print"></i></button>
+        <button class="ib b4" title="Send WhatsApp" onclick="sendWA(${i})"><i class="fab fa-whatsapp"></i></button>
+        <button class="ib b5" title="Concession / Waive" onclick="waiveFee(${i})"><i class="fas fa-tag"></i></button>
+        <button class="ib b6" title="Payment History" onclick="viewHist(${i})"><i class="fas fa-history"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  updateHallChk();
+}
+
+function toggleRow(i){monthData[i].selected=!monthData[i].selected;const chk=document.getElementById('chk-'+i),tr=document.getElementById('mtr-'+i);chk.className=monthData[i].selected?'mchk checked-due':'mchk';tr.className=monthData[i].selected?'row-sel':'';updateMsBar();updateHallChk();}
+function toggleSelectAll(){const sel=monthData.filter(m=>m.balance>0),all=sel.every(m=>m.selected);sel.forEach(m=>m.selected=!all);renderMonths();updateMsBar();}
+function selectAllDue(){monthData.forEach(m=>{if(m.balance>0)m.selected=true;});renderMonths();updateMsBar();}
+function clearDueSel(){monthData.forEach(m=>m.selected=false);renderMonths();updateMsBar();}
+function updateHallChk(){const sel=monthData.filter(m=>m.balance>0),all=sel.length>0&&sel.every(m=>m.selected);const h=document.getElementById('hallChk');if(h)h.className=all?'hall-chk checked':'hall-chk';}
+function updateMsBar(){const sel=monthData.filter(m=>m.selected),tot=sel.reduce((a,m)=>a+m.balance,0);document.getElementById('msCount').textContent=sel.length;document.getElementById('msLabel').textContent=sel.length===1?'month selected':'months selected';document.getElementById('msTotal').textContent='₹'+tot.toLocaleString('en-IN');document.getElementById('msBar').classList.toggle('visible',sel.length>0);}
+
+/* ═══════════════════════════════════
+   PAY MODAL — OPEN
+═══════════════════════════════════ */
+function openPm(i){
+  isMulti=false;activeRow=i;pmMonths=[i];
+  _openPayModal([i]);
+}
+function openMultiPay(){
+  const sel=monthData.map((m,i)=>m.selected?i:-1).filter(i=>i>=0);
+  if(!sel.length){showToast('Please select months first','info');return;}
+  isMulti=true;pmMonths=sel;
+  _openPayModal(sel);
+}
+
+function _openPayModal(monthIndices){
+  // Title
+  if(monthIndices.length===1){
+    const m=monthData[monthIndices[0]];
+    document.getElementById('pmTitle').textContent='Collect Fee — '+m.month+' 2025';
+  } else {
+    document.getElementById('pmTitle').textContent='Collect '+monthIndices.length+' Months Together';
+  }
+  // Student mini info
+  document.getElementById('pmStuInfo').innerHTML=[
+    {l:'Name',v:activeStu.name},{l:'Adm No.',v:activeStu.adm},
+    {l:'Class',v:activeStu.cls+' – '+activeStu.sec},{l:'Mobile',v:activeStu.mob}
+  ].map(c=>`<div class="pm-stu-field"><span class="psl">${c.l}</span><span class="psv">${c.v}</span></div>`).join('');
+  // Multi month list
+  const ml=document.getElementById('pmMultiList');
+  if(monthIndices.length>1){
+    ml.style.display='';
+    document.getElementById('pmMonthList').innerHTML=monthIndices.map(i=>{const m=monthData[i];return`<div class="pm-mrow"><span class="pmn">${m.month} 2025</span><span class="pma">₹${m.balance.toLocaleString('en-IN')}</span></div>`;}).join('');
+  } else ml.style.display='none';
+
+  // Build fee type selector (union of fee types across selected months)
+  _buildFeeTypeSelector(monthIndices);
+  setMode('online');
+  document.getElementById('pmRef').value='';
+  document.getElementById('pmRmk').value='';
+  document.getElementById('pmBg').classList.add('open');
+}
+
+function _buildFeeTypeSelector(monthIndices){
+  // Collect all unique fee types with their totals/paid across selected months
+  const ftMap={};
+  monthIndices.forEach(mi=>{
+    const m=monthData[mi];
+    m.comps.forEach(c=>{
+      if(!ftMap[c.key])ftMap[c.key]={key:c.key,total:0,paid:0,balance:0,status:'due'};
+      ftMap[c.key].total+=c.total;
+      ftMap[c.key].paid+=c.paid;
+      ftMap[c.key].balance+=c.balance;
+    });
+  });
+  // Determine status per type
+  Object.values(ftMap).forEach(f=>{
+    if(f.balance===0)f.status='paid';
+    else if(f.paid>0)f.status='partial';
+    else f.status='due';
+  });
+
+  // Default: select all due/partial types
+  pmSelectedFeeTypes=new Set();
+  Object.values(ftMap).forEach(f=>{if(f.status!=='paid')pmSelectedFeeTypes.add(f.key);});
+
+  const grid=document.getElementById('ftGrid');
+  grid.innerHTML=Object.values(ftMap).map(f=>{
+    const ft=FEE_TYPES.find(x=>x.key===f.key)||{name:f.key,icon:'fa-coins',color:'#488fe4',selCls:'',cls:''};
+    const isPaid=f.status==='paid';
+    const isSel=pmSelectedFeeTypes.has(f.key);
+    const selClass=isSel?(ft.selCls?`selected ${ft.selCls}`:'selected'):'';
+    const statusBadge=isPaid?`<span class="ft-paid-badge paid-f">Paid</span>`:f.status==='partial'?`<span class="ft-paid-badge partial-f">Partial</span>`:`<span class="ft-paid-badge due-f">Due</span>`;
+    return `<div class="ft-item ${selClass}" id="fti-${f.key}" onclick="toggleFeeType('${f.key}')" ${isPaid?'style="opacity:.5;pointer-events:none"':''}>
+      <div class="ft-left">
+        <div class="ft-chk" id="ftchk-${f.key}"></div>
+        <div class="ft-icon" style="background:${ft.color}18;color:${ft.color}"><i class="fas ${ft.icon}"></i></div>
+        <div class="ft-info"><div class="ft-name">${ft.name}</div><div class="ft-desc">Balance: ₹${f.balance.toLocaleString('en-IN')} | Paid: ₹${f.paid.toLocaleString('en-IN')}</div></div>
+      </div>
+      <div class="ft-right"><div class="ft-amt">₹${f.balance.toLocaleString('en-IN')}</div>${statusBadge}</div>
+    </div>`;
+  }).join('');
+
+  // Store ftMap for later use
+  window._pmFtMap=ftMap;
+  _recalcSummary();
+}
+
+function toggleFeeType(key){
+  if(pmSelectedFeeTypes.has(key))pmSelectedFeeTypes.delete(key);
+  else pmSelectedFeeTypes.add(key);
+  const ft=FEE_TYPES.find(x=>x.key===key)||{selCls:''};
+  const el=document.getElementById('fti-'+key);
+  if(pmSelectedFeeTypes.has(key)){el.className=`ft-item selected ${ft.selCls||''}`;}
+  else el.className='ft-item';
+  _recalcSummary();
+}
+
+function _recalcSummary(){
+  const ftMap=window._pmFtMap||{};
+  let subTotal=0,disc=0;
+  pmMonths.forEach(mi=>{
+    const m=monthData[mi];
+    subTotal+=m.fine;
+    // only selected fee types
+    m.comps.forEach(c=>{if(pmSelectedFeeTypes.has(c.key))subTotal+=c.balance;});
+    if(pmSelectedFeeTypes.size>0)disc+=m.concession;
+  });
+  const total=Math.max(0,subTotal-disc);
+  document.getElementById('pmSubTotal').textContent='₹'+subTotal.toLocaleString('en-IN');
+  document.getElementById('pmDiscount').textContent='₹'+disc.toLocaleString('en-IN');
+  document.getElementById('pmTotal').textContent='₹'+total.toLocaleString('en-IN');
+  document.getElementById('pmAmt').value=total>0?total:'';
+  document.getElementById('pmDuesAfter').textContent='₹0';
+  document.getElementById('allocBox').style.display='none';
+  document.getElementById('payNowBtn').disabled=total===0&&pmSelectedFeeTypes.size===0;
+}
+
+function onPayAmtChange(){
+  const amt=parseFloat(document.getElementById('pmAmt').value)||0;
+  const totalStr=document.getElementById('pmTotal').textContent.replace(/[₹,]/g,'');
+  const total=parseFloat(totalStr)||0;
+  const dues=Math.max(0,total-amt);
+  document.getElementById('pmDuesAfter').textContent='₹'+dues.toLocaleString('en-IN');
+  // Show allocation if partial
+  if(amt>0&&amt<total&&pmSelectedFeeTypes.size>1){
+    _showAllocation(amt);
+  } else {
+    document.getElementById('allocBox').style.display='none';
+  }
+}
+
+function _showAllocation(payAmt){
+  // Show input fields to allocate partial amount across fee types
+  const box=document.getElementById('allocBox');
+  box.style.display='';
+  let rem=payAmt;
+  const rows=[];
+  pmMonths.forEach(mi=>{
+    const m=monthData[mi];
+    m.comps.filter(c=>pmSelectedFeeTypes.has(c.key)&&c.balance>0).forEach(c=>{
+      const alloc=Math.min(rem,c.balance);rem=Math.max(0,rem-alloc);
+      rows.push({mi,key:c.key,name:c.name||c.key,balance:c.balance,alloc,month:m.monthS});
+    });
+  });
+  document.getElementById('allocRows').innerHTML=rows.map((r,idx)=>`
+    <div class="alloc-row">
+      <span class="alloc-label">${r.month} · ${r.name} <span style="color:var(--muted);font-weight:400">(Due ₹${r.balance})</span></span>
+      <input class="alloc-input" type="number" id="alloc-${idx}" value="${r.alloc}" min="0" max="${r.balance}" oninput="updateAllocRem()">
+    </div>`).join('');
+  window._allocRows=rows;
+  updateAllocRem();
+}
+
+function updateAllocRem(){
+  const rows=window._allocRows||[];
+  const payAmt=parseFloat(document.getElementById('pmAmt').value)||0;
+  let used=0;
+  rows.forEach((r,i)=>{const v=parseFloat(document.getElementById('alloc-'+i)?.value)||0;used+=v;});
+  const rem=payAmt-used;
+  document.getElementById('allocRem').textContent=rem>=0?`Unallocated: ₹${rem.toFixed(0)}`:`⚠ Over-allocated by ₹${Math.abs(rem).toFixed(0)}`;
+  document.getElementById('allocRem').style.color=rem<0?'var(--red)':'var(--muted)';
+}
+
+function setMode(m){payMode=m;document.getElementById('pmOnline').classList.toggle('active',m==='online');document.getElementById('pmOffline').classList.toggle('active',m==='offline');}
+function closePm(){document.getElementById('pmBg').classList.remove('open');}
+
+/* ═══════════════════════════════════
+   CONFIRM PAYMENT
+═══════════════════════════════════ */
+function confirmPay(){
+  const amt=parseFloat(document.getElementById('pmAmt').value);
+  if(!amt||amt<=0){showToast('Please enter a valid amount','info');return;}
+  if(pmSelectedFeeTypes.size===0){showToast('Please select at least one fee type','info');return;}
+  const rc='RC'+Math.floor(Math.random()*90000+10000);
+  const allocRows=window._allocRows||[];
+
+  pmMonths.forEach(mi=>{
+    const m=monthData[mi];
+    let monthPaid=0;
+    m.comps.forEach(c=>{
+      if(!pmSelectedFeeTypes.has(c.key))return;
+      // find allocated amount for this component
+      const aRow=allocRows.find(r=>r.mi===mi&&r.key===c.key);
+      let pay=aRow?Math.min(parseFloat(document.getElementById('alloc-'+allocRows.indexOf(aRow))?.value)||0,c.balance):c.balance;
+      // if no allocation used (single type / full payment), pay full balance (up to amt)
+      if(!aRow)pay=c.balance;
+      c.paid+=pay;c.balance-=pay;monthPaid+=pay;
+      c.status=c.balance<=0?'paid':c.paid>0?'partial':'due';
+    });
+    m.paid+=monthPaid;m.balance=m.comps.reduce((a,c)=>a+c.balance,0);
+    m.status=m.balance<=0?'paid':m.paid>0?'partial':'due';
+    if(m.balance<=0){m.paidDate=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'});m.receiptNo=rc;}
+    m.selected=false;
+  });
+
+  closePm();renderMonths();updateMsBar();
+  showToast('₹'+amt.toLocaleString('en-IN')+' payment recorded!','success');
+  if(pmMonths.length===1)setTimeout(()=>viewRec(pmMonths[0]),600);
+  else setTimeout(()=>viewMultiReceipt(pmMonths,amt,rc),600);
+}
+
+/* ═══════════════════════════════════
+   RECEIPT
+═══════════════════════════════════ */
+function showNoReceipt(){document.getElementById('nrBg').classList.add('open');}
+function closeNr(){document.getElementById('nrBg').classList.remove('open');}
+function viewRec(i){
+  if(!activeStu)return;const m=monthData[i];
+  if(!m.receiptNo){showNoReceipt();return;}
+  const compRows=m.comps.map(c=>`<div class="rcrow"><span class="rl">${c.name||c.key}</span><span class="rv" style="color:${c.status==='paid'?'var(--green)':c.status==='partial'?'var(--yellow)':'var(--red)'}">₹${c.paid.toLocaleString('en-IN')} ${c.status!=='paid'?'(Partial)':''}</span></div>`).join('');
+  document.getElementById('rcContent').innerHTML=`
+    <div class="rcrow"><span class="rl">Receipt No.</span><span class="rv">${m.receiptNo}</span></div>
+    <div class="rcrow"><span class="rl">Pay. Date</span><span class="rv">${m.paidDate}</span></div>
+    <div class="rcrow"><span class="rl">Student</span><span class="rv">${activeStu.name}</span></div>
+    <div class="rcrow"><span class="rl">Adm No. / Ledger</span><span class="rv">${activeStu.adm} / ${activeStu.ledger}</span></div>
+    <div class="rcrow"><span class="rl">Class / Section</span><span class="rv">${activeStu.cls} – ${activeStu.sec}</span></div>
+    <div class="rcrow"><span class="rl">Month</span><span class="rv">${m.month} 2025</span></div>
+    <div style="margin:8px 0 5px;font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.4px">Fee Breakdown</div>
+    ${compRows}
+    <div class="rcrow"><span class="rl">Late Fine</span><span class="rv">₹${m.fine}</span></div>
+    <div class="rcrow"><span class="rl">Concession</span><span class="rv" style="color:var(--green)">₹${m.concession}</span></div>
+    <div class="rcrow" style="border-bottom:2px solid var(--blue);padding-bottom:9px"><span class="rl" style="font-weight:700;color:var(--dark)">Total Paid</span><span class="rv" style="color:var(--green);font-size:.97rem">₹${m.paid.toLocaleString('en-IN')}</span></div>
+    <div class="rcrow"><span class="rl">Balance Due</span><span class="rv" style="color:${m.balance>0?'var(--red)':'var(--green)'}">₹${m.balance.toLocaleString('en-IN')}</span></div>
+    <div class="rc-ft">Computer generated receipt · Smart School ERP</div>`;
+  document.getElementById('rcBg').classList.add('open');
+}
+function viewMultiReceipt(months,totalPaid,rc){
+  if(!activeStu)return;
+  const mRows=months.map(i=>{const m=monthData[i];return`<div class="rcrow"><span class="rl">${m.month} 2025</span><span class="rv" style="color:var(--green)">₹${m.paid.toLocaleString('en-IN')}</span></div>`;}).join('');
+  document.getElementById('rcContent').innerHTML=`
+    <div class="rcrow"><span class="rl">Receipt No.</span><span class="rv">${rc}</span></div>
+    <div class="rcrow"><span class="rl">Date</span><span class="rv">${new Date().toLocaleDateString('en-IN')}</span></div>
+    <div class="rcrow"><span class="rl">Student</span><span class="rv">${activeStu.name}</span></div>
+    <div class="rcrow"><span class="rl">Adm No. / Ledger</span><span class="rv">${activeStu.adm} / ${activeStu.ledger}</span></div>
+    <div class="rcrow"><span class="rl">Class / Section</span><span class="rv">${activeStu.cls} – ${activeStu.sec}</span></div>
+    <div style="margin:8px 0 5px;font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.4px">Month-wise Breakdown</div>
+    ${mRows}
+    <div class="rcrow" style="border-bottom:2px solid var(--blue);padding-bottom:9px"><span class="rl" style="font-weight:700;color:var(--dark)">Total Paid</span><span class="rv" style="color:var(--green);font-size:.97rem">₹${totalPaid.toLocaleString('en-IN')}</span></div>
+    <div class="rc-ft">Computer generated receipt · Smart School ERP</div>`;
+  document.getElementById('rcBg').classList.add('open');
+}
+function closeRc(){document.getElementById('rcBg').classList.remove('open');}
+function printRec(i){viewRec(i);setTimeout(()=>window.print(),400);}
+function sendWA(i){if(!activeStu)return;const m=monthData[i];window.open(`https://wa.me/91${activeStu.mob}?text=${encodeURIComponent('Dear Parent,\nFee reminder for '+activeStu.name+'\nMonth: '+m.month+' 2025\nBalance Due: Rs.'+m.balance+'\n- Smart School ERP')}`,'_blank');}
+function waiveFee(i){const a=prompt('Enter concession for '+monthData[i].monthS+':',monthData[i].concession);if(a===null)return;const c=parseFloat(a)||0;monthData[i].concession=c;monthData[i].net=monthData[i].fee+monthData[i].fine-c;monthData[i].balance=Math.max(0,monthData[i].net-monthData[i].paid);renderMonths();showToast('Concession ₹'+c+' applied for '+monthData[i].monthS,'success');}
+function viewHist(i){showToast(monthData[i].monthS+' — payment history (demo)','info');}
+
+/* ═══════════════════════════════════
+   EXPORT
+═══════════════════════════════════ */
+function copyTable(){navigator.clipboard.writeText(curStu.map(s=>s.id+'\t'+s.adm+'\t'+s.name+'\t'+s.cls+'\t'+s.sec+'\t'+s.mob+'\t'+s.dues).join('\n')).then(()=>showToast('Copied!','success')).catch(()=>showToast('Copy failed','info'));}
+function exportCSV(){dl('STD ID,Adm,Roll,Name,Class,Sec,Father,Mobile,Dues\n'+curStu.map(s=>[s.id,s.adm,s.roll,s.name,s.cls,s.sec,s.father,s.mob,s.dues].join(',')).join('\n'),'fee.csv','text/csv');}
+function exportExcel(){exportCSV();showToast('CSV downloaded','info');}
+function exportPDF(){showToast('PDF export — coming soon','info');}
+function dl(c,f,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=f;a.click();}
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.className='toast '+type;t.querySelector('i').className=type==='success'?'fas fa-check-circle':'fas fa-info-circle';document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+
+/* ═══════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════ */
+(function(){
+  const sb=document.getElementById('sidebar'),mt=document.getElementById('menuToggle'),cs=document.getElementById('closeSb');
+  if(mt)mt.addEventListener('click',e=>{e.stopPropagation();sb.classList.toggle('sm');});
+  if(cs)cs.addEventListener('click',()=>sb.classList.remove('sm'));
+  document.addEventListener('click',e=>{if(window.innerWidth<=700&&!sb.contains(e.target)&&mt&&!mt.contains(e.target))sb.classList.remove('sm');});
+  document.querySelectorAll('.st').forEach(t=>t.addEventListener('click',e=>{e.preventDefault();const s=document.getElementById(t.getAttribute('data-t'));if(s){s.classList.toggle('show');t.classList.toggle('open');}}));
+  ['fpBg','dueBg','pmBg','rcBg','nrBg'].forEach(id=>{
+    const el=document.getElementById(id);const fn={fpBg:closePanel,dueBg:closeDuePop,pmBg:closePm,rcBg:closeRc,nrBg:closeNr}[id];
+    if(el)el.addEventListener('click',function(e){if(e.target===this)fn();});
+  });
+})();
+</script>
+</body>
+</html>
