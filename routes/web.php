@@ -146,6 +146,7 @@ Route::middleware(['auth','role:admin'])
         Route::post('/promote-student/update-all', [\App\Http\Controllers\Admin\PromoteStudentController::class, 'updateAll'])->name('admin.promote-student.update-all');
         Route::get('/collect-fee', [\App\Http\Controllers\Admin\CollectFeeController::class, 'index'])->name('admin.collect-fee.index');
         Route::get('/collect-fee/details/{id}', [\App\Http\Controllers\Admin\CollectFeeController::class, 'getStudentFeeDetails'])->name('admin.collect-fee.details');
+        Route::post('/collect-fee/pay/{id}', [\App\Http\Controllers\Admin\CollectFeeController::class, 'pay'])->name('admin.collect-fee.pay');
         Route::get('/quick-collect', [\App\Http\Controllers\Admin\QuickCollectController::class, 'index'])->name('admin.quick-collect.index');
         Route::get('/demand-slip', [\App\Http\Controllers\Admin\DemandSlipController::class, 'index'])->name('admin.demand-slip.index');
         Route::post('/demand-slip/students', [\App\Http\Controllers\Admin\DemandSlipController::class, 'getStudents'])->name('admin.demand-slip.students');

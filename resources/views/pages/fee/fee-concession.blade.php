@@ -700,12 +700,12 @@ Manage student fee concessions efficiently.
         if(addSingle) {
             addSingle.addEventListener('click', () => {
                 resetSingleModal();
-                singleModal.classList.add('show');
+                singleModal.classList.add('open');
             });
         }
 
-        if(closeSingle) closeSingle.addEventListener('click', () => singleModal.classList.remove('show'));
-        if(cancelSingle) cancelSingle.addEventListener('click', () => singleModal.classList.remove('show'));
+        if(closeSingle) closeSingle.addEventListener('click', () => singleModal.classList.remove('open'));
+        if(cancelSingle) cancelSingle.addEventListener('click', () => singleModal.classList.remove('open'));
 
         // Delete confirmation
         document.querySelectorAll('.delete-icon').forEach(icon => {
@@ -727,17 +727,17 @@ Manage student fee concessions efficiently.
                 document.getElementById('bulkConcessionForm').reset();
                 document.querySelectorAll('#bulkMonthGrid input[type="checkbox"]').forEach(cb => cb.checked = false);
                 document.getElementById('bulkSelectAllMonths').checked = false;
-                bulkModal.classList.add('show');
+                bulkModal.classList.add('open');
             });
         }
 
-        if(closeBulk) closeBulk.addEventListener('click', () => bulkModal.classList.remove('show'));
-        if(cancelBulk) cancelBulk.addEventListener('click', () => bulkModal.classList.remove('show'));
+        if(closeBulk) closeBulk.addEventListener('click', () => bulkModal.classList.remove('open'));
+        if(cancelBulk) cancelBulk.addEventListener('click', () => bulkModal.classList.remove('open'));
 
         // Close modals on outside click
         window.addEventListener('click', (e) => {
-            if (e.target === singleModal) singleModal.classList.remove('show');
-            if (e.target === bulkModal) bulkModal.classList.remove('show');
+            if (e.target === singleModal) singleModal.classList.remove('open');
+            if (e.target === bulkModal) bulkModal.classList.remove('open');
         });
 
         // Initial render and month grid population

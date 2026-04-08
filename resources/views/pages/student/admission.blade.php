@@ -197,8 +197,8 @@
                     <div class="form-section">
                         <h2>Basic Information</h2>
                         <div class="form-row">
-                            <div class="form-group"><label class="required">Admission No.</label><input type="text" name="admission_no" value=""></div>
-                            <div class="form-group"><label class="required">Admission Date</label><input type="date" name="admission_date" value=""></div>
+                            <div class="form-group"><label class="required">Admission No.</label><input type="text" name="admission_no" id="adm_no" value="{{ $nextAdmissionNo }}"></div>
+                            <div class="form-group"><label class="required">Admission Date</label><input type="date" name="admission_date" id="adm_date" value="{{ date('Y-m-d') }}"></div>
                             <div class="form-group">
                                 <label class="required">Registration No.</label>
                                 <input type="hidden" name="registration_student_id" id="registration_student_id">

@@ -504,8 +504,8 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
         const url = editingFeeTypeId 
-            ? `/admin/fee-structure-manager/fee-type/update/${editingFeeTypeId}` 
-            : `/admin/fee-structure-manager/fee-type/store`;
+            ? `{{ url('admin/fee-structure-manager/fee-type/update') }}/${editingFeeTypeId}` 
+            : `{{ url('admin/fee-structure-manager/fee-type/store') }}`;
         
         try {
             const response = await fetch(url, {
@@ -565,7 +565,7 @@
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch(`/admin/fee-structure-manager/fee-type/delete/${id}`, {
+                    const response = await fetch(`{{ url('admin/fee-structure-manager/fee-type/delete') }}/${id}`, {
                         method: 'POST',
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                     });
@@ -610,7 +610,7 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
                 try {
-                    const resp = await fetch('/admin/fee-structure-manager/save', {
+                    const resp = await fetch(`{{ url('admin/fee-structure-manager/save') }}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -661,7 +661,7 @@
     // --- HISTORY ---
     document.getElementById('historyBtn').onclick = async () => {
         try {
-            const resp = await fetch('/admin/fee-structure-manager/history');
+            const resp = await fetch(`{{ url('admin/fee-structure-manager/history') }}`);
             const data = await resp.json();
             if (data.status === 'success') {
                 const body = document.getElementById('historyBody');

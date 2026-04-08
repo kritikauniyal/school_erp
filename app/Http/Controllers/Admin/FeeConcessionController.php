@@ -12,16 +12,13 @@ class FeeConcessionController extends Controller
         $sections = \App\Models\Section::all();
         $feeTypes = \App\Models\FeeType::all();
         
-        $query = \App\Models\FeeConcession::with(['student.class', 'student.section', 'student.user', 'feeType']);
+        $query = \App\Models\FeeConcession::with(['student.classInfo', 'student.sectionInfo', 'feeType']);
 
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->whereHas('student', function($q) use ($keyword) {
                 $q->where('admission_no', 'LIKE', "%{$keyword}%")
-                  ->orWhere('student_name', 'LIKE', "%{$keyword}%")
-                  ->orWhereHas('user', function($qu) use ($keyword) {
-                      $qu->where('name', 'LIKE', "%{$keyword}%");
-                  });
+                  ->orWhere('student_name', 'LIKE', "%{$keyword}%");
             });
         }
 

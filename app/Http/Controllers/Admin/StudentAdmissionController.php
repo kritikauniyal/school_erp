@@ -52,7 +52,17 @@ class StudentAdmissionController extends Controller
 
         $admissionFeeTypes = \DB::table('fee_types')->where('is_admission_fee', true)->get();
 
-        return view('pages.student.admission', compact('students', 'classes', 'sections', 'registrations', 'qualifications', 'occupations', 'castes', 'bloodGroups', 'admissionFeeTypes'));
+        $lastStudent = \App\Models\Student::orderBy('id', 'desc')->first();
+        if ($lastStudent && preg_match('/^AD(\d+)$/', $lastStudent->admission_no, $matches)) {
+            $nextNumber = intval($matches[1]) + 1;
+            $nextAdmissionNo = 'AD' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            // Fallback if the last student doesn't match the AD format, we'll estimate based on count
+            $count = \App\Models\Student::count() + 1;
+            $nextAdmissionNo = 'AD' . str_pad($count, 3, '0', STR_PAD_LEFT);
+        }
+
+        return view('pages.student.admission', compact('students', 'classes', 'sections', 'registrations', 'qualifications', 'occupations', 'castes', 'bloodGroups', 'admissionFeeTypes', 'nextAdmissionNo'));
     }
 
     public function store(Request $request)

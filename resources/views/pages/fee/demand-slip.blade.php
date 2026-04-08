@@ -7,180 +7,8 @@
 @push('styles')
     <style>
         /* Specific Inner Page styles */
-        .demand-card {
-            max-width: 1300px;
+        .demand-slip {
             width: 100%;
-            background: white;
-            border-radius: 36px;
-            box-shadow: var(--shadow);
-            padding: 28px 30px;
-            transition: var(--transition);
-        }
-        .demand-card:hover {
-            box-shadow: var(--shadow-hover);
-        }
-            transition: var(--transition);
-        }
-        .demand-card:hover {
-            box-shadow: var(--shadow-hover);
-        }
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        .header-title h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        .header-title i {
-            font-size: 2rem;
-            color: var(--primary-orange);
-        }
-        .header-sub {
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            margin-left: 10px;
-            font-size: 0.95rem;
-        }
-
-        /* Premium Unified Filter Bar */
-        .premium-filter-bar { 
-            background: #f8fcff; 
-            padding: 10px; 
-            border-radius: 60px; 
-            margin-bottom: 25px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            border: 1.5px solid #e0eafc;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-            flex-wrap: wrap;
-        }
-        .filter-item-wrap {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #e0e7f0;
-            border-radius: 40px;
-            padding: 4px 4px 4px 18px;
-            transition: var(--transition);
-            flex: 1;
-            min-width: 250px;
-        }
-        .filter-item-wrap:focus-within { border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(61,132,245,0.1); }
-        .filter-item-wrap i { color: var(--text-muted); font-size: 0.9rem; margin-right: 12px; }
-        .filter-item-wrap select {
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 0.9rem;
-            padding: 10px 0;
-            color: var(--text-dark);
-            width: 100%;
-            font-weight: 500;
-        }
-        .select-divider {
-            min-width: 160px;
-            border-right: 1px solid #eee;
-            padding-right: 12px;
-            margin-right: 12px;
-        }
-        .month-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: white;
-            padding: 16px;
-            border-radius: 20px;
-            border: 1px solid #e0e7f0;
-            margin-top: 5px;
-        }
-        .month-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            min-width: 85px;
-            font-size: 0.85rem;
-        }
-        .month-item input {
-            accent-color: var(--primary-orange);
-            width: 16px;
-            height: 16px;
-        }
-        .btn {
-            background: white;
-            border: 1px solid var(--primary-blue);
-            color: var(--primary-blue);
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        .btn i {
-            font-size: 1rem;
-        }
-        .btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-        .btn-orange {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            color: white;
-        }
-        .btn-orange:hover {
-            background: white;
-            color: var(--primary-orange);
-        }
-        .action-bar {
-            display: flex;
-            justify-content: flex-end;
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        /* student table */
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 20px;
-            background: white;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        th {
-            background: var(--primary-blue);
-            color: white;
-            font-weight: 600;
-            font-size: 0.7rem;
-            padding: 14px 8px;
-            border: 1px solid #3a6fa8;
-            text-align: left;
-        }
-        td {
-            padding: 12px 8px;
-            border: 1px solid #d9e2ec;
-            color: var(--text-dark);
-            font-size: 0.85rem;
-            vertical-align: middle;
-        }
-        tr:hover td {
-            background: #f8fcff;
         }
         .action-icons {
             display: flex;
@@ -456,7 +284,7 @@
 
 @section('content')
 
-<div class="demand-card">
+<div class="card">
 
 <div class="content-section-title">
 Monthly Fee Breakdown (April - March)
@@ -473,25 +301,22 @@ Generate and print demand slips for selected months
 <!-- Filter Panel -->
 <div class="filter-panel" style="background:transparent; padding:0;">
 
-    <div class="premium-filter-bar">
-        <div class="filter-item-wrap">
-            <i class="fas fa-filter"></i>
-            <div class="select-divider">
-                <select id="classSelect">
-                    <option value="">Select Class</option>
-                    @foreach($globalClasses as $class)
-                        <option value="{{ $class->name }}">{{ $class->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="select-divider" style="border:none;">
-                <select id="sectionSelect">
-                    <option value="">Select Section</option>
-                    @foreach($sections as $section)
-                        <option value="{{ $section->name }}">{{ $section->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+    <div class="row" style="margin-bottom: 20px; gap: 15px;">
+        <div class="col-md-3">
+            <select id="classSelect" class="form-control">
+                <option value="">Select Class</option>
+                @foreach($globalClasses as $class)
+                    <option value="{{ $class->name }}">{{ $class->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="sectionSelect" class="form-control">
+                <option value="">Select Section</option>
+                @foreach($sections as $section)
+                    <option value="{{ $section->name }}">{{ $section->name }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 
@@ -533,9 +358,9 @@ Generate and print demand slips for selected months
 </div>
 
 
-<div class="table-wrapper">
+<div class="table-wrap">
 
-<table>
+<table class="data-table">
 
 <thead>
 
@@ -568,9 +393,9 @@ Generate and print demand slips for selected months
 
 <h3>Print History</h3>
 
-<div class="table-wrapper">
+<div class="table-wrap">
 
-<table>
+<table class="data-table">
 
 <thead>
 

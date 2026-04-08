@@ -82,7 +82,7 @@
         <button class="btn btn-blue" id="saveAllBtn"><i class="fas fa-save"></i> Save All Changes</button>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-wrap">
         <table class="data-table" id="feeTable">
             <thead id="tableHeader"></thead>
             <tbody id="tableBody"></tbody>
