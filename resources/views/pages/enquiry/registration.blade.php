@@ -3,8 +3,6 @@
 @section('title', 'Registration Manager')
 @section('page_icon', 'fas fa-clipboard-list')
 
-@section('content')
-
 @push('styles')
 <style>
     
@@ -283,32 +281,39 @@
             border-radius: 28px;
             max-width: 720px;
             width: 100%;
-            max-height: 85vh;
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 40px -12px rgba(0,0,0,0.25);
             animation: modalPop 0.25s ease;
+            display: flex;
+            flex-direction: column;
         }
         @keyframes modalPop {
             0% { opacity: 0; transform: scale(0.96); }
             100% { opacity: 1; transform: scale(1); }
         }
         .modal-header {
-            padding: 18px 22px 0 22px;
+            padding: 22px 28px 10px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
         .modal-header h2 {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary-blue);
+            color: #4a90e2; /* Matching the screenshot blue */
+        }
+        .modal-body {
+            padding: 0 28px 22px 28px;
+            flex: 1;
+            overflow-y: auto;
         }
         .close-modal {
             background: none;
             border: none;
-            font-size: 1.8rem;
+            font-size: 2rem;
             cursor: pointer;
-            color: var(--text-muted);
+            color: #64748b;
             line-height: 1;
         }
         .close-modal:hover {
@@ -561,59 +566,96 @@
             border-top: 1px solid #ecf3fa;
         }
 
-        /* ===== UPDATED VIEW MODAL (plain text, compact) ===== */
+        /* ===== UPDATED VIEW MODAL (Exact match to Screenshot) ===== */
+        .view-modal-content {
+            padding: 10px 28px 22px 28px;
+        }
         .detail-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            background: #f8fcff;
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 16px;
+            gap: 16px 30px;
+            background: #f8fbff;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
         }
         .detail-item {
             display: flex;
             flex-direction: column;
-            font-size: 0.8rem;
         }
         .detail-item .label {
             font-size: 0.65rem;
             text-transform: uppercase;
-            font-weight: 700;
-            color: var(--primary-blue);
-            margin-bottom: 2px;
+            font-weight: 800;
+            color: #4a90e2;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
         }
         .detail-item .value {
-            font-size: 0.85rem;
-            color: var(--text-dark);
-            /* no background, no border */
-            line-height: 1.3;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e293b;
+            line-height: 1.4;
         }
         .greeting-message {
-            background: #fff1dd;
-            border-left: 4px solid var(--primary-orange);
-            padding: 12px 16px;
-            border-radius: 16px;
-            margin-bottom: 16px;
-            font-size: 0.8rem;
-            color: var(--text-dark);
+            background: #fff8f0;
+            border-left: 5px solid #ff913b;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 0 28px 20px 28px;
+            font-size: 0.9rem;
+            color: #334155;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(255,145,59,0.08);
         }
         .greeting-message i {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: #25D366;
             cursor: pointer;
             transition: 0.2s;
+            margin-left: 15px;
         }
         .greeting-message i:hover {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(5deg);
+        }
+        .view-modal-actions {
+            padding: 0 28px 28px 28px;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .btn-close-outline {
+            background: white;
+            border: 2px solid #4a90e2;
+            color: #4a90e2;
+            padding: 10px 30px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-close-outline:hover {
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        /* STUDENT TAB - No Scrollbar */
+        #studentsTab {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        .student-table-container {
+            max-height: none !important;
+            overflow: visible !important;
         }
 
         </style>
-
 @endpush
+
+@section('content')
 
 <div class="page-title" style="margin-bottom: 20px; font-size: 1.1rem; font-weight: 700; color: var(--primary-blue);"><i class="fas fa-clipboard-list" style="color: var(--primary-orange);"></i> Registration Manager</div>
 
@@ -683,7 +725,6 @@
                     <th>Student's Name</th>
                     <th>Father's Name</th>
                     <th>Class</th>
-                    <th>Section</th>
                     <th>Email</th>
                     <th>Registration Date</th>
                     <th>Actions</th>
@@ -691,17 +732,20 @@
             </thead>
             <tbody id="tableBody">
                 @forelse($registrations as $reg)
+                
                     <tr>
                         <td>{{ $reg->reg_no ?: ('REG' . str_pad($reg->id, 3, '0', STR_PAD_LEFT)) }}</td>
-                        <td>{{ $reg->student_name }}</td>
                         <td>
-                            @if($reg->class)
-                                {{ $reg->class }}@if($reg->section) - {{ $reg->section }}@endif
-                            @else
-                                <span style="color:#aaa;">N/A</span>
-                            @endif
+                            @foreach($reg->students as $student)
+                               {{ $student->name }}<br>
+                            @endforeach
                         </td>
-                        <td>{{ $reg->father_mobile }}</td>
+                        <td>{{ $reg->father_name }}</td>
+                        <td>    @foreach($reg->students as $student)
+                                    {{ $student->class ?? 'N/A' }}
+                                @endforeach
+                        </td>
+                        
                         <td>{{ $reg->email ?? 'N/A' }}</td>
                         <td>{{ \Carbon\Carbon::parse($reg->reg_date)->format('d-M-Y') }}</td>
                         <td>
@@ -932,20 +976,24 @@
     </div>
 </div>
 
-<!-- VIEW MODAL (plain text + greeting) -->
+<!-- VIEW MODAL (Exact Screenshot Match) -->
 <div class="modal-overlay" id="viewModal">
-    <div class="modal-container">
+    <div class="modal-container" style="max-width: 800px;">
         <div class="modal-header">
             <h2>Registration Details</h2>
             <button class="close-modal" id="closeViewModal">&times;</button>
         </div>
-        <div id="viewDetails" class="detail-grid"></div>
+        <div class="view-modal-content">
+            <div id="viewDetails" class="detail-grid">
+                <!-- Dynamic Content Loaded Here -->
+            </div>
+        </div>
         <div class="greeting-message" id="greetingBox">
             <span id="greetingText"></span>
             <i class="fab fa-whatsapp" id="whatsappIcon" title="Send WhatsApp"></i>
         </div>
-        <div class="modal-actions">
-            <button type="button" class="btn" id="closeViewBtn">Close</button>
+        <div class="view-modal-actions">
+            <button type="button" class="btn-close-outline" id="closeViewBtn">Close</button>
         </div>
     </div>
 </div>
@@ -990,6 +1038,15 @@
 
     document.getElementById('openMainModal').addEventListener('click', openAddModal);
     document.getElementById('closeMainModal').addEventListener('click', () => mainModal.classList.remove('open'));
+    document.getElementById('cancelFamily').addEventListener('click', () => mainModal.classList.remove('open'));
+    document.getElementById('saveFamilyContinue').addEventListener('click', (e) => {
+        e.preventDefault();
+        showStudentsTab();
+    });
+    document.getElementById('prevTabBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        showFamilyTab();
+    });
 
     // Inline Tab Logic for Main Modal
     document.querySelectorAll('.modal-tab').forEach(tab => {
@@ -1261,66 +1318,55 @@
             if(res.success) {
                 const reg = res.data;
                 const detailsHtml = `
-                    <div class="row mb-3">
-                        <div class="col-12 text-center mb-2">
-                            <div style="background:var(--blue-light); color:var(--primary-blue); font-size:1.5rem; font-weight:800; padding:10px 20px; border-radius:15px; display:inline-block; margin-bottom:10px;">
-                                ${reg.reg_no}
-                            </div>
-                            <h6 class="mb-2">Registration Date: <span class="badge bg-primary">${reg.reg_date}</span></h6>
-                            <h6>Status: <span class="badge ${reg.status === 'Register' ? 'bg-warning text-dark' : 'bg-success'}">${reg.status}</span></h6>
-                        </div>
+                    <div class="detail-item">
+                        <div class="label">REG NO.</div>
+                        <div class="value">${reg.reg_no}</div>
                     </div>
-                    
-                    <div class="card shadow-sm mb-3" style="border-radius:16px; border:1px solid #e2e8f0;">
-                        <div class="card-body">
-                            <h6 class="text-primary fw-bold mb-3" style="font-size:0.9rem;"><i class="fas fa-users me-2"></i> Family Details</h6>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <small class="text-muted text-uppercase fw-bold" style="font-size:0.7rem; letter-spacing:0.5px;">Father's Name</small>
-                                    <div class="fw-bold" style="font-size:0.9rem;">${reg.father_name}</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <small class="text-muted text-uppercase fw-bold" style="font-size:0.7rem; letter-spacing:0.5px;">Contact No</small>
-                                    <div class="fw-bold" style="font-size:0.9rem;"><i class="fas fa-phone-alt text-success me-1"></i> ${reg.father_mobile}</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <small class="text-muted text-uppercase fw-bold" style="font-size:0.7rem; letter-spacing:0.5px;">Mother's Name</small>
-                                    <div class="fw-bold" style="font-size:0.9rem;">${reg.mother_name || '-'}</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <small class="text-muted text-uppercase fw-bold" style="font-size:0.7rem; letter-spacing:0.5px;">Email Address</small>
-                                    <div class="fw-bold" style="font-size:0.9rem;"><i class="fas fa-envelope text-primary me-1"></i> ${reg.email || '-'}</div>
-                                </div>
-                                <div class="col-12">
-                                    <small class="text-muted text-uppercase fw-bold" style="font-size:0.7rem; letter-spacing:0.5px;">Address Context</small>
-                                    <div class="fw-bold" style="font-size:0.9rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${reg.address1 || ''} ${reg.city || ''}</div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-item">
+                        <div class="label">STUDENT NAME</div>
+                        <div class="value">${reg.students && reg.students.length > 0 ? reg.students[0].name : '-'}</div>
                     </div>
-
-                    <div class="card shadow-sm mb-2" style="border-radius:16px; border:1px solid #e2e8f0;">
-                        <div class="card-body">
-                            <h6 class="text-primary fw-bold mb-3" style="font-size:0.9rem;"><i class="fas fa-user-graduate me-2"></i> Admitted Students</h6>
-                            <div class="table-wrap">
-                                <table class="data-table mb-0 w-100">
-                                    <thead><tr><th>Name</th><th>Class</th><th>Charges</th></tr></thead>
-                                    <tbody>
-                                        ${reg.students.map((s, i) => `<tr>
-                                            <td class="fw-bold">${s.name}</td>
-                                            <td><span class="badge bg-secondary">${s.class}</span></td>
-                                            <td class="text-success fw-bold">₹${s.registration_charges || 0}</td>
-                                        </tr>`).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="detail-item">
+                        <div class="label">FATHER'S NAME</div>
+                        <div class="value">${reg.father_name}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">CLASS</div>
+                        <div class="value">${reg.students && reg.students.length > 0 ? reg.students[0].class : '-'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">SECTION</div>
+                        <div class="value">${reg.section || 'A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">EMAIL</div>
+                        <div class="value">${reg.email || '-'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">REGISTRATION DATE</div>
+                        <div class="value">${reg.reg_date}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">MOBILE</div>
+                        <div class="value">${reg.father_mobile}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">ADDRESS</div>
+                        <div class="value">${reg.address1 || '-'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">REMARKS</div>
+                        <div class="value">${reg.remarks || '-'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">STATUS</div>
+                        <div class="value">${reg.status}</div>
                     </div>
                 `;
                 document.getElementById('viewDetails').innerHTML = detailsHtml;
                 
                 let studentNames = reg.students.map(s => s.name).join(', ');
-                currentViewMessage = `Dear ${reg.father_name}, welcome to our school family! Your child ${studentNames}'s registration has been ${reg.status}. We look forward to teaching your child. For any queries, feel free to contact us. Regards, School Management.`;
+                currentViewMessage = `Dear ${reg.father_name}, welcome to our school family! Your child ${studentNames}'s registration has been ${reg.status.toLowerCase() == 'register' ? 'confirmed' : 'admitted'}. We look forward to teaching your child. For any queries, feel free to contact us. Regards, School Management.`;
                 currentViewMobile = reg.father_mobile;
                 
                 document.getElementById('greetingText').innerText = currentViewMessage;

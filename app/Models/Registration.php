@@ -10,6 +10,6 @@ class Registration extends Model
 
     public function students()
     {
-        return $this->hasMany(RegistrationStudent::class);
+        return $this->hasMany(RegistrationStudent::class, 'registration_id');
     }
 }

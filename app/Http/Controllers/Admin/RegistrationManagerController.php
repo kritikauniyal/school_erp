@@ -10,7 +10,7 @@ use App\Models\RegistrationStudent;
 
 class RegistrationManagerController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $query = Registration::with('students')->latest();
 
@@ -18,31 +18,16 @@ class RegistrationManagerController extends Controller
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
                 $q->where('reg_no', 'like', "%{$keyword}%")
-                  ->orWhere('father_name', 'like', "%{$keyword}%")
-                  ->orWhere('mother_name', 'like', "%{$keyword}%")
-                  ->orWhereHas('students', function ($sq) use ($keyword) {
-                      $sq->where('name', 'like', "%{$keyword}%");
-                  });
+                ->orWhere('father_name', 'like', "%{$keyword}%")
+                ->orWhere('mother_name', 'like', "%{$keyword}%")
+                ->orWhereHas('students', function ($sq) use ($keyword) {
+                    $sq->where('name', 'like', "%{$keyword}%");
+                });
             });
         }
 
         if ($request->filled('status') && $request->status !== 'All') {
             $query->where('status', $request->status);
-        }
-
-        if ($request->filled('class_name')) {
-            $className = $request->class_name;
-            $query->whereHas('students', function ($q) use ($className) {
-                $q->where('class', $className);
-            });
-        }
-
-        if ($request->filled('from_date')) {
-            $query->where('reg_date', '>=', $request->from_date);
-        }
-
-        if ($request->filled('to_date')) {
-            $query->where('reg_date', '<=', $request->to_date);
         }
 
         $registrations = $query->paginate(10)->withQueryString();
