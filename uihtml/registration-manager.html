@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Registration Manager · Smart School ERP</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        /* Main page styles (unchanged from original) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        :root {
+            --primary-blue: #488fe4;
+            --primary-orange: #ff913b;
+            --blue-light: #e3f0ff;
+            --orange-light: #ffefdb;
+            --bg-light: #f5f9ff;
+            --text-dark: #1e293b;
+            --text-muted: #5f6b7a;
+            --shadow: 0 8px 20px rgba(0,20,50,0.05);
+            --shadow-hover: 0 15px 30px rgba(72,143,228,0.15);
+        }
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .enquiry-container {
+            max-width: 1400px;
+            width: 100%;
+        }
+        .section-heading {
+            margin-bottom: 20px;
+        }
+        .section-heading h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-heading h2 i {
+            color: var(--primary-orange);
+        }
+        .section-heading p {
+            color: var(--text-muted);
+            margin-left: 40px;
+        }
+
+        /* filter panel */
+        .filter-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 16px 20px;
+            transition: var(--transition);
+        }
+        .filter-panel:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 160px;
+            flex: 1 1 170px;
+        }
+        .filter-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary-blue);
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+        .filter-group input,
+        .filter-group select {
+            background: var(--bg-light);
+            border: 1px solid #e0e7f0;
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            outline: none;
+            width: 100%;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255,145,59,0.2);
+        }
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-left: auto;
+        }
+        .btn {
+            background: white;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+            text-decoration: none;
+        }
+        .btn i {
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .btn-orange {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
+        }
+        .btn-orange:hover {
+            background: white;
+            color: var(--primary-orange);
+        }
+
+        /* tabs */
+        .status-tabs {
+            display: flex;
+            gap: 2px;
+            background: white;
+            padding: 6px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            width: fit-content;
+            margin-bottom: 24px;
+        }
+        .status-tab {
+            padding: 8px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .status-tab.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        .status-tab:not(.active):hover {
+            background: var(--blue-light);
+            color: var(--primary-blue);
+        }
+
+        /* main table */
+        .table-card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        th, td {
+            border: 1px solid #d9e2ec;
+            padding: 16px 12px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f8fcff;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+        }
+        td {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+        tr:hover td {
+            background-color: #f2f8ff;
+        }
+        .action-icons {
+            display: flex;
+            gap: 12px;
+            white-space: nowrap;
+        }
+        .action-icons i {
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .action-icons i:nth-child(1) { color: #2a86da; } /* view */
+        .action-icons i:nth-child(2) { color: #f39c12; } /* edit */
+        .action-icons i:nth-child(3) { color: #e74c3c; } /* delete */
+        .action-icons i:nth-child(4) { color: #27ae60; } /* print */
+        .action-icons i:hover {
+            transform: scale(1.2);
+        }
+        .status-badge {
+            background: var(--orange-light);
+            color: var(--primary-orange);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .status-badge.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* pagination */
+        .pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: white;
+            border-radius: 60px;
+            padding: 12px 24px;
+            box-shadow: var(--shadow);
+        }
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #e2eaf5;
+            color: var(--primary-blue);
+            font-weight: 600;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .page-btn.active-page {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        .page-size {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+        .page-size select {
+            background: var(--bg-light);
+            border: 1px solid #dae2ec;
+            border-radius: 30px;
+            padding: 8px 16px;
+        }
+
+        /* ===== MODAL STYLES (reused) ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 16px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-container {
+            background: white;
+            border-radius: 28px;
+            max-width: 720px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.25);
+            animation: modalPop 0.25s ease;
+        }
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            padding: 18px 22px 0 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+        .close-modal:hover {
+            color: var(--primary-orange);
+        }
+        .modal-tabs {
+            display: flex;
+            gap: 2px;
+            background: #eef3fa;
+            padding: 5px;
+            border-radius: 50px;
+            margin: 14px 22px 16px 22px;
+        }
+        .modal-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-tab.active {
+            background: white;
+            color: var(--primary-blue);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .tab-content {
+            display: none;
+            padding: 0 22px 18px 22px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-section {
+            margin-bottom: 18px;
+        }
+        .form-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-orange);
+            padding-left: 10px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 2px;
+        }
+        .form-group label.required::after {
+            content: " *";
+            color: #e53e3e;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--bg-light);
+            border: 1px solid #e0e7f0;
+            border-radius: 14px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            outline: none;
+            width: 100%;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255,145,59,0.2);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .double-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .btn-primary {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: white;
+            color: var(--primary-orange);
+        }
+
+        /* student table inside modal (compact) */
+        .student-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .student-header h4 {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+        }
+        .add-student-btn {
+            background: var(--blue-light);
+            border: 1px dashed var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f8fcff;
+            border-radius: 16px;
+            overflow: hidden;
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            table-layout: fixed;
+        }
+        .student-table th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+            font-size: 0.7rem;
+            padding: 8px 4px;
+            text-align: left;
+        }
+        .student-table td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #d9e2ec;
+            word-wrap: break-word;
+        }
+        .student-table .action-icons i {
+            margin: 0 3px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .empty-row td {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px;
+        }
+
+        /* submodal (add student) */
+        .submodal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 11000;
+            padding: 16px;
+        }
+        .submodal-overlay.show {
+            display: flex;
+        }
+        .submodal-container {
+            background: white;
+            border-radius: 28px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px -12px black;
+        }
+        .submodal-header {
+            padding: 16px 20px 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .submodal-header h3 {
+            font-size: 1.4rem;
+            color: var(--primary-blue);
+        }
+        .close-submodal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .sub-tabs {
+            display: flex;
+            gap: 4px;
+            margin: 10px 20px 0 20px;
+            border-bottom: 2px solid #eef3fa;
+        }
+        .sub-tab {
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .sub-tab.active {
+            color: var(--primary-orange);
+            border-bottom-color: var(--primary-orange);
+        }
+        .sub-tab-content {
+            display: none;
+            padding: 16px 20px;
+        }
+        .sub-tab-content.active {
+            display: block;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+        .submodal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 12px 20px 18px 20px;
+            border-top: 1px solid #ecf3fa;
+        }
+
+        /* ===== UPDATED VIEW MODAL (plain text, compact) ===== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            background: #f8fcff;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.8rem;
+        }
+        .detail-item .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 2px;
+        }
+        .detail-item .value {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            /* no background, no border */
+            line-height: 1.3;
+        }
+        .greeting-message {
+            background: #fff1dd;
+            border-left: 4px solid var(--primary-orange);
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            font-size: 0.8rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .greeting-message i {
+            font-size: 1.2rem;
+            color: #25D366;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .greeting-message i:hover {
+            transform: scale(1.1);
+        }
+
+        /* mobile adjustments */
+        @media (max-width: 700px) {
+            body { padding: 8px; }
+            .filter-panel {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                padding: 16px;
+            }
+            .filter-group { min-width: unset; width: 100%; }
+            .filter-actions { grid-column: span 2; }
+            .status-tabs { width: 100%; }
+            .status-tab { flex: 1; text-align: center; }
+            .pagination-bar { flex-direction: column; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <style>
+        /* ===== SIDEBAR LAYOUT ===== */
+        :root {
+            --sidebar-bg: #435471;
+            --sidebar-text: #ffffff;
+            --sidebar-hover: rgba(255,255,255,0.15);
+            --primary-blue: #488fe4;
+            --primary-orange: #ff913b;
+            --blue-light: #e3f0ff;
+            --bg-light: #f5f9ff;
+            --text-dark: #1e293b;
+            --text-muted: #5f6b7a;
+            --shadow: 0 8px 20px rgba(0,20,50,0.05);
+            --shadow-hover: 0 15px 30px rgba(72,143,228,0.15);
+            --transition: all 0.2s ease;
+        }
+        /* Override body to flex row */
+        html, body {
+            margin: 0; padding: 0;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+        body {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            padding: 0 !important;
+        }
+        /* Gradient scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f4ff; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(145deg, var(--primary-blue), var(--primary-orange)); border-radius: 10px; border: 2px solid #fff; }
+
+        /* ---- SIDEBAR ---- */
+        .sidebar {
+            width: 300px;
+            min-width: 300px;
+            background: var(--sidebar-bg);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+            border-right: 1px solid rgba(255,255,255,0.15);
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            flex-shrink: 0;
+            color: var(--sidebar-text);
+            animation: sideSlideIn 0.4s ease;
+        }
+        @keyframes sideSlideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to   { transform: translateX(0);     opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .sidebar:hover { box-shadow: 8px 0 28px rgba(0,0,0,0.2); }
+        .sidebar-header {
+            padding: 22px 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid var(--primary-orange);
+            background: rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .sidebar-header img { max-width: 180px; max-height: 60px; object-fit: contain; }
+        .close-sidebar {
+            background: transparent; border: none; color: white;
+            font-size: 1.4rem; cursor: pointer; display: none;
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+        }
+        .menu-section {
+            margin: 4px 0;
+            animation: fadeInUp 0.4s ease backwards;
+            animation-delay: calc(0.04s * var(--i, 0));
+            position: relative;
+        }
+        .menu-section:not(:first-of-type) {
+            border-top: 1px dotted rgba(255,255,255,0.25);
+            margin-top: 5px;
+            padding-top: 5px;
+        }
+        .section-title {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 20px 8px 24px;
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.25s, transform 0.2s;
+            border-radius: 0 30px 30px 0;
+            margin-right: 8px;
+        }
+        .section-title:hover { background: var(--sidebar-hover); transform: translateX(4px); }
+        .section-title i { color: white; font-size: 1rem; }
+        .section-title .chevron { margin-left: auto; font-size: 0.75rem; color: rgba(255,255,255,0.7); transition: transform 0.3s; }
+        .section-title.open .chevron { transform: rotate(90deg); }
+        .submenu-items { display: none; margin-left: 6px; padding: 3px 0; }
+        .submenu-items.show { display: block; animation: fadeInUp 0.25s ease; }
+        .menu-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 20px 8px 24px; color: white; text-decoration: none;
+            font-size: 0.95rem; font-weight: 500;
+            transition: all 0.22s cubic-bezier(0.2,0.9,0.3,1);
+            border-left: 3px solid transparent;
+            margin: 2px 8px 2px 0;
+            border-radius: 0 30px 30px 0;
+        }
+        .menu-item i { width: 22px; font-size: 1rem; text-align: center; color: white; transition: transform 0.2s, color 0.2s; }
+        .menu-item:hover {
+            background: var(--sidebar-hover);
+            border-left-color: var(--primary-orange);
+            transform: translateX(6px);
+            color: white;
+        }
+        .menu-item:hover i { color: var(--primary-orange); transform: scale(1.15); }
+        .sub-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 6px 12px 6px 16px;
+            color: rgba(255,255,255,0.8); text-decoration: none;
+            font-size: 0.87rem; font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            margin: 2px 8px 2px 6px;
+            border-radius: 0 20px 20px 0;
+        }
+        .sub-icon-wrap {
+            width: 24px; height: 24px; border-radius: 6px;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .sub-icon-wrap i { font-size: 0.68rem; color: rgba(255,255,255,0.8); }
+        .sub-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: var(--primary-orange);
+            transform: translateX(4px);
+            color: white;
+        }
+        .sub-item:hover .sub-icon-wrap { background: var(--primary-orange); box-shadow: 0 3px 8px rgba(255,145,59,0.4); }
+        .sub-item:hover .sub-icon-wrap i { color: white; }
+        /* Active state */
+        .menu-item.active-page { background: rgba(255,255,255,0.18) !important; border-left-color: var(--primary-orange) !important; }
+        .menu-item.active-page i { color: var(--primary-orange); }
+        .sub-item.active-page { background: rgba(255,145,59,0.2) !important; border-left-color: var(--primary-orange) !important; color: white; font-weight: 600; }
+        .sub-item.active-page .sub-icon-wrap { background: var(--primary-orange); }
+        .standalone-item .menu-item { margin-top: 2px; }
+
+        /* ---- MAIN CONTENT WRAPPER ---- */
+        .page-main-content {
+            flex: 1;
+            min-width: 0;
+            overflow-x: hidden;
+            background: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+        }
+        /* Top bar */
+        .inner-topbar {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 24px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,20,50,0.06);
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 2px solid var(--blue-light);
+        }
+        .inner-topbar .page-title {
+            font-size: 1.1rem; font-weight: 700; color: var(--primary-blue);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .inner-topbar .page-title i { color: var(--primary-orange); }
+        .menu-toggle {
+            background: transparent; border: none; color: var(--text-dark);
+            font-size: 1.4rem; cursor: pointer; display: none; padding: 4px 8px;
+        }
+        .page-inner-content { padding: 24px; flex: 1; }
+
+        /* Mobile sidebar */
+        @media (max-width: 700px) {
+            .sidebar {
+                position: fixed !important; left: 0; top: 0;
+                height: 100vh; z-index: 2000;
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1) !important;
+            }
+            .sidebar.show-mobile { transform: translateX(0) !important; box-shadow: 10px 0 30px rgba(0,0,0,0.3); }
+            .close-sidebar { display: block !important; }
+            .menu-toggle { display: flex !important; }
+            .page-inner-content { padding: 14px; }
+        }
+        @media (min-width: 701px) {
+            .sidebar { transform: translateX(0) !important; }
+            .menu-toggle { display: none !important; }
+            .close-sidebar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+<div style="display:flex;min-height:100vh;width:100%;">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://decentdemo.in/school/images/school-logo.png" alt="Smart School ERP Logo">
+            <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="menu-section" style="--i:1;">
+            <a href="index.html" class="menu-item" data-page="index"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        </div>
+        <div class="menu-section" style="--i:2;">
+            <div class="section-title" data-target="enquiryReg"><i class="fas fa-clipboard-list"></i> Enquiry &amp; Registration<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="enquiryReg">
+                <a href="enquiry-manager.html" class="sub-item" data-page="enquiry-manager"><span class="sub-icon-wrap"><i class="fas fa-phone-volume"></i></span>Enquiry</a>
+                <a href="registration-manager.html" class="sub-item" data-page="registration-manager"><span class="sub-icon-wrap"><i class="fas fa-user-plus"></i></span>Registration Manager</a>
+                <a href="admission-report.html" class="sub-item" data-page="admission-report"><span class="sub-icon-wrap"><i class="fas fa-file-alt"></i></span>Report</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:3;">
+            <div class="section-title" data-target="studentMaster"><i class="fas fa-user-graduate"></i> Student Management<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="studentMaster">
+                <a href="student-admisson-manager.html" class="sub-item" data-page="student-admisson-manager"><span class="sub-icon-wrap"><i class="fas fa-user-plus"></i></span>Admission Master</a>
+                <a href="student-entry.html" class="sub-item" data-page="student-entry"><span class="sub-icon-wrap"><i class="fas fa-pen-to-square"></i></span>Student Entry</a>
+                <a href="student-details.html" class="sub-item" data-page="student-details"><span class="sub-icon-wrap"><i class="fas fa-id-card"></i></span>Students Details</a>
+                <a href="admission-report.html" class="sub-item" data-page="admission-report"><span class="sub-icon-wrap"><i class="fas fa-file-invoice"></i></span>Admission Report</a>
+                <a href="admission-fee-structure.html" class="sub-item" data-page="admission-fee-structure"><span class="sub-icon-wrap"><i class="fas fa-rupee-sign"></i></span>Admission Fee Structure</a>
+                <a href="promote-student.html" class="sub-item" data-page="promote-student"><span class="sub-icon-wrap"><i class="fas fa-level-up-alt"></i></span>Promote Student</a>
+                <a href="class-section-manager.html" class="sub-item" data-page="class-section-manager"><span class="sub-icon-wrap"><i class="fas fa-layer-group"></i></span>Class &amp; Section Manager</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:4;">
+            <div class="section-title" data-target="feeMaster"><i class="fas fa-coins"></i> Fee Details<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="feeMaster">
+                <a href="collect-fee.html" class="sub-item" data-page="collect-fee"><span class="sub-icon-wrap"><i class="fas fa-hand-holding-usd"></i></span>Collect Fee</a>
+                <a href="quick-collect.html" class="sub-item" data-page="quick-collect"><span class="sub-icon-wrap"><i class="fas fa-bolt"></i></span>Quick Collect</a>
+                <a href="demand-slip.html" class="sub-item" data-page="demand-slip"><span class="sub-icon-wrap"><i class="fas fa-receipt"></i></span>Demand Slip</a>
+                <a href="manage-dues.html" class="sub-item" data-page="manage-dues"><span class="sub-icon-wrap"><i class="fas fa-exclamation-circle"></i></span>Manage Due Fee</a>
+                <a href="fee-structure-manager.html" class="sub-item" data-page="fee-structure-manager"><span class="sub-icon-wrap"><i class="fas fa-sitemap"></i></span>Structure Manager</a>
+                <a href="fee-concession.html" class="sub-item" data-page="fee-concession"><span class="sub-icon-wrap"><i class="fas fa-tag"></i></span>Fee Concession</a>
+                <a href="late-fine.html" class="sub-item" data-page="late-fine"><span class="sub-icon-wrap"><i class="fas fa-clock"></i></span>Late Fine Fee</a>
+                <a href="fee-report.html" class="sub-item" data-page="fee-report"><span class="sub-icon-wrap"><i class="fas fa-chart-bar"></i></span>Fee Report</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-baby"></i></span>Day Care Manager</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:5;">
+            <div class="section-title" data-target="transport"><i class="fas fa-bus"></i> Transport Management<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="transport">
+                <a href="transport-assign2.html" class="sub-item" data-page="transport-assign2"><span class="sub-icon-wrap"><i class="fas fa-user-tag"></i></span>Transport Assign</a>
+                <a href="transport-management.html" class="sub-item" data-page="transport-management"><span class="sub-icon-wrap"><i class="fas fa-route"></i></span>Transport Route - Vehicle Manager</a>
+                <a href="transport-report.html" class="sub-item" data-page="transport-report"><span class="sub-icon-wrap"><i class="fas fa-clipboard-list"></i></span>Transport Report</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:6;">
+            <div class="section-title" data-target="hostel"><i class="fas fa-hotel"></i> Hostel Manager<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="hostel">
+                <a href="student-hostel.html" class="sub-item" data-page="student-hostel"><span class="sub-icon-wrap"><i class="fas fa-bed"></i></span>Student Hostel</a>
+                <a href="student-hostel.html" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-rupee-sign"></i></span>Assign Hostel Charges</a>
+                <a href="hostel-report.html" class="sub-item" data-page="hostel-report"><span class="sub-icon-wrap"><i class="fas fa-file-medical-alt"></i></span>Hostel Report</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:7;">
+            <div class="section-title" data-target="attendance"><i class="fas fa-calendar-check"></i> Attendance<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="attendance">
+                <a href="attendance-manager.html" class="sub-item" data-page="attendance-manager"><span class="sub-icon-wrap"><i class="fas fa-calendar-check"></i></span>Attendance Manager</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-chart-pie"></i></span>Attendance Report</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:8;">
+            <div class="section-title" data-target="exam"><i class="fas fa-pencil-alt"></i> Examination<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="exam">
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-book"></i></span>Add Subject</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-pen-square"></i></span>Add Exam Name</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-tasks"></i></span>Assign Subject</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-plus-square"></i></span>Add Exam</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-id-badge"></i></span>Print Admit Card</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-table"></i></span>Marks Register</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-star-half-alt"></i></span>Grade Form</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-file-excel"></i></span>Tabulation &amp; Marksheet</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-file-alt"></i></span>Final Marksheet</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-sliders-h"></i></span>Set Division Marks</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-graduation-cap"></i></span>Set Grading Marks</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:9;">
+            <div class="section-title" data-target="reports"><i class="fas fa-chart-line"></i> Reports<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="reports">
+                <a href="fee-report.html" class="sub-item" data-page="fee-report"><span class="sub-icon-wrap"><i class="fas fa-rupee-sign"></i></span>Fee Report</a>
+                <a href="admission-report.html" class="sub-item" data-page="admission-report"><span class="sub-icon-wrap"><i class="fas fa-user-plus"></i></span>Admission Report</a>
+                <a href="transport-report.html" class="sub-item" data-page="transport-report"><span class="sub-icon-wrap"><i class="fas fa-bus"></i></span>Transport Report</a>
+                <a href="hostel-report.html" class="sub-item" data-page="hostel-report"><span class="sub-icon-wrap"><i class="fas fa-hotel"></i></span>Hostel Report</a>
+            </div>
+        </div>
+        <div class="menu-section" style="--i:10;">
+            <div class="section-title" data-target="hr"><i class="fas fa-users"></i> HR &amp; Payroll<i class="fas fa-chevron-right chevron"></i></div>
+            <div class="submenu-items" id="hr">
+                <a href="staff-attendance.html" class="sub-item" data-page="staff-attendance"><span class="sub-icon-wrap"><i class="fas fa-user-clock"></i></span>Staff Attendance</a>
+                <a href="staff-hr-payroll.html" class="sub-item" data-page="staff-hr-payroll"><span class="sub-icon-wrap"><i class="fas fa-user-tie"></i></span>Staff Management</a>
+                <a href="#" class="sub-item"><span class="sub-icon-wrap"><i class="fas fa-file-alt"></i></span>Staff Report</a>
+                <a href="expenses-manager.html" class="sub-item" data-page="expenses-manager"><span class="sub-icon-wrap"><i class="fas fa-wallet"></i></span>Expense Management</a>
+                <a href="staff-permissions.html" class="sub-item" data-page="staff-permissions"><span class="sub-icon-wrap"><i class="fas fa-user-shield"></i></span>Assign Role to User</a>
+            </div>
+        </div>
+        <div class="menu-section standalone-item" style="--i:11;">
+            <a href="school-setting.html" class="menu-item" data-page="school-setting"><i class="fas fa-cogs"></i><span>School Setting</span></a>
+        </div>
+        <div class="menu-section standalone-item" style="--i:12;">
+            <a href="#" class="menu-item"><i class="fas fa-database"></i><span>Backup Database</span></a>
+        </div>
+        <div class="menu-section standalone-item" style="--i:13;">
+            <a href="#" class="menu-item"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
+        </div>
+        <div class="menu-section standalone-item" style="--i:14;">
+            <a href="#" class="menu-item" style="color:#ff8080;"><i class="fas fa-sign-out-alt" style="color:#ff8080;"></i><span>Logout</span></a>
+        </div>
+        <div style="height:20px;"></div>
+    </aside>
+    <div class="page-main-content">
+        <div class="inner-topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="page-title"><i class="fas fa-clipboard-list"></i> Registration Manager</div>
+        </div>
+        <div class="page-inner-content">
+
+<div class="enquiry-container">
+    <!-- heading -->
+    <div class="section-heading">
+        <h2><i class="fas fa-clipboard-list"></i> Registration Manager</h2>
+        <p>Manage student registrations and admissions</p>
+    </div>
+
+    <!-- filter panel (same as before) -->
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label>SEARCH TEXT</label>
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="filter-group">
+            <label>STATUS</label>
+            <select id="statusFilter">
+                <option>All</option>
+                <option>Register</option>
+                <option>Admission Confirm</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>CLASS</label>
+            <select id="classFilter">
+                <option>All Classes</option>
+                <option>Nursery</option><option>KG</option><option>1st</option><option>2nd</option><option>3rd</option>
+                <option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>REGISTRATION DATE</label>
+            <input type="date" id="regDateFilter">
+        </div>
+        <div class="filter-actions">
+            <a href="#" class="btn"><i class="fas fa-download"></i> Export CSV</a>
+            <a href="#" class="btn"><i class="fas fa-print"></i> Print Form</a>
+            <button class="btn btn-orange" id="openMainModal"><i class="fas fa-plus-circle"></i> New Registration</button>
+        </div>
+    </div>
+
+    <!-- status tabs (updated labels) -->
+    <div class="status-tabs">
+        <span class="status-tab active" data-filter="All">All</span>
+        <span class="status-tab" data-filter="Register">Register</span>
+        <span class="status-tab" data-filter="Admission Confirm">Admission Confirm</span>
+    </div>
+
+    <!-- table with new columns -->
+    <div class="table-card">
+        <table id="registrationTable">
+            <thead>
+                <tr>
+                    <th>Reg No.</th>
+                    <th>Student's Name</th>
+                    <th>Father's Name</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Email</th>
+                    <th>Registration Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- populated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- pagination -->
+    <div class="pagination-bar">
+        <div class="pagination-info" id="paginationInfo">Page 1 of 1 | 0-0 of 0</div>
+        <div class="pagination-controls" id="paginationControls">
+            <span class="page-btn" id="prevPage"><i class="fas fa-chevron-left"></i></span>
+            <span class="page-btn active-page" data-page="1">1</span>
+            <span class="page-btn" id="nextPage"><i class="fas fa-chevron-right"></i></span>
+        </div>
+        <div class="page-size">
+            <span>Page Size:</span>
+            <select id="pageSize">
+                <option>5</option><option>10</option><option>20</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN MODAL (Create/Edit Registration) – unchanged -->
+<div class="modal-overlay" id="mainModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 id="modalTitle">Create New Registration</h2>
+            <button class="close-modal" id="closeMainModal">&times;</button>
+        </div>
+        <div class="modal-tabs">
+            <div class="modal-tab active" data-tab="family">FAMILY INFO</div>
+            <div class="modal-tab" data-tab="students">STUDENTS</div>
+        </div>
+        <!-- Family Info tab -->
+        <div class="tab-content active" id="familyTab">
+            <div class="form-section">
+                <h3>FAMILY INFO</h3>
+                <div class="double-row">
+                    <div class="form-group">
+                        <label>Registration Date</label>
+                        <input type="date" id="regDate" value="2026-03-01">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="regStatus">
+                            <option>Register</option>
+                            <option>Admission Confirm</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Father's Information</h3>
+                <div class="double-row">
+                    <div class="form-group">
+                        <label class="required">Father's Name</label>
+                        <input type="text" id="fatherName" placeholder="Enter father's name">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Father's Mobile</label>
+                        <input type="text" id="fatherMobile" placeholder="Mobile number">
+                    </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Mother's Information</h3>
+                <div class="double-row">
+                    <div class="form-group">
+                        <label>Mother's Name</label>
+                        <input type="text" id="motherName" placeholder="Enter mother's name">
+                    </div>
+                    <div class="form-group">
+                        <label>Mother's Mobile</label>
+                        <input type="text" id="motherMobile" placeholder="Mobile number">
+                    </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Contact & Address</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="Email address">
+                    </div>
+                    <div class="form-group">
+                        <label>Address Line 1</label>
+                        <input type="text" id="addr1" placeholder="Address">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Address Line 2</label>
+                        <input type="text" id="addr2" placeholder="Address (optional)">
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="city" placeholder="City">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Remarks</label>
+                    <textarea id="remarks" placeholder="Any remarks..."></textarea>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn" id="cancelFamily">Cancel</button>
+                <button class="btn btn-primary" id="saveFamilyContinue">Next</button>
+            </div>
+        </div>
+        <!-- Students tab -->
+        <div class="tab-content" id="studentsTab">
+            <div class="student-header">
+                <h4>Students <span id="studentCount">0</span></h4>
+                <button class="add-student-btn" id="showAddStudent"><i class="fas fa-plus"></i> Add Student</button>
+            </div>
+            <table class="student-table" id="studentTable">
+                <thead>
+                    <tr><th>#</th><th>Student Name</th><th>Class</th><th>Gender</th><th>DOB</th><th>Admission Form No.</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <tr class="empty-row"><td colspan="7">No students added yet. Click "Add Student" to add one.</td></tr>
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button class="btn" id="prevTabBtn">Previous</button>
+                <button class="btn btn-primary" id="saveRegistrationBtn">Save Registration</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SUB MODAL (Add Student) – unchanged -->
+<div class="submodal-overlay" id="addStudentModal">
+    <div class="submodal-container">
+        <div class="submodal-header">
+            <h3>Add Student</h3>
+            <button class="close-submodal" id="closeSubmodal">&times;</button>
+        </div>
+        <div class="sub-tabs">
+            <div class="sub-tab active" data-subtab="basic">Basic Info</div>
+            <div class="sub-tab" data-subtab="previous">Previous School</div>
+            <div class="sub-tab" data-subtab="test">Test & Form Info</div>
+        </div>
+        <!-- Basic Info tab -->
+        <div class="sub-tab-content active" id="basicTab">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Student name *</label>
+                    <input type="text" id="studentName" placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label>Class *</label>
+                    <select id="studentClass">
+                        <option>Nursery</option><option>KG</option><option>I</option><option>II</option><option>III</option>
+                        <option>IV</option><option>V</option><option>VI</option><option>VII</option><option>VIII</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Gender *</label>
+                    <select id="studentGender"><option>Male</option><option>Female</option></select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Date of Birth *</label>
+                    <input type="date" id="studentDob" value="2010-01-01">
+                </div>
+            </div>
+        </div>
+        <!-- Previous School tab -->
+        <div class="sub-tab-content" id="previousTab">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Previous School name</label>
+                    <input type="text" placeholder="School name">
+                </div>
+                <div class="form-group">
+                    <label>Board</label>
+                    <select><option>CBSE</option><option>ICSE</option><option>State</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Last Exam Percentage</label>
+                    <input type="text" placeholder="%">
+                </div>
+            </div>
+        </div>
+        <!-- Test & Form Info tab -->
+        <div class="sub-tab-content" id="testTab">
+            <div class="form-grid" style="gap: 10px;">
+                <div class="form-group"><label>Test Date</label><input type="date" placeholder="dd-mm-yyyy"></div>
+                <div class="form-group"><label>Test Time</label><input type="time" placeholder="HH:MM"></div>
+                <div class="form-group full-width"><label>Test Venue</label><input type="text"></div>
+                <div class="form-group"><label>Full Marks</label><input type="text"></div>
+                <div class="form-group"><label>Pass Marks</label><input type="text"></div>
+                <div class="form-group"><label>Percentage</label><input type="text"></div>
+                <div class="form-group"><label>Obtained Marks</label><input type="text"></div>
+                <div class="form-group"><label>Obtained Percentage</label><input type="text"></div>
+                <div class="form-group full-width"><label>Prospectus no</label><input type="text"></div>
+                <div class="form-group"><label>Admission Form No</label><input type="text"></div>
+                <div class="form-group"><label>Voucher Receipt No</label><input type="text"></div>
+                <div class="form-group"><label>Prospectus Fee</label><input type="text"></div>
+            </div>
+        </div>
+        <div class="submodal-actions">
+            <button class="btn" id="cancelSubmodal">Cancel</button>
+            <button class="btn btn-primary" id="saveStudent">Add</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW MODAL (plain text + greeting) -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2>Registration Details</h2>
+            <button class="close-modal" id="closeViewModal">&times;</button>
+        </div>
+        <div id="viewDetails" class="detail-grid"></div>
+        <div class="greeting-message" id="greetingBox">
+            <span id="greetingText"></span>
+            <i class="fab fa-whatsapp" id="whatsappIcon" title="Send WhatsApp"></i>
+        </div>
+        <div class="modal-actions">
+            <button class="btn" id="closeViewBtn">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADMISSION CONFIRMATION MODAL (unchanged) -->
+<div class="modal-overlay" id="admissionModal">
+    <div class="modal-container" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2>Confirm Admission</h2>
+            <button class="close-modal" id="closeAdmissionModal">&times;</button>
+        </div>
+        <p style="margin: 20px 0;">Are you sure you want to mark this registration as admitted?</p>
+        <div class="modal-actions">
+            <button class="btn" id="cancelAdmission">Cancel</button>
+            <button class="btn btn-primary" id="confirmAdmission">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- Mock Registration Data ----------
+        let registrations = [
+            { id: 1, regNo: 'REG001', studentName: 'Rahul Sharma', fatherName: 'Mr. Sharma', class: 'V', section: 'A', email: 'rahul@example.com', regDate: '2026-03-01', status: 'Register', mobile: '9876543210', address: '123 Street', city: 'Delhi', remarks: '' },
+            { id: 2, regNo: 'REG002', studentName: 'Priya Singh', fatherName: 'Mr. Singh', class: 'V', section: 'A', email: 'priya@example.com', regDate: '2026-03-02', status: 'Admission Confirm', mobile: '9123456789', address: '456 Avenue', city: 'Delhi', remarks: '' },
+            { id: 3, regNo: 'REG003', studentName: 'Amit Kumar', fatherName: 'Mr. Kumar', class: 'VI', section: 'B', email: 'amit@example.com', regDate: '2026-03-03', status: 'Register', mobile: '9988776655', address: '789 Road', city: 'Noida', remarks: '' },
+            { id: 4, regNo: 'REG004', studentName: 'Sneha Gupta', fatherName: 'Mr. Gupta', class: 'VII', section: 'A', email: 'sneha@example.com', regDate: '2026-03-04', status: 'Register', mobile: '9876512345', address: '321 Lane', city: 'Gurgaon', remarks: '' },
+            { id: 5, regNo: 'REG005', studentName: 'Rohan Mehta', fatherName: 'Mr. Mehta', class: 'VIII', section: 'C', email: 'rohan@example.com', regDate: '2026-03-05', status: 'Admission Confirm', mobile: '8765432109', address: '654 Boulevard', city: 'Faridabad', remarks: '' },
+        ];
+        let nextId = 6;
+        let nextRegNo = 6;
+
+        // For modal student list (inside registration)
+        let tempStudents = [];
+
+        // DOM elements
+        const tbody = document.getElementById('tableBody');
+        const mainModal = document.getElementById('mainModal');
+        const openBtn = document.getElementById('openMainModal');
+        const closeMainBtn = document.getElementById('closeMainModal');
+        const cancelFamily = document.getElementById('cancelFamily');
+        const saveFamilyContinue = document.getElementById('saveFamilyContinue');
+        const prevTabBtn = document.getElementById('prevTabBtn');
+        const saveRegistrationBtn = document.getElementById('saveRegistrationBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const familyTab = document.getElementById('familyTab');
+        const studentsTab = document.getElementById('studentsTab');
+        const tabs = document.querySelectorAll('.modal-tab');
+        const addStudentBtn = document.getElementById('showAddStudent');
+        const subModal = document.getElementById('addStudentModal');
+        const closeSub = document.getElementById('closeSubmodal');
+        const cancelSub = document.getElementById('cancelSubmodal');
+        const saveStudent = document.getElementById('saveStudent');
+        const subTabs = document.querySelectorAll('.sub-tab');
+        const basicTab = document.getElementById('basicTab');
+        const previousTab = document.getElementById('previousTab');
+        const testTab = document.getElementById('testTab');
+        const studentTableBody = document.getElementById('studentTableBody');
+        const studentCountSpan = document.getElementById('studentCount');
+
+        // Form fields in main modal
+        const regDate = document.getElementById('regDate');
+        const regStatus = document.getElementById('regStatus');
+        const fatherName = document.getElementById('fatherName');
+        const fatherMobile = document.getElementById('fatherMobile');
+        const motherName = document.getElementById('motherName');
+        const motherMobile = document.getElementById('motherMobile');
+        const email = document.getElementById('email');
+        const addr1 = document.getElementById('addr1');
+        const addr2 = document.getElementById('addr2');
+        const city = document.getElementById('city');
+        const remarks = document.getElementById('remarks');
+
+        // Submodal student fields
+        const studentName = document.getElementById('studentName');
+        const studentClass = document.getElementById('studentClass');
+        const studentGender = document.getElementById('studentGender');
+        const studentDob = document.getElementById('studentDob');
+
+        // Pagination elements
+        const prevPage = document.getElementById('prevPage');
+        const nextPage = document.getElementById('nextPage');
+        const pageSizeSelect = document.getElementById('pageSize');
+        const paginationInfo = document.getElementById('paginationInfo');
+        const paginationControls = document.getElementById('paginationControls');
+        let currentPage = 1;
+        let pageSize = 5;
+
+        // View modal elements
+        const viewModal = document.getElementById('viewModal');
+        const closeViewModal = document.getElementById('closeViewModal');
+        const closeViewBtn = document.getElementById('closeViewBtn');
+        const viewDetails = document.getElementById('viewDetails');
+        const greetingText = document.getElementById('greetingText');
+        const whatsappIcon = document.getElementById('whatsappIcon');
+
+        // Admission modal
+        const admissionModal = document.getElementById('admissionModal');
+        const closeAdmission = document.getElementById('closeAdmissionModal');
+        const cancelAdmission = document.getElementById('cancelAdmission');
+        const confirmAdmission = document.getElementById('confirmAdmission');
+
+        let editingId = null; // for edit
+        let currentViewId = null; // for view modal whatsapp
+        let pendingAdmissionId = null; // for admission confirmation
+
+        // ---------- Helper Functions ----------
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB'); // dd-mm-yyyy
+        }
+
+        // Render table with pagination
+        function renderTable() {
+            const filtered = registrations; // no real filter for demo
+            const total = filtered.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            const start = (currentPage - 1) * pageSize;
+            const end = Math.min(start + pageSize, total);
+            const pageData = filtered.slice(start, end);
+
+            let html = '';
+            pageData.forEach((reg, idx) => {
+                const statusClass = reg.status === 'Admission Confirm' ? 'confirmed' : '';
+                html += `<tr data-id="${reg.id}">
+                    <td>${reg.regNo}</td>
+                    <td>${reg.studentName}</td>
+                    <td>${reg.fatherName}</td>
+                    <td>${reg.class}</td>
+                    <td>${reg.section}</td>
+                    <td>${reg.email}</td>
+                    <td>${formatDate(reg.regDate)}</td>
+                    <td class="action-icons">
+                        <i class="fas fa-eye view-icon" title="View"></i>
+                        <i class="fas fa-edit edit-icon" title="Edit"></i>
+                        <i class="fas fa-trash delete-icon" title="Delete"></i>
+                        <i class="fas fa-print print-icon" title="Print"></i>
+                        <span class="status-badge ${statusClass}" data-id="${reg.id}">${reg.status}</span>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+
+            paginationInfo.innerText = `Page ${currentPage} of ${totalPages} | ${start+1}-${end} of ${total}`;
+            updatePaginationButtons(totalPages);
+
+            // Attach event listeners
+            document.querySelectorAll('.view-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const id = e.target.closest('tr').dataset.id;
+                    viewRegistration(parseInt(id));
+                });
+            });
+            document.querySelectorAll('.edit-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const id = e.target.closest('tr').dataset.id;
+                    editRegistration(parseInt(id));
+                });
+            });
+            document.querySelectorAll('.delete-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const id = e.target.closest('tr').dataset.id;
+                    if (confirm('Delete this registration?')) {
+                        registrations = registrations.filter(r => r.id != id);
+                        renderTable();
+                    }
+                });
+            });
+            document.querySelectorAll('.print-icon').forEach(icon => {
+                icon.addEventListener('click', () => {
+                    alert('Print registration (demo) – would print details.');
+                });
+            });
+            document.querySelectorAll('.status-badge').forEach(badge => {
+                badge.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    if (registrations.find(r => r.id == id).status === 'Register') {
+                        pendingAdmissionId = parseInt(id);
+                        admissionModal.classList.add('show');
+                    } else {
+                        alert('Already admitted.');
+                    }
+                });
+            });
+        }
+
+        function updatePaginationButtons(totalPages) {
+            let btns = '';
+            for (let i = 1; i <= totalPages; i++) {
+                btns += `<span class="page-btn ${i === currentPage ? 'active-page' : ''}" data-page="${i}">${i}</span>`;
+            }
+            // replace middle buttons
+            const prev = paginationControls.children[0];
+            const next = paginationControls.children[paginationControls.children.length - 1];
+            while (paginationControls.children.length > 2) {
+                paginationControls.removeChild(paginationControls.children[1]);
+            }
+            const temp = document.createElement('span');
+            temp.innerHTML = btns;
+            const pageNodes = temp.children;
+            for (let i = pageNodes.length - 1; i >= 0; i--) {
+                paginationControls.insertBefore(pageNodes[i], next);
+            }
+
+            document.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const page = parseInt(e.target.dataset.page);
+                    if (page !== currentPage) {
+                        currentPage = page;
+                        renderTable();
+                    }
+                });
+            });
+        }
+
+        prevPage.addEventListener('click', () => {
+            if (currentPage > 1) { currentPage--; renderTable(); }
+        });
+        nextPage.addEventListener('click', () => {
+            const totalPages = Math.ceil(registrations.length / pageSize) || 1;
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
+        });
+        pageSizeSelect.addEventListener('change', () => {
+            pageSize = parseInt(pageSizeSelect.value);
+            currentPage = 1;
+            renderTable();
+        });
+
+        // ---------- View Registration (updated) ----------
+        function viewRegistration(id) {
+            const reg = registrations.find(r => r.id === id);
+            if (!reg) return;
+            currentViewId = id;
+            const detailsHtml = `
+                <div class="detail-item"><span class="label">Reg No.</span><span class="value">${reg.regNo}</span></div>
+                <div class="detail-item"><span class="label">Student Name</span><span class="value">${reg.studentName}</span></div>
+                <div class="detail-item"><span class="label">Father's Name</span><span class="value">${reg.fatherName}</span></div>
+                <div class="detail-item"><span class="label">Class</span><span class="value">${reg.class}</span></div>
+                <div class="detail-item"><span class="label">Section</span><span class="value">${reg.section}</span></div>
+                <div class="detail-item"><span class="label">Email</span><span class="value">${reg.email}</span></div>
+                <div class="detail-item"><span class="label">Registration Date</span><span class="value">${formatDate(reg.regDate)}</span></div>
+                <div class="detail-item"><span class="label">Mobile</span><span class="value">${reg.mobile || ''}</span></div>
+                <div class="detail-item"><span class="label">Address</span><span class="value">${reg.address || ''}, ${reg.city || ''}</span></div>
+                <div class="detail-item"><span class="label">Remarks</span><span class="value">${reg.remarks || ''}</span></div>
+                <div class="detail-item"><span class="label">Status</span><span class="value">${reg.status}</span></div>
+            `;
+            viewDetails.innerHTML = detailsHtml;
+            // Set greeting message
+            greetingText.innerText = `Dear ${reg.fatherName}, welcome to our school family! Your child ${reg.studentName}'s registration has been confirmed. We look forward to teaching your child. For any queries, feel free to contact us. Regards, School Management.`;
+            viewModal.classList.add('show');
+        }
+
+        // WhatsApp share
+        whatsappIcon.addEventListener('click', () => {
+            const reg = registrations.find(r => r.id === currentViewId);
+            if (!reg) return;
+            const message = `Dear ${reg.fatherName}, welcome to our school family! Your child ${reg.studentName}'s registration has been confirmed. We look forward to teaching your child. For any queries, feel free to contact us. Regards, School Management.`;
+            const url = `https://wa.me/91${reg.mobile}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        });
+
+        // ---------- Edit Registration ----------
+        function editRegistration(id) {
+            const reg = registrations.find(r => r.id === id);
+            if (!reg) return;
+            editingId = id;
+            modalTitle.innerText = 'Edit Registration';
+            regDate.value = reg.regDate;
+            regStatus.value = reg.status;
+            fatherName.value = reg.fatherName;
+            fatherMobile.value = reg.mobile || '';
+            motherName.value = reg.motherName || '';
+            motherMobile.value = reg.motherMobile || '';
+            email.value = reg.email;
+            addr1.value = reg.address || '';
+            addr2.value = reg.address2 || '';
+            city.value = reg.city || '';
+            remarks.value = reg.remarks || '';
+
+            tempStudents = [{ name: reg.studentName, class: reg.class, gender: '', dob: '' }];
+            updateStudentTable();
+            document.querySelector('.modal-tab[data-tab="family"]').click();
+            mainModal.classList.add('show');
+        }
+
+        // ---------- Add New ----------
+        function openAddModal() {
+            editingId = null;
+            modalTitle.innerText = 'Create New Registration';
+            regDate.value = new Date().toISOString().slice(0,10);
+            regStatus.value = 'Register';
+            fatherName.value = '';
+            fatherMobile.value = '';
+            motherName.value = '';
+            motherMobile.value = '';
+            email.value = '';
+            addr1.value = '';
+            addr2.value = '';
+            city.value = '';
+            remarks.value = '';
+            tempStudents = [];
+            updateStudentTable();
+            document.querySelector('.modal-tab[data-tab="family"]').click();
+            mainModal.classList.add('show');
+        }
+
+        // Student table inside modal
+        function updateStudentTable() {
+            if (tempStudents.length === 0) {
+                studentTableBody.innerHTML = `<tr class="empty-row"><td colspan="7">No students added yet. Click "Add Student" to add one.</td></tr>`;
+                studentCountSpan.innerText = '0';
+                return;
+            }
+            let html = '';
+            tempStudents.forEach((s, index) => {
+                html += `<tr>
+                    <td>${index+1}</td>
+                    <td>${s.name}</td>
+                    <td>${s.class}</td>
+                    <td>${s.gender || ''}</td>
+                    <td>${s.dob || ''}</td>
+                    <td>-</td>
+                    <td class="action-icons">
+                        <i class="fas fa-edit" data-index="${index}"></i>
+                        <i class="fas fa-trash" data-index="${index}"></i>
+                    </td>
+                </tr>`;
+            });
+            studentTableBody.innerHTML = html;
+            studentCountSpan.innerText = tempStudents.length;
+
+            document.querySelectorAll('#studentTableBody .fa-trash').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const idx = e.target.dataset.index;
+                    tempStudents.splice(idx, 1);
+                    updateStudentTable();
+                });
+            });
+            document.querySelectorAll('#studentTableBody .fa-edit').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    alert('Edit student (demo)');
+                });
+            });
+        }
+
+        // ---------- Modal Navigation ----------
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (tab.dataset.tab === 'family') {
+                    familyTab.classList.add('active');
+                    studentsTab.classList.remove('active');
+                } else {
+                    familyTab.classList.remove('active');
+                    studentsTab.classList.add('active');
+                }
+            });
+        });
+
+        saveFamilyContinue.addEventListener('click', () => {
+            document.querySelector('.modal-tab[data-tab="students"]').click();
+        });
+        prevTabBtn.addEventListener('click', () => {
+            document.querySelector('.modal-tab[data-tab="family"]').click();
+        });
+
+        // Save registration
+        saveRegistrationBtn.addEventListener('click', () => {
+            if (tempStudents.length === 0) {
+                alert('Please add at least one student.');
+                return;
+            }
+            const student = tempStudents[0];
+            const newReg = {
+                id: editingId || nextId++,
+                regNo: editingId ? registrations.find(r => r.id === editingId).regNo : `REG${String(nextRegNo++).padStart(3,'0')}`,
+                studentName: student.name,
+                fatherName: fatherName.value.trim(),
+                class: student.class,
+                section: 'A',
+                email: email.value.trim(),
+                regDate: regDate.value,
+                status: regStatus.value,
+                mobile: fatherMobile.value.trim(),
+                motherName: motherName.value.trim(),
+                motherMobile: motherMobile.value.trim(),
+                address: addr1.value.trim(),
+                address2: addr2.value.trim(),
+                city: city.value.trim(),
+                remarks: remarks.value.trim(),
+            };
+            if (editingId) {
+                const index = registrations.findIndex(r => r.id === editingId);
+                if (index !== -1) registrations[index] = newReg;
+            } else {
+                registrations.push(newReg);
+            }
+            renderTable();
+            mainModal.classList.remove('show');
+        });
+
+        // Add student submodal
+        addStudentBtn.addEventListener('click', () => {
+            subModal.classList.add('show');
+            subTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('.sub-tab[data-subtab="basic"]').classList.add('active');
+            basicTab.classList.add('active');
+            previousTab.classList.remove('active');
+            testTab.classList.remove('active');
+        });
+
+        closeSub.addEventListener('click', () => subModal.classList.remove('show'));
+        cancelSub.addEventListener('click', () => subModal.classList.remove('show'));
+
+        subTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                subTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.dataset.subtab;
+                basicTab.classList.remove('active');
+                previousTab.classList.remove('active');
+                testTab.classList.remove('active');
+                if (target === 'basic') basicTab.classList.add('active');
+                else if (target === 'previous') previousTab.classList.add('active');
+                else if (target === 'test') testTab.classList.add('active');
+            });
+        });
+
+        saveStudent.addEventListener('click', () => {
+            const name = studentName.value.trim() || 'Student';
+            const cls = studentClass.value;
+            const gender = studentGender.value;
+            const dob = studentDob.value;
+            tempStudents.push({ name, class: cls, gender, dob });
+            updateStudentTable();
+            subModal.classList.remove('show');
+        });
+
+        // Main modal close
+        openBtn.addEventListener('click', openAddModal);
+        closeMainBtn.addEventListener('click', () => mainModal.classList.remove('show'));
+        cancelFamily.addEventListener('click', () => mainModal.classList.remove('show'));
+
+        // Close modals on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target === mainModal) mainModal.classList.remove('show');
+            if (e.target === subModal) subModal.classList.remove('show');
+            if (e.target === viewModal) viewModal.classList.remove('show');
+            if (e.target === admissionModal) admissionModal.classList.remove('show');
+        });
+
+        // View modal close
+        closeViewModal.addEventListener('click', () => viewModal.classList.remove('show'));
+        closeViewBtn.addEventListener('click', () => viewModal.classList.remove('show'));
+
+        // Admission confirmation
+        closeAdmission.addEventListener('click', () => admissionModal.classList.remove('show'));
+        cancelAdmission.addEventListener('click', () => admissionModal.classList.remove('show'));
+        confirmAdmission.addEventListener('click', () => {
+            if (pendingAdmissionId) {
+                const reg = registrations.find(r => r.id === pendingAdmissionId);
+                if (reg) reg.status = 'Admission Confirm';
+                renderTable();
+                admissionModal.classList.remove('show');
+                pendingAdmissionId = null;
+            }
+        });
+
+        // Status tab filters (demo)
+        document.querySelectorAll('.status-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                alert('Filter by ' + this.innerText + ' (demo)');
+            });
+        });
+
+        // Initial render
+        renderTable();
+    })();
+</script>
+
+<script>
+(function() {
+    var sidebar = document.getElementById('sidebar');
+    var menuToggle = document.getElementById('menuToggle');
+    var closeBtn = document.getElementById('closeSidebar');
+    if (closeBtn) closeBtn.addEventListener('click', function(){ sidebar.classList.remove('show-mobile'); });
+    if (menuToggle) menuToggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (window.innerWidth <= 700) sidebar.classList.toggle('show-mobile');
+    });
+    document.addEventListener('click', function(e){
+        if (window.innerWidth <= 700 && sidebar && menuToggle) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) sidebar.classList.remove('show-mobile');
+        }
+    });
+    // Accordion menu
+    document.querySelectorAll('.section-title').forEach(function(t){
+        t.addEventListener('click', function(){
+            var sub = document.getElementById(this.getAttribute('data-target'));
+            if (!sub) return;
+            var open = sub.classList.contains('show');
+            document.querySelectorAll('.submenu-items').forEach(function(s){ s.classList.remove('show'); });
+            document.querySelectorAll('.section-title').forEach(function(x){ x.classList.remove('open'); });
+            if (!open) { sub.classList.add('show'); this.classList.add('open'); }
+        });
+    });
+    // Active page highlight
+    var page = (window.location.pathname.split('/').pop() || 'index').replace('.html','');
+    document.querySelectorAll('[data-page]').forEach(function(el){
+        if (el.getAttribute('data-page') === page) {
+            el.classList.add('active-page');
+            var parentSub = el.closest ? el.closest('.submenu-items') : null;
+            if (parentSub) {
+                parentSub.classList.add('show');
+                var pt = parentSub.previousElementSibling;
+                if (pt && pt.classList.contains('section-title')) pt.classList.add('open');
+            }
+        }
+    });
+})();
+</script>
+</body>
+</html>
+        </div>
+    </div>
+</div>

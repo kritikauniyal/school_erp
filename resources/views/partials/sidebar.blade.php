@@ -8,28 +8,24 @@
 
   <nav class="sb-nav">
 
+    <!-- Dashboard -->
     <a href="{{ route('dashboard') }}" class="menu-item {{ Route::is('dashboard') ? 'active-page' : '' }}">
       <span class="m-ico"><i class="fas fa-chart-pie"></i></span>Dashboard
     </a>
 
     <!-- Enquiry & Registration -->
-    <div class="section-title {{ Request::is('admin/enquiry-manager*') || Request::is('admin/registration-manager*') || Request::is('admin/admission-report*') ? 'open' : '' }}" data-target="m-enq">
+    <div class="section-title {{ Request::is('admin/enquiry-manager*') || Request::is('admin/registration-manager*') ? 'open' : '' }}" data-target="m-enq">
       <span class="s-ico"><i class="fas fa-clipboard-list"></i></span>
       <span class="s-txt">Enquiry &amp; Registration</span>
       <i class="fas fa-chevron-right chev"></i>
     </div>
-    <div class="submenu {{ Request::is('admin/enquiry-manager*') || Request::is('admin/registration-manager*') || Request::is('admin/admission-report*') ? 'open' : '' }}" id="m-enq">
+    <div class="submenu {{ Request::is('admin/enquiry-manager*') || Request::is('admin/registration-manager*') ? 'open' : '' }}" id="m-enq">
       <a href="{{ route('enquiry.index') }}" class="sub-item {{ Route::is('enquiry.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-phone-volume"></i></span>Enquiry
       </a>
       <a href="{{ route('registration.index') }}" class="sub-item {{ Route::is('registration.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-user-plus"></i></span>Registration Manager
       </a>
-      @if(Route::has('admin.admission-report.index'))
-      <a href="{{ route('admin.admission-report.index') }}" class="sub-item {{ Route::is('admin.admission-report.index') ? 'active-page' : '' }}">
-        <span class="si"><i class="fas fa-file-alt"></i></span>Report
-      </a>
-      @endif
     </div>
 
     <!-- Student Management -->
@@ -48,6 +44,11 @@
       <a href="{{ route('students.student-details') }}" class="sub-item {{ Route::is('students.student-details') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-id-card"></i></span>Students Details
       </a>
+      @if(Route::has('admin.admission-report.index'))
+      <a href="{{ route('admin.admission-report.index') }}" class="sub-item {{ Route::is('admin.admission-report.index') ? 'active-page' : '' }}">
+        <span class="si"><i class="fas fa-file-invoice"></i></span>Admission Report
+      </a>
+      @endif
       <a href="{{ route('admin.admission-fee-structure.index') }}" class="sub-item {{ Route::is('admin.admission-fee-structure.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-rupee-sign"></i></span>Admission Fee Structure
       </a>
@@ -60,18 +61,15 @@
     </div>
 
     <!-- Fee Details -->
-    <div class="section-title {{ Request::is('admin/collect-fee*') || Request::is('admin/quick-collect*') || Request::is('admin/demand-slip*') || Request::is('admin/manage-dues*') || Request::is('admin/fee*') ? 'open' : '' }}" data-target="m-fee">
+    <div class="section-title {{ Request::is('admin/collect-fee*') || Request::is('admin/quick-collect*') || Request::is('admin/demand-slip*') || Request::is('admin/manage-dues*') || Request::is('admin/fee*') || Request::is('admin/late-fine*') ? 'open' : '' }}" data-target="m-fee">
       <span class="s-ico"><i class="fas fa-coins"></i></span>
       <span class="s-txt">Fee Details</span>
       <i class="fas fa-chevron-right chev"></i>
     </div>
-    <div class="submenu {{ Request::is('admin/collect-fee*') || Request::is('admin/quick-collect*') || Request::is('admin/demand-slip*') || Request::is('admin/manage-dues*') || Request::is('admin/fee*') ? 'open' : '' }}" id="m-fee">
+    <div class="submenu {{ Request::is('admin/collect-fee*') || Request::is('admin/quick-collect*') || Request::is('admin/demand-slip*') || Request::is('admin/manage-dues*') || Request::is('admin/fee*') || Request::is('admin/late-fine*') ? 'open' : '' }}" id="m-fee">
       <a href="{{ route('admin.collect-fee.index') }}" class="sub-item {{ Route::is('admin.collect-fee.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-hand-holding-usd"></i></span>Collect Fee
       </a>
-      <!--<a href="{{ route('quick.collect') }}" class="sub-item {{ Route::is('quick.collect') ? 'active-page' : '' }}">-->
-      <!--  <span class="si"><i class="fas fa-bolt"></i></span>Quick Collect-->
-      <!--</a>-->
       <a href="{{ route('admin.demand-slip.index') }}" class="sub-item {{ Route::is('admin.demand-slip.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-receipt"></i></span>Demand Slip
       </a>
@@ -87,12 +85,12 @@
       <a href="{{ route('admin.late-fine.index') }}" class="sub-item {{ Route::is('admin.late-fine.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-clock"></i></span>Late Fine Fee
       </a>
-      <a href="{{ route('admin.fee-report.index') }}" class="sub-item {{ Route::is('admin.fee-report.index') ? 'active-page' : '' }}">
-        <span class="si"><i class="fas fa-chart-bar"></i></span>Fee Report
+      <a href="#" class="sub-item">
+        <span class="si"><i class="fas fa-baby"></i></span>Day Care Manager
       </a>
     </div>
 
-    <!-- Transport -->
+    <!-- Transport Management -->
     <div class="section-title {{ Request::is('admin/transport*') ? 'open' : '' }}" data-target="m-trn">
       <span class="s-ico"><i class="fas fa-bus"></i></span>
       <span class="s-txt">Transport Management</span>
@@ -107,25 +105,20 @@
       <a href="{{ route('admin.transport-management.index') }}" class="sub-item {{ Route::is('admin.transport-management.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-route"></i></span>Route – Vehicle Manager
       </a>
-      <a href="{{ route('admin.transport-report.index') }}" class="sub-item {{ Route::is('admin.transport-report.index') ? 'active-page' : '' }}">
-        <span class="si"><i class="fas fa-clipboard-list"></i></span>Transport Report
-      </a>
     </div>
+
     <!-- Hostel Manager -->
-    <div class="section-title {{ Request::is('admin/student-hostel*') || Request::is('admin/hostel-report*') ? 'open' : '' }}" data-target="m-hst">
+    <div class="section-title {{ Request::is('admin/student-hostel*') ? 'open' : '' }}" data-target="m-hst">
       <span class="s-ico"><i class="fas fa-hotel"></i></span>
       <span class="s-txt">Hostel Manager</span>
       <i class="fas fa-chevron-right chev"></i>
     </div>
-    <div class="submenu {{ Request::is('admin/student-hostel*') || Request::is('admin/hostel-report*') ? 'open' : '' }}" id="m-hst">
+    <div class="submenu {{ Request::is('admin/student-hostel*') ? 'open' : '' }}" id="m-hst">
       <a href="{{ route('admin.student-hostel.index') }}" class="sub-item {{ Route::is('admin.student-hostel.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-bed"></i></span>Student Hostel
       </a>
       <a href="{{ route('admin.student-hostel.index') }}" class="sub-item">
         <span class="si"><i class="fas fa-rupee-sign"></i></span>Assign Hostel Charges
-      </a>
-      <a href="{{ route('admin.hostel-report.index') }}" class="sub-item {{ Route::is('admin.hostel-report.index') ? 'active-page' : '' }}">
-        <span class="si"><i class="fas fa-file-medical-alt"></i></span>Hostel Report
       </a>
     </div>
 
@@ -139,15 +132,79 @@
       <a href="{{ route('attendance.index') }}" class="sub-item {{ Route::is('attendance.index') ? 'active-page' : '' }}">
         <span class="si"><i class="fas fa-calendar-check"></i></span>Attendance Manager
       </a>
+      <a href="#" class="sub-item">
+        <span class="si"><i class="fas fa-chart-pie"></i></span>Attendance Report
+      </a>
+    </div>
+
+    <!-- Examination (New) -->
+    <div class="section-title" data-target="m-exam">
+      <span class="s-ico"><i class="fas fa-pencil-alt"></i></span>
+      <span class="s-txt">Examination</span>
+      <i class="fas fa-chevron-right chev"></i>
+    </div>
+    <div class="submenu" id="m-exam">
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-book"></i></span>Add Subject</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-pen-square"></i></span>Add Exam Name</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-tasks"></i></span>Assign Subject</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-plus-square"></i></span>Add Exam</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-id-badge"></i></span>Print Admit Card</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-table"></i></span>Marks Register</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-star-half-alt"></i></span>Grade Form</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-file-excel"></i></span>Tabulation &amp; Marksheet</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-file-alt"></i></span>Final Marksheet</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-sliders-h"></i></span>Set Division Marks</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-graduation-cap"></i></span>Set Grading Marks</a>
+    </div>
+
+    <!-- Reports -->
+    <div class="section-title {{ Request::is('admin/*report*') ? 'open' : '' }}" data-target="m-rep">
+      <span class="s-ico"><i class="fas fa-chart-line"></i></span>
+      <span class="s-txt">Reports</span>
+      <i class="fas fa-chevron-right chev"></i>
+    </div>
+    <div class="submenu {{ Request::is('admin/*report*') ? 'open' : '' }}" id="m-rep">
+      <a href="{{ route('admin.fee-report.index') }}" class="sub-item {{ Route::is('admin.fee-report.index') ? 'active-page' : '' }}">
+        <span class="si"><i class="fas fa-rupee-sign"></i></span>Fee Report
+      </a>
+      @if(Route::has('admin.admission-report.index'))
+      <a href="{{ route('admin.admission-report.index') }}" class="sub-item {{ Route::is('admin.admission-report.index') ? 'active-page' : '' }}">
+        <span class="si"><i class="fas fa-user-plus"></i></span>Admission Report
+      </a>
+      @endif
+      <a href="{{ route('admin.transport-report.index') }}" class="sub-item {{ Route::is('admin.transport-report.index') ? 'active-page' : '' }}">
+        <span class="si"><i class="fas fa-bus"></i></span>Transport Report
+      </a>
+      <a href="{{ route('admin.hostel-report.index') }}" class="sub-item {{ Route::is('admin.hostel-report.index') ? 'active-page' : '' }}">
+        <span class="si"><i class="fas fa-hotel"></i></span>Hostel Report
+      </a>
+    </div>
+
+    <!-- HR & Payroll (New) -->
+    <div class="section-title" data-target="m-hr">
+      <span class="s-ico"><i class="fas fa-users"></i></span>
+      <span class="s-txt">HR &amp; Payroll</span>
+      <i class="fas fa-chevron-right chev"></i>
+    </div>
+    <div class="submenu" id="m-hr">
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-user-clock"></i></span>Staff Attendance</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-user-tie"></i></span>Staff Management</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-file-alt"></i></span>Staff Report</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-wallet"></i></span>Expense Management</a>
+      <a href="#" class="sub-item"><span class="si"><i class="fas fa-user-shield"></i></span>Assign Role to User</a>
     </div>
 
     <div class="nav-divider"></div>
 
+    <!-- Settings -->
     <a href="{{ route('admin.school-setting.index') }}" class="menu-item {{ Route::is('admin.school-setting.index') ? 'active-page' : '' }}">
       <span class="m-ico"><i class="fas fa-cogs"></i></span>School Setting
     </a>
     <a href="#" class="menu-item">
       <span class="m-ico"><i class="fas fa-database"></i></span>Backup Database
+    </a>
+    <a href="#" class="menu-item">
+      <span class="m-ico"><i class="fas fa-user-circle"></i></span>My Profile
     </a>
     
     <form action="{{ route('logout') }}" method="POST" id="sidebar-logout-form" style="display: none;">
