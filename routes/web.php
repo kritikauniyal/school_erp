@@ -16,6 +16,8 @@ use App\Http\Controllers\Teacher\DashboardController as TeacherDashboard;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Fee\FeeController as FeeController;
+Route::get('/modification-history-log', [\App\Http\Controllers\AdmissionFeeController::class, 'getHistory'])->name('fee-history-root');
+
 Route::get('/assign-admin', function () {
     $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']);
     $user = \App\Models\User::first();
@@ -147,6 +149,8 @@ Route::middleware(['auth','role:admin'])
         Route::get('/collect-fee', [\App\Http\Controllers\Admin\CollectFeeController::class, 'index'])->name('admin.collect-fee.index');
         Route::get('/collect-fee/details/{id}', [\App\Http\Controllers\Admin\CollectFeeController::class, 'getStudentFeeDetails'])->name('admin.collect-fee.details');
         Route::post('/collect-fee/pay/{id}', [\App\Http\Controllers\Admin\CollectFeeController::class, 'pay'])->name('admin.collect-fee.pay');
+        Route::get('/collect-fee/get-receipt/{paymentId}', [\App\Http\Controllers\Admin\CollectFeeController::class, 'getReceipt'])->name('admin.collect-fee.get-receipt');
+        Route::get('/collect-fee/sections/{classId}', [\App\Http\Controllers\Admin\CollectFeeController::class, 'getSections'])->name('admin.collect-fee.sections');
         Route::get('/quick-collect', [\App\Http\Controllers\Admin\QuickCollectController::class, 'index'])->name('admin.quick-collect.index');
         Route::get('/demand-slip', [\App\Http\Controllers\Admin\DemandSlipController::class, 'index'])->name('admin.demand-slip.index');
         Route::post('/demand-slip/students', [\App\Http\Controllers\Admin\DemandSlipController::class, 'getStudents'])->name('admin.demand-slip.students');
@@ -252,3 +256,5 @@ Route::prefix('fee')->group(function () {
     Route::get('/quick-collect',[FeeController::class,'quickCollect'])->name('quick.collect');
 
 });
+
+Route::get('/modification-history-log', [\App\Http\Controllers\AdmissionFeeController::class, 'getHistory'])->name('fee-history-root');

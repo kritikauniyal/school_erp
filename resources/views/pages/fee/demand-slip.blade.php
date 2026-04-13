@@ -6,9 +6,174 @@
 
 @push('styles')
     <style>
-        /* Specific Inner Page styles */
-        .demand-slip {
+        .demand-card {
+            max-width: 1300px;
             width: 100%;
+            background: white;
+            border-radius: 36px;
+            box-shadow: var(--shadow);
+            padding: 28px 30px;
+            transition: var(--transition);
+        }
+        .demand-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .header-title i {
+            font-size: 2rem;
+            color: var(--primary-orange);
+        }
+        .header-sub {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            margin-left: 10px;
+            font-size: 0.95rem;
+        }
+
+        /* filter panel */
+        .filter-panel {
+            background: #f8fcff;
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+        .filter-group select {
+            background: white;
+            border: 1px solid #e0e7f0;
+            border-radius: 16px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            outline: none;
+            width: 100%;
+        }
+        .filter-group select:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255,145,59,0.2);
+        }
+        .month-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: white;
+            padding: 16px;
+            border-radius: 20px;
+            border: 1px solid #e0e7f0;
+            margin-top: 5px;
+        }
+        .month-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 85px;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+        }
+        .month-item input {
+            accent-color: var(--primary-orange);
+            width: 16px;
+            height: 16px;
+        }
+        .btn {
+            background: white;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn i {
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        .btn-orange {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
+        }
+        .btn-orange:hover {
+            background: white;
+            color: var(--primary-orange);
+        }
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        /* student table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            background: white;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+            font-size: 0.7rem;
+            padding: 14px 8px;
+            border: 1px solid #3a6fa8;
+            text-align: left;
+        }
+        td {
+            padding: 12px 8px;
+            border: 1px solid #d9e2ec;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+        tr:hover td {
+            background: #f8fcff;
         }
         .action-icons {
             display: flex;
@@ -32,13 +197,12 @@
             border-radius: 24px;
             padding: 20px;
         }
-        .content-section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
+        .log-section h3 {
             color: var(--primary-blue);
-            margin: 16px 0 12px;
+            margin-bottom: 16px;
             border-left: 5px solid var(--primary-orange);
-            padding-left: 12px;
+            padding-left: 14px;
+            font-weight: 700;
         }
 
         /* modal for individual slip - compact */
@@ -85,23 +249,23 @@
             padding: 8px;
             border-radius: 12px;
             border: 1px solid #d9e2ec;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             line-height: 1.2;
         }
-        .demand-slip .slip-header {
+        .slip-header {
             text-align: center;
             margin-bottom: 6px;
         }
-        .demand-slip .slip-header h2 {
+        .slip-header h2 {
             color: var(--primary-blue);
             font-size: 1.1rem;
             margin-bottom: 2px;
         }
-        .demand-slip .slip-header .school-info {
+        .slip-header .school-info {
             font-size: 0.6rem;
             color: var(--text-muted);
         }
-        .demand-slip .slip-title {
+        .slip-title {
             text-align: center;
             font-size: 0.9rem;
             font-weight: 700;
@@ -111,13 +275,13 @@
             border-bottom: 1px dashed var(--orange-light);
             padding: 2px 0;
         }
-        .demand-slip .month-session {
+        .month-session {
             display: flex;
             justify-content: space-between;
             font-size: 0.65rem;
             margin-bottom: 6px;
         }
-        .demand-slip .student-details {
+        .student-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4px;
@@ -127,21 +291,20 @@
             margin-bottom: 8px;
             font-size: 0.65rem;
         }
-        .demand-slip .student-details div span {
+        .student-details div span {
             color: var(--primary-blue);
             font-weight: 600;
         }
 
         /* Fee table without Paid column - FIXED width */
-        .demand-slip .fee-table {
+        .fee-table {
             width: 100%;
             border-collapse: collapse;
             margin: 6px 0;
             font-size: 0.6rem;
             table-layout: fixed;
         }
-        .demand-slip .fee-table th,
-        .demand-slip .fee-table td {
+        .fee-table th, .fee-table td {
             padding: 3px 2px;
             border: 1px solid #d9e2ec;
             word-wrap: break-word;
@@ -149,11 +312,10 @@
             white-space: normal;
             text-align: left;
         }
-        .demand-slip .fee-table th:nth-child(1) { width: 44%; }  /* Fee Type */
-        .demand-slip .fee-table th:nth-child(2) { width: 28%; }  /* Fee */
-        .demand-slip .fee-table th:nth-child(3) { width: 28%; }  /* Dues */
+        .fee-table th:nth-child(1) { width: 44%; }  /* Fee Type */
+        .fee-table th:nth-child(2) { width: 28%; }  /* Fee */
+        .fee-table th:nth-child(3) { width: 28%; }  /* Dues */
 
-        /* Attractive totals card */
         .totals-card {
             background: linear-gradient(135deg, #f0f7ff 0%, #e3f0ff 100%);
             border-radius: 12px;
@@ -182,8 +344,7 @@
             color: var(--primary-orange);
             font-size: 0.85rem;
         }
-
-        .demand-slip .footer-info {
+        .footer-info {
             display: flex;
             justify-content: space-between;
             font-size: 0.6rem;
@@ -192,8 +353,6 @@
             padding-top: 4px;
             border-top: 1px dashed var(--orange-light);
         }
-
-        /* Signature and WhatsApp inline */
         .signature-row {
             display: flex;
             justify-content: space-between;
@@ -217,6 +376,7 @@
             gap: 4px;
             cursor: pointer;
             transition: 0.2s;
+            text-decoration: none;
         }
         .whatsapp-share:hover {
             background: #128C7E;
@@ -226,36 +386,21 @@
         .print-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 15px;
             page-break-inside: avoid;
-        }
-        .print-container .demand-slip {
-            border: 1px solid #ccc;
-            page-break-inside: avoid;
-            break-inside: avoid;
-            margin: 0;
-            font-size: 0.65rem;
         }
         @media print {
-            body 
-            .print-container, .print-container 
-            .print-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-            }
-            .demand-slip {
-                border: none !important;
-            }
+            body { background: white !important; }
+            .demand-slip { border: 1px solid #ccc !important; }
+            .whatsapp-share { display: none !important; }
         }
 
         /* ===== MOBILE FIXES ===== */
         @media (max-width: 700px) {
             .demand-card {
                 padding: 20px 16px;
+                border-radius: 20px;
             }
-            /* Class and Section in one row */
             .filter-row {
                 display: flex;
                 flex-direction: row;
@@ -263,10 +408,9 @@
                 gap: 8px;
             }
             .filter-row .filter-group {
-                flex: 1 1 45%; /* side by side with small gap */
+                flex: 1 1 45%; 
                 min-width: 120px;
             }
-            /* Month grid 2 columns */
             .month-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
@@ -278,161 +422,110 @@
                 font-size: 0.8rem;
             }
         }
-    
     </style>
 @endpush
 
 @section('content')
 
-<div class="card">
+<div class="demand-card">
 
-<div class="content-section-title">
-Monthly Fee Breakdown (April - March)
-</div>
-<div class="header-title">
-<i class="fas fa-file-invoice"></i>
-<h1>Demand Slip Manager</h1>
-</div>
+    <div class="header-title">
+        <i class="fas fa-file-invoice"></i>
+        <h1>Demand Slip Manager</h1>
+    </div>
+    <div class="header-sub">
+        Generate and print demand slips for selected months
+    </div>
 
-<div class="header-sub">
-Generate and print demand slips for selected months
-</div>
-
-<!-- Filter Panel -->
-<div class="filter-panel" style="background:transparent; padding:0;">
-
-    <div class="row" style="margin-bottom: 20px; gap: 15px;">
-        <div class="col-md-3">
-            <select id="classSelect" class="form-control">
-                <option value="">Select Class</option>
-                @foreach($globalClasses as $class)
-                    <option value="{{ $class->name }}">{{ $class->name }}</option>
-                @endforeach
-            </select>
+    <!-- Filter Panel -->
+    <div class="filter-panel">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>Class</label>
+                <select id="classSelect">
+                    <option value="">Select Class</option>
+                    @foreach($globalClasses as $class)
+                        <option value="{{ $class->name }}">{{ $class->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Section</label>
+                <select id="sectionSelect">
+                    <option value="">Select Section</option>
+                    @foreach($sections as $section)
+                        <option value="{{ $section->name }}">{{ $section->name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-        <div class="col-md-3">
-            <select id="sectionSelect" class="form-control">
-                <option value="">Select Section</option>
-                @foreach($sections as $section)
-                    <option value="{{ $section->name }}">{{ $section->name }}</option>
-                @endforeach
-            </select>
+        <div class="filter-group">
+            <label>Select Months</label>
+            <div class="month-grid" id="monthCheckboxes">
+                <!-- populated by JS -->
+            </div>
+        </div>
+        <div class="action-bar">
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn btn-orange" id="printBtn"><i class="fas fa-print"></i> Print List</button>
         </div>
     </div>
 
-<div class="filter-group">
+    <!-- Student List (shown only after print) -->
+    <div id="studentListContainer" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 class="section-title" style="margin:0; font-weight:700; color:var(--primary-blue);">Student List</h3>
+            <button class="btn btn-orange" id="bulkPrintBtn"><i class="fas fa-print"></i> Print All Demand</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SID</th>
+                        <th>Student Name</th>
+                        <th>Father's Name</th>
+                        <th>Roll No</th>
+                        <th>Monthly Dues (₹)</th>
+                        <th>Total Dues (₹)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <!-- populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<label>Select Months</label>
-
-<div class="month-grid" id="monthCheckboxes">
-
+    <!-- Print Log Section -->
+    <div id="logSection" class="log-section" style="display: none;">
+        <h3>Print History</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Demand Month(s)</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-</div>
-
-<div class="action-bar">
-
-<button class="btn" id="resetBtn">Reset</button>
-
-<button class="btn btn-orange" id="printBtn">
-<i class="fas fa-print"></i> Print
-</button>
-
-</div>
-
-</div>
-
-
-<!-- Student List -->
-
-<div id="studentListContainer" style="display:none">
-
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-
-<h3 class="section-title" style="margin:0;">Student List</h3>
-
-<button class="btn btn-orange" id="bulkPrintBtn">
-<i class="fas fa-print"></i> Print All Demand
-</button>
-
-</div>
-
-
-<div class="table-wrap">
-
-<table class="data-table">
-
-<thead>
-
-<tr>
-<th>SID</th>
-<th>Student Name</th>
-<th>Father Name</th>
-<th>Roll No</th>
-<th>Monthly Dues (₹)</th>
-<th>Total Dues (₹)</th>
-<th>Action</th>
-</tr>
-
-</thead>
-
-<tbody id="studentTableBody">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-
-<!-- Print Log -->
-
-<div id="logSection" class="log-section" style="display:none">
-
-<h3>Print History</h3>
-
-<div class="table-wrap">
-
-<table class="data-table">
-
-<thead>
-
-<tr>
-<th>Date & Time</th>
-<th>Class</th>
-<th>Section</th>
-<th>Demand Month(s)</th>
-<th>Type</th>
-</tr>
-
-</thead>
-
-<tbody id="logTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<!-- Modal -->
-
+<!-- Individual Slip Modal -->
+<!-- Individual Slip Modal -->
 <div class="modal-overlay" id="slipModal">
-
-<div class="modal-container">
-
-<button class="close-modal" id="closeSlipModal">&times;</button>
-
-<div id="modalSlipContent"></div>
-
-</div>
-
+    <div class="modal-container">
+        <button class="close-modal" id="closeSlipModal">&times;</button>
+        <div id="modalSlipContent"></div>
+        <button class="btn btn-orange" id="modalPrintBtn"><i class="fas fa-print"></i> Print</button>
+    </div>
 </div>
 
 @endsection
@@ -443,7 +536,35 @@ Generate and print demand slips for selected months
         // ---------- Data ----------
         const monthNames = ["April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February", "March"];
 
-        // Data will be fetched dynamically via AJAX
+        // Common styles for printing to ensure exact UI replication
+        const demandSlipStyles = `
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+            body { font-family: 'Inter', sans-serif; background: white; margin: 0; padding: 20px; }
+            .demand-slip { background: white; padding: 20px; border: 1px solid #e2e8f0; line-height: 1.4; max-width: 600px; margin: 0 auto; color: #1e293b; }
+            .slip-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #488fe4; padding-bottom: 10px; }
+            .slip-header h2 { color: #488fe4; font-size: 1.5rem; margin: 0 0 4px 0; text-transform: uppercase; }
+            .slip-header .school-info { font-size: 0.8rem; color: #5f6b7a; margin-bottom: 2px; }
+            .slip-title { text-align: center; font-size: 1.1rem; font-weight: 800; color: #ff913b; margin: 15px 0; text-transform: uppercase; letter-spacing: 2px; background: #ffefdb; padding: 8px; border-radius: 8px; }
+            .month-session { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; }
+            .student-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fcff; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; border: 1px solid #edf2f7; }
+            .student-details div span { color: #488fe4; font-weight: 700; margin-right: 5px; }
+            .fee-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.85rem; }
+            .fee-table th, .fee-table td { padding: 10px; border: 1px solid #e2e8f0; text-align: left; }
+            .fee-table th { background: #f8fcff; color: #488fe4; font-weight: 700; }
+            .totals-card { background: linear-gradient(135deg, #f0f7ff 0%, #e3f0ff 100%); border-radius: 15px; padding: 15px; margin: 20px 0; border: 1.5px solid #488fe4; }
+            .totals-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(72,143,228,0.2); }
+            .totals-row:last-child { border-bottom: none; padding-top: 12px; margin-top: 5px; border-top: 2px solid #488fe4; }
+            .totals-label { font-weight: 700; color: #488fe4; font-size: 0.9rem; }
+            .totals-value { font-weight: 800; color: #ff913b; font-size: 1.1rem; }
+            .footer-info { display: flex; justify-content: space-between; font-size: 0.75rem; color: #5f6b7a; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
+            .signature-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 35px; }
+            .signature-box { text-align: center; width: 150px; font-size: 0.8rem; font-weight: 700; }
+            .signature-line { border-top: 1px solid #1e293b; margin-bottom: 5px; }
+            .whatsapp-share { display: none !important; }
+            .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; }
+            .page-break { page-break-after: always; }
+        `;
+
         let currentStudents = [];
 
         // School details
@@ -472,12 +593,17 @@ Generate and print demand slips for selected months
         const modalSlipContent = document.getElementById('modalSlipContent');
         const logSection = document.getElementById('logSection');
         const logTableBody = document.getElementById('logTableBody');
+        const modalPrintBtn = document.getElementById('modalPrintBtn');
 
         // Populate months
         function populateMonths() {
             let html = '';
             monthNames.forEach(m => {
-                html += `<label class="month-item"><input type="checkbox" class="month-checkbox" value="${m}"> ${m}</label>`;
+                html += `
+                    <label class="month-item">
+                        <input type="checkbox" class="month-checkbox" value="${m}">
+                        ${m}
+                    </label>`;
             });
             monthContainer.innerHTML = html;
         }
@@ -504,18 +630,17 @@ Generate and print demand slips for selected months
         // Add log entry
         function addLog(type, details = '') {
             const sel = getCurrentSelection();
-            if (!sel.class || !sel.section) return;
             const now = new Date();
             const dateTime = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             let typeText = type;
             if (type === 'Bulk') typeText = `Bulk (${details} students)`;
-            else if (type === 'Single') typeText = `Single: ${details}`;
+            else if (type === 'Single') typeText = `Slip: ${details}`;
             else typeText = type;
             printLog.push({
                 dateTime,
-                class: sel.class,
-                section: sel.section,
-                months: sel.months.join(', '),
+                class: sel.class || 'N/A',
+                section: sel.section || 'N/A',
+                months: sel.months.join(', ') || 'None',
                 type: typeText
             });
             renderLog();
@@ -549,14 +674,14 @@ Generate and print demand slips for selected months
                 const totalDues = (monthlyTotal * sel.months.length) + s.backDues;
                 html += `<tr>
                     <td>${s.sid}</td>
-                    <td>${s.name}</td>
+                    <td><strong style="color:var(--primary-blue)">${s.name}</strong></td>
                     <td>${s.father}</td>
                     <td>${s.roll}</td>
                     <td>₹${monthlyTotal}</td>
-                    <td>₹${totalDues}</td>
+                    <td><span style="color:var(--primary-orange);font-weight:700">₹${totalDues}</span></td>
                     <td class="action-icons">
                         <i class="fas fa-eye view-icon" title="View Slip" data-sid="${s.sid}"></i>
-                        <i class="fas fa-print print-icon" title="Print Single" data-sid="${s.sid}"></i>
+                        <i class="fas fa-print print-icon" title="Print Slip" data-sid="${s.sid}"></i>
                     </td>
                 </tr>`;
             });
@@ -564,27 +689,27 @@ Generate and print demand slips for selected months
             studentListContainer.style.display = 'block';
 
             // Attach view events
-            document.querySelectorAll('.fa-eye').forEach(icon => {
+            document.querySelectorAll('.view-icon').forEach(icon => {
                 icon.addEventListener('click', (e) => {
-                    const sid = e.target.dataset.sid;
+                    const sid = e.currentTarget.dataset.sid;
                     const student = currentStudents.find(s => s.sid === sid);
                     showSlipModal(student, sel.months);
                 });
             });
-            // Attach single print events
-            document.querySelectorAll('.fa-print').forEach(icon => {
+            // Attach print events - showing modal first to WOW user with UI
+            document.querySelectorAll('.print-icon').forEach(icon => {
                 icon.addEventListener('click', (e) => {
-                    const sid = e.target.dataset.sid;
+                    const sid = e.currentTarget.dataset.sid;
                     const student = currentStudents.find(s => s.sid === sid);
-                    printSingleSlip(student, sel.months);
+                    showSlipModal(student, sel.months);
                     addLog('Single', student.name);
                 });
             });
         }
 
-        // Build slip HTML for a student (compact version, no Paid column, WhatsApp inline)
+        // Build slip HTML for a student (compact version)
         function buildSlipHTML(student, months) {
-            const monthList = months.join(', ');
+            const monthList = months.join(', ') || 'No months selected';
             const feeTypes = Object.keys(student.monthlyFee);
             let feeRows = '';
             let subtotal = 0;
@@ -600,7 +725,7 @@ Generate and print demand slips for selected months
                 `*Demand Slip*\nMonth(s): ${monthList} | Session: 2025-2026\n\n` +
                 `Name: ${student.name}\nFather: ${student.father}\nClass: ${classSelect.value} (${sectionSelect.value})\nRoll No: ${student.roll}\nStd ID: ${student.sid}\n\n` +
                 `Fee Details:\n${feeTypes.map(ft => `${ft}: ₹${student.monthlyFee[ft] * months.length}`).join('\n')}\n\n` +
-                `Total Dues: ₹${subtotal}`
+                `Total Dues: ₹${subtotal + (student.backDues || 0)}`
             );
 
             return `
@@ -636,11 +761,11 @@ Generate and print demand slips for selected months
                         </div>
                         <div class="totals-row">
                             <span class="totals-label">Back Dues</span>
-                            <span class="totals-value">₹${student.backDues}</span>
+                            <span class="totals-value">₹${student.backDues || 0}</span>
                         </div>
                         <div class="totals-row">
                             <span class="totals-label">Total Dues</span>
-                            <span class="totals-value">₹${subtotal + student.backDues}</span>
+                            <span class="totals-value">₹${subtotal + (student.backDues || 0)}</span>
                         </div>
                     </div>
                     <div class="footer-info">
@@ -649,42 +774,84 @@ Generate and print demand slips for selected months
                         <span>Website: ${school.website}</span>
                     </div>
                     <div class="signature-row">
-                        <span class="signature">Signature</span>
-                        <button class="whatsapp-share" onclick="window.open('https://wa.me/?text=${whatsappText}', '_blank')"><i class="fab fa-whatsapp"></i> Share</button>
+                        <span class="signature">Parent/Guardian Signature</span>
+                        <a href="https://wa.me/?text=${whatsappText}" target="_blank" class="whatsapp-share">
+                            <i class="fab fa-whatsapp"></i> Share
+                        </a>
                     </div>
                 </div>
             `;
         }
 
+        // Current active student for printing
+        let activeStudentForPrint = null;
+
         // Show modal with slip
         function showSlipModal(student, months) {
+            activeStudentForPrint = student;
             modalSlipContent.innerHTML = buildSlipHTML(student, months);
             slipModal.classList.add('show');
         }
 
-        closeSlipModal.addEventListener('click', () => slipModal.classList.remove('show'));
-        window.addEventListener('click', (e) => {
-            if (e.target === slipModal) slipModal.classList.remove('show');
+        closeSlipModal.addEventListener('click', () => {
+            slipModal.classList.remove('show');
+            activeStudentForPrint = null;
         });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === slipModal) {
+                slipModal.classList.remove('show');
+                activeStudentForPrint = null;
+            }
+        });
+
+        // Modal Print Button
+        if (modalPrintBtn) {
+            modalPrintBtn.addEventListener('click', () => {
+                if (activeStudentForPrint) {
+                    printSingleSlip(activeStudentForPrint, getCurrentSelection().months);
+                }
+            });
+        }
 
         // Print single slip
         function printSingleSlip(student, months) {
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html><head><title>Demand Slip - ${student.name}</title>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap">
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
                 <style>
-                    body { font-family: 'Inter', sans-serif; padding: 20px; background: white; }
-                    .demand-slip { max-width: 600px; margin:0 auto; font-size:0.8rem; }
+                    body { font-family: 'Inter', sans-serif; padding: 20px; background: white; color: #1e293b; }
+                    .demand-slip { max-width: 600px; margin: 0 auto; border: 1px solid #d9e2ec; padding: 15px; border-radius: 12px; font-size: 0.8rem; line-height: 1.3; }
+                    .slip-header { text-align: center; margin-bottom: 8px; border-bottom: 1px solid #488fe4; padding-bottom: 8px; }
+                    .slip-header h2 { color: #488fe4; font-size: 1.2rem; margin: 0 0 4px 0; }
+                    .slip-header .school-info { font-size: 0.65rem; color: #5f6b7a; }
+                    .slip-title { text-align: center; font-size: 1rem; font-weight: 700; color: #ff913b; margin: 10px 0; text-transform: uppercase; border-top: 1px dashed #ff913b; border-bottom: 1px dashed #ff913b; padding: 4px 0; }
+                    .month-session { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 10px; font-weight: 600; }
+                    .student-details { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f8fcff; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 0.7rem; }
+                    .student-details div span { color: #488fe4; font-weight: 600; }
+                    .fee-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.7rem; }
+                    .fee-table th, .fee-table td { padding: 6px 4px; border: 1px solid #d9e2ec; text-align: left; }
+                    .fee-table th { background: #f8fcff; color: #488fe4; }
+                    .totals-card { background: #f0f7ff; border-radius: 10px; padding: 10px; margin: 10px 0; border: 1px solid #488fe4; }
+                    .totals-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed rgba(72,143,228,0.3); }
+                    .totals-row:last-child { border-bottom: none; }
+                    .totals-label { font-weight: 600; color: #488fe4; }
+                    .totals-value { font-weight: 700; color: #ff913b; }
+                    .footer-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #5f6b7a; margin-top: 10px; border-top: 1px dashed #ff913b; padding-top: 5px; }
+                    .signature-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-style: italic; font-size: 0.7rem; }
+                    .whatsapp-share { display: none; }
                 </style>
                 </head><body>${buildSlipHTML(student, months)}</body></html>
             `);
             printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+            }, 500);
         }
 
-        // Bulk print: 4 slips per page
+        // Bulk print
         function bulkPrint(students, months) {
             if (!students || students.length === 0) return;
             const printWindow = window.open('', '_blank');
@@ -692,40 +859,40 @@ Generate and print demand slips for selected months
             for (let i = 0; i < students.length; i++) {
                 allSlips += buildSlipHTML(students[i], months);
                 if ((i + 1) % 4 === 0 && i !== students.length - 1) {
-                    allSlips += '<div style="page-break-after: always;"></div>';
+                    allSlips += '<div style="page-break-after: always; height: 1px;"></div>';
                 }
             }
             printWindow.document.write(`
                 <html><head><title>Bulk Demand Slips</title>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap">
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
                 <style>
-                    body { font-family: 'Inter', sans-serif; background: white; margin:0; padding:5px; }
-                    .bulk-grid {
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: 5px;
-                    }
-                    .demand-slip {
-                        border: 1px solid #ccc;
-                        padding: 6px;
-                        font-size: 0.7rem;
-                        break-inside: avoid;
-                        page-break-inside: avoid;
-                    }
+                    body { font-family: 'Inter', sans-serif; background: white; margin: 0; padding: 10px; }
+                    .bulk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                    .demand-slip { border: 1px solid #d9e2ec; padding: 10px; border-radius: 8px; font-size: 0.65rem; line-height: 1.2; break-inside: avoid; page-break-inside: avoid; margin-bottom: 10px; }
+                    .slip-header { text-align: center; margin-bottom: 5px; border-bottom: 1px solid #488fe4; }
+                    .slip-header h2 { color: #488fe4; font-size: 1rem; margin: 0; }
+                    .slip-header .school-info { font-size: 0.55rem; color: #5f6b7a; }
+                    .slip-title { text-align: center; font-size: 0.8rem; font-weight: 700; color: #ff913b; margin: 5px 0; text-transform: uppercase; border-top: 1px dashed #ff913b; border-bottom: 1px dashed #ff913b; }
+                    .student-details { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #f8fcff; padding: 5px; border-radius: 6px; font-size: 0.6rem; }
+                    .student-details div span { color: #488fe4; font-weight: 600; }
+                    .fee-table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.6rem; }
+                    .fee-table th, .fee-table td { padding: 3px; border: 1px solid #d9e2ec; }
+                    .totals-card { background: #f0f7ff; border-radius: 6px; padding: 5px; border: 1px solid #488fe4; }
+                    .totals-row { display: flex; justify-content: space-between; font-size: 0.6rem; padding: 2px 0; }
+                    .totals-value { font-weight: 700; color: #ff913b; }
+                    .signature-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-style: italic; font-size: 0.6rem; }
+                    .whatsapp-share { display: none; }
                 </style>
-                </head>
-                <body>
-                <div class="bulk-grid">
-                    ${allSlips}
-                </div>
-                </body></html>
+                </head><body><div class="bulk-grid">${allSlips}</div></body></html>
             `);
             printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+            }, 500);
         }
 
-        // Print button (formerly Generate)
+        // Print button (Fetch and Render)
         printBtn.addEventListener('click', () => {
             const sel = getCurrentSelection();
             if (!sel.class || !sel.section) {
@@ -737,7 +904,6 @@ Generate and print demand slips for selected months
                 return;
             }
             
-            // AJAX Fetch LIVE Data from Ledgers using Vanilla JS
             fetch("{{ route('admin.demand-slip.students') }}", {
                 method: 'POST',
                 headers: {
@@ -749,32 +915,29 @@ Generate and print demand slips for selected months
                     section: sel.section
                 })
             })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.length === 0) {
-                    alert('No active students found linking this class and section.');
+                    alert('No active students found in this class and section.');
                     return;
                 }
                 renderStudentList(data);
-                addLog('Print List'); // log the action
+                addLog('Fetch List');
             })
             .catch(error => {
                 console.error('Error fetching students:', error);
-                alert('Could not fetch student data from database.');
+                alert('Error fetching student data.');
             });
         });
 
-        // Bulk Print button Event
+        // Bulk Print button
         bulkPrintBtn.addEventListener('click', () => {
             if (currentStudents.length === 0) {
-                alert('Please load students first by selecting filters.');
+                alert('Please load students first.');
                 return;
             }
             bulkPrint(currentStudents, getCurrentSelection().months);
-            addLog('Bulk', currentStudents.length);
+            addLog('Bulk Print', currentStudents.length);
         });
 
         // Reset

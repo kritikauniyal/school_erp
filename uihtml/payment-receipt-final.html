@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Receipt · Smart School ERP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+/* ══ ROOT PALETTE ══ */
+:root{
+  --navy:   #1e3a5f;   /* school name, headings */
+  --blue:   #2563eb;   /* labels, borders */
+  --teal:   #0891b2;   /* secondary accents */
+  --green:  #15803d;   /* paid */
+  --red:    #b91c1c;   /* dues */
+  --orange: #c2410c;   /* highlight */
+  --purple: #6d28d9;   /* special */
+  --gold:   #92400e;   /* receipt no */
+  --gray:   #475569;   /* body text */
+  --soft:   #f0f5ff;   /* very light blue tint */
+  --softg:  #f0fdf4;   /* very light green tint */
+}
+
+/* ══ SCREEN ══ */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#b8c5d4;min-height:100vh;padding:18px;}
+
+/* CONTROL BAR */
+.ctrl{
+  background:#fff;border-radius:12px;padding:11px 18px;
+  box-shadow:0 3px 16px rgba(0,0,0,.12);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  margin-bottom:18px;position:sticky;top:8px;z-index:200;
+  border-left:5px solid var(--blue);
+}
+.ctrl-left{display:flex;align-items:center;gap:10px}
+.ctrl-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem}
+.ctrl-title{font-size:.95rem;font-weight:800;color:var(--navy)}
+.ctrl-sub{font-size:.7rem;color:var(--gray);margin-top:1px}
+.ctrl-btns{display:flex;gap:8px;flex-wrap:wrap}
+.cbtn{padding:9px 18px;border-radius:9px;border:none;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.18s;white-space:nowrap}
+.cbtn-print{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff}
+.cbtn-print:hover{background:linear-gradient(135deg,var(--blue),var(--teal))}
+.cbtn-wa{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.cbtn-wa:hover{background:linear-gradient(135deg,#16a34a,#15803d)}
+.cbtn:disabled{opacity:.55;cursor:wait}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ══ A4 ══ */
+.a4-outer{display:flex;justify-content:center}
+.a4{width:210mm;background:#fff;box-shadow:0 10px 44px rgba(0,0,0,.18);padding:10mm 11mm;}
+
+/* ══ RECEIPT — fixed 130mm so both fit on 1 A4 ══ */
+.receipt{
+  width:100%;height:130mm;
+  display:flex;flex-direction:column;
+  overflow:hidden;position:relative;
+  border-radius:6px;
+}
+/* Office copy — blue-navy border */
+.receipt.office{border:2px solid var(--blue)}
+/* Guardian copy — teal border */
+.receipt.guardian{border:2px solid var(--teal)}
+
+/* ── COPY LABEL BAR ── */
+.rc-bar{
+  padding:4px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.office .rc-bar{
+  background:linear-gradient(90deg,var(--navy),var(--blue));
+  border-bottom:1px solid var(--blue);
+}
+.guardian .rc-bar{
+  background:linear-gradient(90deg,var(--teal),#0e7490);
+  border-bottom:1px solid var(--teal);
+}
+.rc-bar-label{
+  font-size:7.5pt;font-weight:800;letter-spacing:1.2px;
+  text-transform:uppercase;color:#fff;
+}
+.rc-bar-rcno{
+  font-size:7pt;font-weight:700;color:rgba(255,255,255,.9);
+}
+.rc-bar-rcno b{color:#ffe08a;font-weight:800}
+
+/* ── SCHOOL HEADER ── */
+.rc-hdr{
+  padding:7px 12px 6px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.office .rc-hdr{background:#fff;border-bottom:1.5px solid #bdd0f4}
+.guardian .rc-hdr{background:#fff;border-bottom:1.5px solid #a5d8e6}
+.rc-logo{
+  width:44px;height:44px;border-radius:50%;
+  overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;background:#fff;
+}
+.office .rc-logo{border:2.5px solid var(--blue)}
+.guardian .rc-logo{border:2.5px solid var(--teal)}
+.rc-logo img{width:100%;height:100%;object-fit:cover}
+.rc-school{flex:1}
+.rc-sname{
+  font-family:'Playfair Display',serif;
+  font-size:13.5pt;font-weight:800;line-height:1.2;
+}
+.office .rc-sname{color:var(--navy)}
+.guardian .rc-sname{color:#064e63}
+.rc-saddr{font-size:6.8pt;font-weight:600;color:var(--gray);margin-top:2px;line-height:1.45}
+.rc-grad{width:44px;height:44px;object-fit:contain;flex-shrink:0}
+
+/* ── SESSION INFO BAR ── */
+.rc-session{
+  padding:4px 12px;
+  display:flex;flex-wrap:wrap;gap:0 20px;
+  border-bottom:1.5px solid;
+  flex-shrink:0;
+}
+.office .rc-session{background:#fff;border-color:#bdd0f4}
+.guardian .rc-session{background:#fff;border-color:#a5d8e6}
+.rc-sess-item{font-size:7.2pt;font-weight:600;color:var(--gray)}
+.rc-sess-item b{font-weight:800}
+.office .rc-sess-item b{color:var(--blue)}
+.guardian .rc-sess-item b{color:var(--teal)}
+
+/* ── INFO GRID ── */
+.rc-info{
+  display:grid;grid-template-columns:1fr 1fr;
+  flex-shrink:0;
+}
+.rc-info{border-bottom:1.5px solid}
+.office .rc-info{border-color:#bdd0f4}
+.guardian .rc-info{border-color:#a5d8e6}
+
+.rc-ic{
+  padding:3.5px 10px;
+  border-bottom:1px solid #dde8f8;
+  border-right:1px solid #dde8f8;
+  display:flex;align-items:baseline;gap:5px;
+  line-height:1.4;background:#fff;
+}
+.guardian .rc-ic{border-color:#cce8ef}
+.rc-ic:nth-child(even){border-right:none;background:#fff}
+.guardian .rc-ic:nth-child(even){background:#fff}
+.rc-ic:nth-last-child(-n+2){border-bottom:none}
+.rc-lbl{font-size:6.8pt;font-weight:800;white-space:nowrap}
+.office .rc-lbl{color:var(--blue)}
+.guardian .rc-lbl{color:var(--teal)}
+.rc-val{font-size:6.8pt;font-weight:700;color:var(--navy)}
+
+/* ── FEE TABLE ── */
+.rc-tw{flex:1;overflow:hidden;padding:0 0}
+.rc-tbl{width:100%;border-collapse:collapse}
+.rc-tbl thead th{
+  font-size:7pt;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+  padding:4.5px 10px;text-align:left;color:#fff;
+}
+.office .rc-tbl thead tr{background:linear-gradient(90deg,var(--navy),var(--blue))}
+.guardian .rc-tbl thead tr{background:linear-gradient(90deg,#064e63,var(--teal))}
+.rc-tbl thead th:first-child{text-align:center;width:28px}
+.rc-tbl thead th:last-child{text-align:right;width:72px}
+.rc-tbl tbody tr:nth-child(even) td{background:#fff}
+.guardian .rc-tbl tbody tr:nth-child(even) td{background:#fff}
+.rc-tbl tbody td{
+  padding:3.5px 10px;
+  border-bottom:1px solid #e2eaf8;
+  font-size:7.5pt;font-weight:600;color:var(--navy);vertical-align:middle;
+}
+.guardian .rc-tbl tbody td{border-color:#cce8ef}
+.rc-tbl tbody td:first-child{
+  text-align:center;font-weight:800;
+}
+.office .rc-tbl tbody td:first-child{color:var(--blue)}
+.guardian .rc-tbl tbody td:first-child{color:var(--teal)}
+.rc-tbl tbody td:last-child{text-align:right;font-weight:800;color:var(--navy)}
+.rc-tbl .emp td{height:11px;border-color:#edf2fc}
+/* tfoot */
+.rc-tbl tfoot td{
+  padding:4px 10px;
+  font-size:7.8pt;font-weight:700;
+  border-top:1px solid;
+}
+.office .rc-tbl tfoot td{border-color:#bdd0f4}
+.guardian .rc-tbl tfoot td{border-color:#a5d8e6}
+.rc-tbl tfoot td:first-child{text-align:right;padding-right:10px;font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.rc-tbl tfoot td:last-child{text-align:right;font-size:9pt;font-weight:800}
+/* Sub Total row */
+.rc-tbl .st-row td{border-top:2px solid}
+.office .rc-tbl .st-row td{border-color:var(--blue);color:var(--blue)}
+.guardian .rc-tbl .st-row td{border-color:var(--teal);color:var(--teal)}
+/* Paid row */
+.rc-tbl .pd-row td{color:var(--green)}
+.pd-tag{display:inline;font-size:6pt;font-weight:800;border:1.5px solid var(--green);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px;letter-spacing:.3px}
+/* Dues row */
+.rc-tbl .du-row td{color:var(--red)}
+.du-tag{display:inline;font-size:6pt;font-weight:800;border:1.5px dashed var(--red);color:var(--red);padding:1px 5px;border-radius:3px;margin-left:4px;letter-spacing:.3px}
+
+/* ── RECEIPT FOOTER ── */
+.rc-ftr{
+  padding:5px 12px 6px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  flex-shrink:0;
+}
+.office .rc-ftr{border-top:1.5px dashed var(--blue);background:#fff}
+.guardian .rc-ftr{border-top:1.5px dashed var(--teal);background:#fff}
+.rc-fnote{font-size:6pt;font-weight:600;color:var(--gray);line-height:1.6}
+.office .rc-fnote b{color:var(--blue);font-weight:800}
+.guardian .rc-fnote b{color:var(--teal);font-weight:800}
+.rc-sig-line{width:80px;border-bottom:1.5px solid var(--navy);margin:0 auto 2px}
+.rc-sig-lbl{font-size:6pt;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;text-align:center}
+
+/* ── CUT LINE ── */
+.cut{
+  display:flex;align-items:center;gap:8px;margin:6mm 0;
+  font-size:7pt;font-weight:700;color:var(--gray);
+}
+.cut-line{flex:1;border-top:2px dashed #93a3b8}
+.cut i{font-size:10pt;color:var(--gray)}
+
+/* ══ PRINT ══ */
+@media print{
+  @page{size:A4;margin:10mm 11mm}
+  body{background:#fff;padding:0}
+  .ctrl{display:none!important}
+  .a4-outer{display:block}
+  .a4{width:auto;padding:0;box-shadow:none}
+  .cut{margin:4.5mm 0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- CONTROL BAR -->
+<div class="ctrl">
+  <div class="ctrl-left">
+    <div class="ctrl-icon"><i class="fas fa-receipt"></i></div>
+    <div>
+      <div class="ctrl-title">Payment Receipt</div>
+      <div class="ctrl-sub">A4 · Office Copy + Guardian Copy · Both on one page</div>
+    </div>
+  </div>
+  <div class="ctrl-btns">
+    <button class="cbtn cbtn-wa" id="waBtn" onclick="shareWithPDF()">
+      <i class="fab fa-whatsapp"></i> WhatsApp + PDF
+    </button>
+    <button class="cbtn cbtn-print" onclick="window.print()">
+      <i class="fas fa-print"></i> Print
+    </button>
+  </div>
+</div>
+
+<div class="a4-outer">
+  <div class="a4" id="a4Page"></div>
+</div>
+
+<script>
+const school = {
+  name:    'Hazrat Ali Academy',
+  addr:    'Chandwara Branch Muslim Club Campus, Pakki Sarai Chandwara, Muzaffarpur',
+  phone:   '9102277998, 9835281616',
+  udise:   '10140614302',
+  session: '2025-2026',
+  logo:    'https://decentdemo.in/school/images/school-logo.png',
+  grad:    'https://cdn-icons-png.flaticon.com/128/3048/3048127.png',
+};
+
+const rc = {
+  month:       'September',
+  studentName: 'BILAL MINNAT',
+  fatherName:  'MD. MINNATULLAH',
+  cls: 'I', section: 'A',
+  stdId: 'SID10', rollNo: '26', admNo: '5642',
+  regNo: '2161204202192112718',
+  payDate: '01-09-2025',
+  address: 'Chandwara, Muzaffarpur',
+  receiptNo: 'RC84521',
+  payMode: 'Cash',
+  mobile: '9876543210',
+  items: [
+    { particular: 'Back Dues',          amount: 6400 },
+    { particular: 'Tuition Fee',         amount: 900  },
+    { particular: 'Generator Charge',    amount: 50   },
+    { particular: 'Examination SA',      amount: 150  },
+  ],
+  subTotal: 7500, paid: 6350, dues: 1150,
+};
+
+const R = n => '₹' + Number(n).toLocaleString('en-IN');
+
+function ic(lbl, val){
+  return `<div class="rc-ic">
+    <span class="rc-lbl">${lbl} :</span>
+    <span class="rc-val">${val||'—'}</span>
+  </div>`;
+}
+
+function buildHalf(type){
+  const isOff  = type === 'office';
+  const barLbl = isOff ? '🏫  FOR OFFICE COPY' : '👤  FOR GUARDIAN COPY';
+
+  const rows = rc.items.map((it,i)=>`<tr>
+    <td>${i+1}</td><td>${it.particular}</td><td>${R(it.amount)}</td>
+  </tr>`).join('');
+
+  const empN = Math.max(0, 5 - rc.items.length);
+  const emp  = '<tr class="emp"><td></td><td>&nbsp;</td><td></td></tr>'.repeat(empN);
+
+  return `
+  <div class="receipt ${type}">
+
+    <!-- LABEL BAR -->
+    <div class="rc-bar">
+      <span class="rc-bar-label">${barLbl}</span>
+      <span class="rc-bar-rcno">Receipt No. : <b>${rc.receiptNo}</b></span>
+    </div>
+
+    <!-- SCHOOL HEADER -->
+    <div class="rc-hdr">
+      <div class="rc-logo">
+        <img src="${school.logo}" alt="logo" onerror="this.style.display='none'">
+      </div>
+      <div class="rc-school">
+        <div class="rc-sname">${school.name}</div>
+        <div class="rc-saddr">${school.addr}<br>${school.phone}</div>
+      </div>
+      <img src="${school.grad}" class="rc-grad" alt="" onerror="this.style.display='none'">
+    </div>
+
+    <!-- SESSION BAR -->
+    <div class="rc-session">
+      <span class="rc-sess-item">To Month : <b>${rc.month}</b></span>
+      <span class="rc-sess-item">Session : <b>${school.session}</b></span>
+      <span class="rc-sess-item">Payment Date : <b>${rc.payDate}</b></span>
+      <span class="rc-sess-item">Mode : <b>${rc.payMode}</b></span>
+    </div>
+
+    <!-- INFO GRID -->
+    <div class="rc-info">
+      ${ic('UDISE No.',    school.udise)}
+      ${ic('Reg. No.',     rc.regNo)}
+      ${ic('Name',         rc.studentName)}
+      ${ic("Father's Name",rc.fatherName)}
+      ${ic('Class',        rc.cls)}
+      ${ic('Section',      rc.section)}
+      ${ic('Std. ID',      rc.stdId)}
+      ${ic('Roll No.',     rc.rollNo)}
+      ${ic('Adm. No.',     rc.admNo)}
+      ${ic('Address',      rc.address)}
+    </div>
+
+    <!-- FEE TABLE -->
+    <div class="rc-tw">
+      <table class="rc-tbl">
+        <thead>
+          <tr>
+            <th>S.No.</th>
+            <th>Particular / Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}${emp}
+        </tbody>
+        <tfoot>
+          <tr class="st-row">
+            <td colspan="2">Sub Total</td>
+            <td>${R(rc.subTotal)}</td>
+          </tr>
+          <tr class="pd-row">
+            <td colspan="2">Paid &nbsp;<span class="pd-tag">PAID</span></td>
+            <td>${R(rc.paid)}</td>
+          </tr>
+          <tr class="du-row">
+            <td colspan="2">Dues &nbsp;<span class="du-tag">DUE</span></td>
+            <td>${R(rc.dues)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="rc-ftr">
+      <div class="rc-fnote">
+        <b>${school.name}</b> · Computer generated receipt<br>
+        UDISE : ${school.udise} &nbsp;·&nbsp; ${school.phone}
+      </div>
+      <div>
+        <div class="rc-sig-line"></div>
+        <div class="rc-sig-lbl">Signature &amp; Stamp</div>
+      </div>
+    </div>
+
+  </div>`;
+}
+
+function render(){
+  document.getElementById('a4Page').innerHTML = `
+    ${buildHalf('office')}
+    <div class="cut">
+      <div class="cut-line"></div>
+      <i class="fas fa-cut"></i>
+      <span>CUT HERE &nbsp;·&nbsp; GUARDIAN COPY BELOW</span>
+      <div class="cut-line"></div>
+    </div>
+    ${buildHalf('guardian')}
+  `;
+}
+render();
+
+/* ══ WHATSAPP + PDF ══ */
+async function shareWithPDF(){
+  const btn = document.getElementById('waBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Generating…';
+  try{
+    const canvas = await html2canvas(document.getElementById('a4Page'),{
+      scale:2.2, useCORS:true, backgroundColor:'#ffffff', logging:false
+    });
+    const {jsPDF} = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const w=210, h=(canvas.height*210)/canvas.width;
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,w,Math.min(h,297));
+
+    const blob  = pdf.output('blob');
+    const fname = 'Receipt_'+rc.receiptNo+'_'+rc.studentName.replace(/\s+/g,'_')+'.pdf';
+    const file  = new File([blob], fname, {type:'application/pdf'});
+    const msg   = buildMsg();
+
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], text:msg, title:'Fee Receipt'});
+    } else {
+      const url = URL.createObjectURL(blob);
+      Object.assign(document.createElement('a'),{href:url,download:fname}).click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); window.open('https://wa.me/91'+rc.mobile+'?text='+encodeURIComponent(msg),'_blank'); }, 800);
+    }
+  } catch(e){ alert('Error: '+e.message); }
+  finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="fab fa-whatsapp"></i> WhatsApp + PDF';
+  }
+}
+
+function buildMsg(){
+  const lines = rc.items.map((it,i)=>`${i+1}. ${it.particular} : ${R(it.amount)}`).join('\n');
+  return `🏫 *FEE RECEIPT — ${school.name}*\n──────────────────────────\n👤 Student  : *${rc.studentName}*\n👨 Father   : ${rc.fatherName}\n🎓 Class    : ${rc.cls}–${rc.section}  |  Roll : ${rc.rollNo}\n📅 Month    : ${rc.month}  |  Session : ${school.session}\n🗓 Pay Date : ${rc.payDate}  |  Mode : ${rc.payMode}\n🧾 Receipt  : ${rc.receiptNo}\n──────────────────────────\n${lines}\n──────────────────────────\n💰 Sub Total : ${R(rc.subTotal)}\n✅ Paid       : ${R(rc.paid)}\n⚠️ Dues       : ${R(rc.dues)}\n──────────────────────────\n📞 ${school.phone}\n_(PDF receipt is attached)_`;
+}
+</script>
+</body>
+</html>

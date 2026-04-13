@@ -11,6 +11,9 @@ class AdmissionFeeController extends Controller
 {
     public function index(Request $request)
     {
+        if ($request->has('get_history')) {
+            return $this->getHistory();
+        }
         $session = $request->input('session', '2025-2026');
         $classes = SchoolClass::orderBy('id')->get();
         // Load only admission fee types
@@ -249,6 +252,20 @@ class AdmissionFeeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $structures
+        ]);
+    }
+
+    public function getHistory()
+    {
+        $logs = \App\Models\AuditLog::with('user')
+            ->where('model_type', 'App\Models\FeeStructure')
+            ->orderBy('created_at', 'desc')
+            ->take(50)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'logs' => $logs
         ]);
     }
 }

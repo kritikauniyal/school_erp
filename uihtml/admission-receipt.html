@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admission Receipt · Smart School ERP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ══ ROOT ══ */
+:root{
+  --navy:#1e3a5f;--blue:#2563eb;--teal:#0891b2;
+  --green:#15803d;--red:#b91c1c;--orange:#c2410c;
+  --gold:#92400e;--gray:#475569;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#b8c5d4;min-height:100vh;padding:18px}
+
+/* CONTROL BAR */
+.ctrl{
+  background:#fff;border-radius:12px;padding:12px 18px;
+  box-shadow:0 3px 16px rgba(0,0,0,.12);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  margin-bottom:18px;position:sticky;top:8px;z-index:200;
+  border-left:5px solid var(--blue);
+}
+.ctrl-left{display:flex;align-items:center;gap:10px}
+.ctrl-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem}
+.ctrl-title{font-size:.95rem;font-weight:800;color:var(--navy)}
+.ctrl-sub{font-size:.7rem;color:var(--gray);margin-top:1px}
+.ctrl-btns{display:flex;gap:8px;flex-wrap:wrap}
+.cbtn{padding:9px 18px;border-radius:9px;border:none;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.18s;white-space:nowrap}
+.cbtn-print{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff}
+.cbtn-print:hover{background:linear-gradient(135deg,var(--blue),var(--teal))}
+.cbtn-wa{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.cbtn-wa:hover{background:#15803d}
+.cbtn:disabled{opacity:.55;cursor:wait}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ══ A4 ══ */
+.a4-outer{display:flex;justify-content:center}
+.a4{
+  width:210mm;background:#fff;
+  box-shadow:0 10px 44px rgba(0,0,0,.18);
+  padding:10mm 12mm;
+}
+
+/* ══ RECEIPT — fixed 132mm each so both fit perfectly on 1 A4 ══ */
+.receipt{
+  width:100%;height:132mm;
+  display:flex;flex-direction:column;
+  overflow:hidden;position:relative;
+  border-radius:6px;
+}
+.receipt.office{border:2px solid var(--blue)}
+.receipt.parents{border:2px solid var(--teal)}
+
+/* ── TOP LABEL BAR ── */
+.rc-bar{
+  padding:4px 13px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.office .rc-bar{background:linear-gradient(90deg,var(--navy),var(--blue))}
+.parents .rc-bar{background:linear-gradient(90deg,#064e63,var(--teal))}
+.rc-bar-left{display:flex;align-items:center;gap:8px}
+.rc-bar-label{font-size:7.5pt;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#fff}
+.rc-bar-badge{
+  font-size:6pt;font-weight:800;text-transform:uppercase;letter-spacing:.6px;
+  padding:2px 8px;border-radius:8px;color:#fff;
+  border:1.5px solid rgba(255,255,255,.5);
+}
+.rc-bar-rcno{font-size:7pt;font-weight:700;color:rgba(255,255,255,.9)}
+.rc-bar-rcno b{color:#ffe08a;font-weight:800}
+
+/* ── SCHOOL HEADER ── */
+.rc-hdr{
+  padding:7px 12px 6px;display:flex;align-items:center;gap:11px;
+  border-bottom:1.5px solid;flex-shrink:0;background:#fff;
+}
+.office .rc-hdr{border-color:#bdd0f4}
+.parents .rc-hdr{border-color:#a5d8e6}
+.rc-logo{width:46px;height:46px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff}
+.office .rc-logo{border:2.5px solid var(--blue)}
+.parents .rc-logo{border:2.5px solid var(--teal)}
+.rc-logo img{width:100%;height:100%;object-fit:cover}
+.rc-school{flex:1}
+.rc-sname{font-family:'Playfair Display',serif;font-size:13.5pt;font-weight:800;line-height:1.2}
+.office .rc-sname{color:var(--navy)}.parents .rc-sname{color:#064e63}
+.rc-saddr{font-size:6.8pt;font-weight:600;color:var(--gray);margin-top:2px;line-height:1.45}
+.rc-grad{width:46px;height:46px;object-fit:contain;flex-shrink:0}
+
+/* ── ADMISSION BANNER ── */
+.rc-adm-banner{
+  padding:3px 13px;display:flex;align-items:center;justify-content:center;gap:10px;
+  flex-shrink:0;border-bottom:1.5px solid;
+}
+.office .rc-adm-banner{background:#f0f5ff;border-color:#bdd0f4}
+.parents .rc-adm-banner{background:#f0faff;border-color:#a5d8e6}
+.rc-adm-title{font-size:9pt;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;text-decoration:underline;text-underline-offset:3px}
+.office .rc-adm-title{color:var(--navy)}
+.parents .rc-adm-title{color:#064e63}
+
+/* ── INFO GRID ── */
+.rc-info{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-bottom:1.5px solid;flex-shrink:0;
+}
+.office .rc-info{border-color:#bdd0f4}
+.parents .rc-info{border-color:#a5d8e6}
+.rc-ic{
+  padding:3.5px 10px;border-bottom:1px solid #dde8f8;border-right:1px solid #dde8f8;
+  display:flex;align-items:baseline;gap:5px;line-height:1.45;background:#fff;
+}
+.guardian .rc-ic,.parents .rc-ic{border-color:#cce8ef}
+.rc-ic:nth-child(even){border-right:none}
+.rc-ic:nth-last-child(-n+2){border-bottom:none}
+.rc-lbl{font-size:6.8pt;font-weight:800;white-space:nowrap}
+.office .rc-lbl{color:var(--blue)}.parents .rc-lbl{color:var(--teal)}
+.rc-val{font-size:6.8pt;font-weight:700;color:var(--navy)}
+
+/* ── FEE TABLE ── */
+.rc-tw{flex:1;overflow:hidden}
+.rc-tbl{width:100%;border-collapse:collapse}
+.rc-tbl thead th{
+  font-size:7pt;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+  padding:5px 10px;text-align:left;color:#fff;
+}
+.office .rc-tbl thead tr{background:linear-gradient(90deg,var(--navy),var(--blue))}
+.parents .rc-tbl thead tr{background:linear-gradient(90deg,#064e63,var(--teal))}
+.rc-tbl thead th:first-child{text-align:center;width:28px}
+.rc-tbl thead th:last-child{text-align:right;width:72px}
+.rc-tbl tbody td{padding:4px 10px;border-bottom:1px solid #e2eaf8;font-size:7.5pt;font-weight:600;color:var(--navy);vertical-align:middle}
+.rc-tbl tbody td:first-child{text-align:center;font-weight:800}
+.office .rc-tbl tbody td:first-child{color:var(--blue)}.parents .rc-tbl tbody td:first-child{color:var(--teal)}
+.rc-tbl tbody td:last-child{text-align:right;font-weight:800}
+.rc-tbl .emp td{height:10px;border-color:#edf2fc}
+/* tfoot */
+.rc-tbl tfoot td{padding:4px 10px;font-size:7.8pt;font-weight:700;border-top:1px solid}
+.office .rc-tbl tfoot td{border-color:#bdd0f4}.parents .rc-tbl tfoot td{border-color:#a5d8e6}
+.rc-tbl tfoot td:first-child{text-align:right;padding-right:10px;font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.rc-tbl tfoot td:last-child{text-align:right;font-size:9pt;font-weight:800}
+.rc-tbl .st-row td{border-top:2px solid}
+.office .rc-tbl .st-row td{border-color:var(--blue);color:var(--blue)}
+.parents .rc-tbl .st-row td{border-color:var(--teal);color:var(--teal)}
+.rc-tbl .pd-row td{color:var(--green)}
+.pd-tag{display:inline;font-size:6pt;font-weight:800;border:1.5px solid var(--green);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px}
+.rc-tbl .du-row td{color:var(--red)}
+.du-tag{display:inline;font-size:6pt;font-weight:800;border:1.5px dashed var(--red);color:var(--red);padding:1px 5px;border-radius:3px;margin-left:4px}
+
+/* ── FOOTER ── */
+.rc-ftr{
+  padding:5px 12px 6px;display:flex;align-items:flex-end;justify-content:space-between;
+  flex-shrink:0;background:#fff;
+}
+.office .rc-ftr{border-top:1.5px dashed var(--blue)}
+.parents .rc-ftr{border-top:1.5px dashed var(--teal)}
+.rc-fnote{font-size:6pt;font-weight:600;color:var(--gray);line-height:1.7}
+.office .rc-fnote b{color:var(--blue);font-weight:800}.parents .rc-fnote b{color:var(--teal);font-weight:800}
+.rc-sig-line{width:80px;border-bottom:1.5px solid var(--navy);margin:0 auto 2px}
+.rc-sig-lbl{font-size:6pt;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;text-align:center}
+
+/* ── CUT LINE ── */
+.cut{display:flex;align-items:center;gap:8px;margin:6mm 0;color:var(--gray);font-size:7pt;font-weight:700}
+.cut-line{flex:1;border-top:2px dashed #93a3b8}
+.cut i{font-size:10pt}
+
+/* ── PRINT ── */
+@media print{
+  @page{size:A4;margin:10mm 12mm}
+  body{background:#fff;padding:0}
+  .ctrl{display:none!important}
+  .a4-outer{display:block}
+  .a4{width:auto;padding:0;box-shadow:none}
+  .cut{margin:4.5mm 0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- CONTROL BAR -->
+<div class="ctrl">
+  <div class="ctrl-left">
+    <div class="ctrl-icon"><i class="fas fa-user-plus"></i></div>
+    <div>
+      <div class="ctrl-title">Admission Payment Receipt</div>
+      <div class="ctrl-sub">A4 · Office Copy + Parents Copy · Both on one page</div>
+    </div>
+  </div>
+  <div class="ctrl-btns">
+    <button class="cbtn cbtn-wa" id="waBtn" onclick="shareWithPDF()">
+      <i class="fab fa-whatsapp"></i> WhatsApp + PDF
+    </button>
+    <button class="cbtn cbtn-print" onclick="window.print()">
+      <i class="fas fa-print"></i> Print
+    </button>
+  </div>
+</div>
+
+<div class="a4-outer">
+  <div class="a4" id="a4Page"></div>
+</div>
+
+<script>
+/* ── SCHOOL DATA ── */
+const school={
+  name:'Hazrat Ali Academy',
+  addr:'Chandwara Branch Muslim Club Campus, Pakki Sarai Chandwara, Muzaffarpur',
+  phone:'9102277998, 9835281616',
+  udise:'10140614302',
+  session:'2025-2026',
+  logo:'https://decentdemo.in/school/images/school-logo.png',
+  grad:'https://cdn-icons-png.flaticon.com/128/3048/3048127.png',
+};
+
+/* ── ADMISSION RECEIPT DATA ── */
+const adm={
+  receiptNo:   'ADM-2025-00142',
+  admDate:     '05-04-2025',
+  session:     '2025-2026',
+  studentName: 'RAHUL KUMAR SINGH',
+  fatherName:  'SANTOSH KUMAR SINGH',
+  motherName:  'ANITA DEVI',
+  dob:         '14-08-2016',
+  gender:      'Male',
+  category:    'OBC',
+  cls:         'VI',
+  section:     'A',
+  stdId:       'SID-NEW',
+  admNo:       '5890',
+  rollNo:      '—',       /* assigned after formal admission */
+  regNo:       '2161204202192113001',
+  mobile:      '9876543210',
+  address:     'Ward No. 5, Chandwara, Muzaffarpur – 843301',
+  payMode:     'Cash',
+  payDate:     '05-04-2025',
+  /* fee items */
+  items:[
+    {particular:'Admission Fee',           amount:2000},
+    {particular:'Registration / Form Fee', amount:500},
+    {particular:'Tuition Fee (April)',     amount:1200},
+    {particular:'Examination Fund',        amount:300},
+    {particular:'Development Fee',         amount:500},
+    {particular:'Smart Card / ID Card',    amount:150},
+  ],
+  subTotal: 4650,
+  paid:     4650,
+  dues:     0,
+};
+
+const R=n=>'₹'+Number(n).toLocaleString('en-IN');
+
+function ic(lbl,val){
+  return`<div class="rc-ic"><span class="rc-lbl">${lbl} :</span><span class="rc-val">${val||'—'}</span></div>`;
+}
+
+function buildHalf(type){
+  const isOff=type==='office';
+  const barLabel=isOff?'🏫  FOR OFFICE COPY':'👨‍👩‍👦  FOR PARENTS COPY';
+  const badgeText=isOff?'OFFICE':'PARENTS';
+
+  const rows=adm.items.map((it,i)=>`<tr>
+    <td>${i+1}</td><td>${it.particular}</td><td>${R(it.amount)}</td>
+  </tr>`).join('');
+
+  const empN=Math.max(0,4-adm.items.length);
+  const emp='<tr class="emp"><td></td><td>&nbsp;</td><td></td></tr>'.repeat(empN);
+
+  return`
+  <div class="receipt ${type}">
+
+    <!-- LABEL BAR -->
+    <div class="rc-bar">
+      <div class="rc-bar-left">
+        <span class="rc-bar-label">${barLabel}</span>
+        <span class="rc-bar-badge">${badgeText}</span>
+      </div>
+      <span class="rc-bar-rcno">Receipt No. : <b>${adm.receiptNo}</b></span>
+    </div>
+
+    <!-- SCHOOL HEADER -->
+    <div class="rc-hdr">
+      <div class="rc-logo">
+        <img src="${school.logo}" alt="logo" onerror="this.style.display='none'">
+      </div>
+      <div class="rc-school">
+        <div class="rc-sname">${school.name}</div>
+        <div class="rc-saddr">${school.addr}<br>${school.phone}</div>
+      </div>
+      <img src="${school.grad}" class="rc-grad" alt="" onerror="this.style.display='none'">
+    </div>
+
+    <!-- ADMISSION BANNER -->
+    <div class="rc-adm-banner">
+      <div class="rc-adm-title">✦ Admission Payment Receipt ✦</div>
+    </div>
+
+    <!-- INFO GRID — 12 cells / 6 rows -->
+    <div class="rc-info">
+      ${ic('UDISE No.',school.udise)}
+      ${ic('Session',adm.session)}
+      ${ic('Student Name',adm.studentName)}
+      ${ic("Father's Name",adm.fatherName)}
+      ${ic("Mother's Name",adm.motherName)}
+      ${ic('Date of Birth',adm.dob)}
+      ${ic('Class Admitted',adm.cls+' – '+adm.section)}
+      ${ic('Category',adm.category+' / '+adm.gender)}
+      ${ic('Adm. No.',adm.admNo)}
+      ${ic('Std. ID',adm.stdId)}
+      ${ic('Admission Date',adm.admDate)}
+      ${ic('Mobile No.',adm.mobile)}
+      ${ic('Payment Date',adm.payDate)}
+      ${ic('Payment Mode',adm.payMode)}
+      ${ic('Registration No.',adm.regNo)}
+      ${ic('Address',adm.address)}
+    </div>
+
+    <!-- FEE TABLE -->
+    <div class="rc-tw">
+      <table class="rc-tbl">
+        <thead><tr>
+          <th>S.No.</th>
+          <th>Fee Head / Particular</th>
+          <th style="width:72px">Amount</th>
+        </tr></thead>
+        <tbody>${rows}${emp}</tbody>
+        <tfoot>
+          <tr class="st-row">
+            <td colspan="2">Sub Total</td>
+            <td>${R(adm.subTotal)}</td>
+          </tr>
+          <tr class="pd-row">
+            <td colspan="2">Amount Paid <span class="pd-tag">PAID IN FULL</span></td>
+            <td>${R(adm.paid)}</td>
+          </tr>
+          <tr class="du-row">
+            <td colspan="2">Balance Dues <span class="du-tag">${adm.dues===0?'NIL':'DUE'}</span></td>
+            <td>${adm.dues===0?'NIL':R(adm.dues)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="rc-ftr">
+      <div class="rc-fnote">
+        <b>${school.name}</b> · Computer generated admission receipt<br>
+        UDISE : ${school.udise} &nbsp;·&nbsp; ${school.phone}<br>
+        This receipt is valid proof of admission payment.
+      </div>
+      <div style="text-align:center">
+        <div class="rc-sig-line"></div>
+        <div class="rc-sig-lbl">Principal / Authorised Signatory</div>
+      </div>
+    </div>
+
+  </div>`;
+}
+
+function render(){
+  document.getElementById('a4Page').innerHTML=`
+    ${buildHalf('office')}
+    <div class="cut">
+      <div class="cut-line"></div>
+      <i class="fas fa-cut"></i>
+      <span>CUT HERE &nbsp;·&nbsp; PARENTS COPY BELOW</span>
+      <div class="cut-line"></div>
+    </div>
+    ${buildHalf('parents')}
+  `;
+}
+render();
+
+/* ── WHATSAPP + PDF ── */
+async function shareWithPDF(){
+  const btn=document.getElementById('waBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Generating…';
+  try{
+    const canvas=await html2canvas(document.getElementById('a4Page'),{scale:2.2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const w=210,h=(canvas.height*210)/canvas.width;
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,w,Math.min(h,297));
+    const blob=pdf.output('blob');
+    const fname='Admission_Receipt_'+adm.receiptNo.replace(/\//g,'-')+'_'+adm.studentName.replace(/\s+/g,'_')+'.pdf';
+    const file=new File([blob],fname,{type:'application/pdf'});
+    const msg=buildMsg();
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],text:msg,title:'Admission Receipt'});
+    } else {
+      const url=URL.createObjectURL(blob);
+      Object.assign(document.createElement('a'),{href:url,download:fname}).click();
+      setTimeout(()=>{URL.revokeObjectURL(url);window.open('https://wa.me/91'+adm.mobile+'?text='+encodeURIComponent(msg),'_blank');},800);
+    }
+  }catch(e){alert('Error: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fab fa-whatsapp"></i> WhatsApp + PDF';}
+}
+
+function buildMsg(){
+  const lines=adm.items.map((it,i)=>`${i+1}. ${it.particular} : ${R(it.amount)}`).join('\n');
+  return`🏫 *ADMISSION RECEIPT — ${school.name}*
+──────────────────────────────
+🎉 Congratulations on Admission!
+──────────────────────────────
+👤 Student    : *${adm.studentName}*
+👨 Father     : ${adm.fatherName}
+🎓 Class      : ${adm.cls} – ${adm.section}
+📋 Adm. No.   : ${adm.admNo}
+🧾 Receipt No : ${adm.receiptNo}
+📅 Date       : ${adm.admDate}
+💳 Mode       : ${adm.payMode}
+──────────────────────────────
+${lines}
+──────────────────────────────
+💰 Total Paid : *${R(adm.paid)}*
+✅ Dues       : ${adm.dues===0?'NIL':R(adm.dues)}
+──────────────────────────────
+📞 ${school.phone}
+_(PDF receipt is attached above)_`;
+}
+</script>
+</body>
+</html>

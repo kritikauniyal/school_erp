@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Admission;
+use App\Models\Student;
 use Carbon\Carbon;
 
 class AdmissionReportController extends Controller
@@ -12,34 +12,43 @@ class AdmissionReportController extends Controller
     public function index(Request $request)
     {
         $session = $request->input('session', '2025-2026');
-        $fromDate = $request->input('from_date', date('Y-m-01', strtotime('-1 month'))); // Default to last 2 months
-        $toDate = $request->input('to_date', date('Y-m-t'));
+        $fromDate = $request->input('from_date'); 
+        $toDate = $request->input('to_date');
         $className = $request->input('class_name');
 
-        // Query Students instead of Admissions for a full report of admitted students
-        $query = \App\Models\Student::with(['classInfo', 'studentFees']);
+        $classes = \App\Models\SchoolClass::orderBy('id')->get();
 
-        // Apply filters
-        $query->where('session', $session)
-              ->whereBetween('admission_date', [$fromDate, $toDate]);
+        // Query Student model to ensure sync with Student Admission Manager
+        $query = Student::with(['classInfo', 'studentFees']);
+
+        // Apply Session Filter
+        if ($session) {
+            $query->where('session', $session);
+        }
+
+        // Apply Date Range Filter if provided
+        if ($fromDate && $toDate) {
+            $query->whereBetween('admission_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('admission_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('admission_date', '<=', $toDate);
+        }
 
         if ($className) {
-            $query->whereHas('classInfo', function ($q) use ($className) {
+            $query->whereHas('classInfo', function($q) use ($className) {
                 $q->where('name', 'LIKE', "%{$className}%");
             });
         }
 
-        $students = $query->get();
+        $studentRecords = $query->get();
 
-        // Group and summarize by class
         $summaryData = [];
         $admissions = [];
 
-        foreach ($students as $student) {
-            $currClass = $student->classInfo ? $student->classInfo->name : 'Unknown';
-            
-            // Calculate total admission fee for this student
-            $studentTotalFee = $student->studentFees->sum('amount');
+        foreach ($studentRecords as $student) {
+            $currClass = $student->classInfo->name ?? 'N/A';
+            $feeCollected = $student->studentFees->sum('amount');
 
             if (!isset($summaryData[$currClass])) {
                 $summaryData[$currClass] = [
@@ -48,74 +57,21 @@ class AdmissionReportController extends Controller
                 ];
             }
             $summaryData[$currClass]['students'] += 1;
-            $summaryData[$currClass]['totalFee'] += $studentTotalFee;
+            $summaryData[$currClass]['totalFee'] += $feeCollected;
 
-            // Map student for consistent variable in view
             $admissions[] = (object)[
-                'date' => $student->admission_date,
+                'date' => $student->admission_date ? \Carbon\Carbon::parse($student->admission_date)->format('Y-m-d') : null,
                 'student_name' => $student->student_name,
                 'class_name' => $currClass,
-                'fee_collected' => $studentTotalFee,
+                'fee_collected' => $feeCollected,
                 'session' => $student->session,
-                'status' => 'Admitted',
+                'status' => $student->is_active ? 'Active' : 'Inactive',
                 'admission_no' => $student->admission_no,
             ];
         }
 
         ksort($summaryData);
 
-        return view('pages.enquiry.admission-report', compact('summaryData', 'admissions'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'date' => 'required|date',
-            'student_name' => 'required|string|max:255',
-            'class_name' => 'required|string|max:50',
-            'fee_collected' => 'required|numeric|min:0',
-            'session' => 'required|string|max:50',
-            'status' => 'required|string|max:50'
-        ]);
-
-        Admission::create($request->all());
-
-        return redirect()->back()->with('success', 'Admission record created successfully.');
-    }
-
-    public function show($id)
-    {
-        $admission = Admission::findOrFail($id);
-        return response()->json(['success' => true, 'data' => $admission]);
-    }
-
-    public function edit($id)
-    {
-        $admission = Admission::findOrFail($id);
-        return response()->json(['success' => true, 'data' => $admission]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $admission = Admission::findOrFail($id);
-
-        $request->validate([
-            'date' => 'required|date',
-            'student_name' => 'required|string|max:255',
-            'class_name' => 'required|string|max:50',
-            'fee_collected' => 'required|numeric|min:0',
-            'session' => 'required|string|max:50',
-            'status' => 'required|string|max:50'
-        ]);
-
-        $admission->update($request->all());
-
-        return redirect()->back()->with('success', 'Admission record updated successfully.');
-    }
-
-    public function destroy($id)
-    {
-        Admission::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Admission record deleted successfully.');
+        return view('pages.enquiry.admission-report', compact('summaryData', 'admissions', 'classes'));
     }
 }

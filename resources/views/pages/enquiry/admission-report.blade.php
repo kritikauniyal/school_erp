@@ -37,24 +37,25 @@
             <div class="form-group">
                 <label>Academic Session</label>
                 <select name="session">
-                    <option value="2025-2026" {{ request('session') == '2025-2026' ? 'selected' : '' }}>2025-2026</option>
-                    <option value="2024-2025" {{ request('session') == '2024-2025' ? 'selected' : '' }}>2024-2025</option>
+                    <option value="" {{ request('session') == '' ? 'selected' : '' }}>Select Session</option>
+                    <option value="2025-2026" {{ request('session', '2025-2026') == '2025-2026' ? 'selected' : '' }}>2025-2026</option>
+                    <option value="2026-2027" {{ request('session') == '2026-2027' ? 'selected' : '' }}>2026-2027</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>From Date</label>
-                <input type="date" name="from_date" value="{{ request('from_date', date('Y-m-01', strtotime('-1 month'))) }}">
+                <input type="date" name="from_date" value="{{ request('from_date') }}">
             </div>
             <div class="form-group">
                 <label>To Date</label>
-                <input type="date" name="to_date" value="{{ request('to_date', date('Y-m-t')) }}">
+                <input type="date" name="to_date" value="{{ request('to_date') }}">
             </div>
             <div class="form-group">
                 <label>Grade/Class</label>
                 <select name="class_name">
                     <option value="">All Classes</option>
-                    @foreach(['Nursery', 'KG', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'] as $cls)
-                        <option value="{{ $cls }}" {{ request('class_name') == $cls ? 'selected' : '' }}>{{ $cls }}</option>
+                    @foreach($classes as $cls)
+                        <option value="{{ $cls->name }}" {{ request('class_name') == $cls->name ? 'selected' : '' }}>{{ $cls->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -125,8 +126,54 @@
             </tbody>
         </table>
     </div>
-</div>
+<!-- Detailed Admission List -->
+<div class="card" style="margin-top: 25px;">
+    <div class="card-head">
+        <div>
+            <h2><i class="fas fa-list"></i> Detailed Admission List</h2>
+            <p style="font-size: .82rem; color: var(--txt3); margin-top: 4px;">Individual student records for the selected period</p>
+        </div>
+    </div>
 
+    <div class="table-responsive">
+        <table class="data-table" id="admissionDetailTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Adm No.</th>
+                    <th>Student Name</th>
+                    <th>Grade/Class</th>
+                    <th>Session</th>
+                    <th>Fee (₹)</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($admissions as $adm)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($adm->date)->format('d-M-Y') }}</td>
+                        <td class="fw-700" style="color: var(--blue);">{{ $adm->admission_no }}</td>
+                        <td class="fw-600">{{ $adm->student_name }}</td>
+                        <td><span class="badge badge-outline-blue">{{ $adm->class_name }}</span></td>
+                        <td>{{ $adm->session }}</td>
+                        <td class="fw-700">₹{{ number_format($adm->fee_collected, 2) }}</td>
+                        <td class="text-center">
+                            @if($adm->status == 'Converted to Student')
+                                <span class="badge badge-blue">Enrolled</span>
+                            @else
+                                <span class="badge badge-orange">{{ $adm->status }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">No detail records to display.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection
 
 @push('scripts')

@@ -10,6 +10,7 @@ class Student extends Model
 
     protected $casts = [
         'dob' => 'date',
+        'admission_date' => 'date',
     ];
 
     // belongs to login user

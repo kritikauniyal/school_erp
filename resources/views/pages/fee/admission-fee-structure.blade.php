@@ -114,24 +114,28 @@
     </div>
 </div>
 
-<!-- History Modal -->
-<div class="modal-overlay" id="historyModal">
-    <div class="modal">
+            <div class="modal-overlay" id="historyModal">
+    <div class="modal" style="max-width: 98%; width: 98%;">
         <div class="modal-head">
-            <h3>Configuration Log</h3>
+            <h3><i class="fas fa-history"></i> Configuration & Modification Log</h3>
             <button class="modal-close" id="closeHistoryModal">&times;</button>
         </div>
-        <div class="modal-body">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Last Updated</th>
-                    </tr>
-                </thead>
-                <tbody id="historyBody"></tbody>
-            </table>
+        <div class="modal-body" style="padding: 0;">
+            <div class="table-wrap">
+                <table class="data-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>Previous</th>
+                            <th>New Value</th>
+                            <th>Date/Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -140,53 +144,55 @@
 @push('scripts')
 <script>
     (function() {
-        const classes = ["Nursery", "KG", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-        let feeTypes = [
-            { id: 1, name: "Registration Fee", defaultAmount: 500 },
-            { id: 2, name: "Admission Fee", defaultAmount: 20000 },
-            { id: 3, name: "Annual Charges", defaultAmount: 1000 },
-            { id: 4, name: "Exam Fee", defaultAmount: 1000 },
-            { id: 5, name: "Transport Fee", defaultAmount: 2000 }
-        ];
-        let lastUpdate = {};
-        feeTypes.forEach(ft => lastUpdate[ft.id] = "28 Feb 2026, 11:45 AM");
-
-        let amountsArr = classes.map(c => feeTypes.map(f => f.defaultAmount));
+        const classes = {!! json_encode($classes->pluck('name')) !!};
+        let feeTypes = {!! json_encode($feeTypes) !!};
+        let amountsArr = {!! json_encode($amounts) !!};
 
         function renderFeeTypes() {
             const container = document.getElementById('feeTypesContainer');
-            container.innerHTML = feeTypes.map(ft => `
-                <div class="ft-card">
+            container.innerHTML = feeTypes.length ? feeTypes.map(ft => `
+                <div class="ft-card" data-id="${ft.id}">
                     <span class="ft-name">${ft.name}</span>
                     <div class="ft-acts">
                         <i class="fas fa-edit" onclick="openFeeModal(${ft.id})"></i>
                         <i class="fas fa-trash" onclick="deleteFeeType(${ft.id})"></i>
                     </div>
                 </div>
-            `).join('');
+            `).join('') : '<p style="padding: 20px; color: var(--txt3); font-style: italic;">No fee categories defined. Click "Add New Category" to start.</p>';
         }
 
         function renderTable() {
             const thead = document.getElementById('tableHeader');
             const tbody = document.getElementById('tableBody');
 
+            if (!feeTypes.length) {
+                thead.innerHTML = '';
+                tbody.innerHTML = '<tr><td colspan="100%" style="text-align: center; padding: 40px; color: var(--txt3);">Please add at least one fee category above first.</td></tr>';
+                return;
+            }
+
             thead.innerHTML = `<tr><th>Grade/Class</th>${feeTypes.map(ft => `<th>${ft.name}</th>`).join('')}<th>Total Amount</th></tr>`;
 
-            tbody.innerHTML = classes.map((cls, cIdx) => {
+            tbody.innerHTML = classes.map((cls) => {
                 let rowTotal = 0;
-                const cells = feeTypes.map((ft, fIdx) => {
-                    const val = amountsArr[cIdx][fIdx] || 0;
-                    rowTotal += val;
-                    return `<td><input type="number" class="amt-in" oninput="updateRow(${cIdx}, ${fIdx}, this.value)" value="${val}"></td>`;
+                const cells = feeTypes.map((ft) => {
+                    const val = amountsArr[cls] ? (amountsArr[cls][ft.id] || 0) : 0;
+                    rowTotal += parseFloat(val);
+                    return `<td><input type="number" class="amt-in" oninput="updateRow('${cls}', ${ft.id}, this.value)" value="${val}"></td>`;
                 }).join('');
-                return `<tr><td class="fw-700">${cls}</td>${cells}<td class="tot-col" id="total-${cIdx}">₹${rowTotal.toLocaleString()}</td></tr>`;
+                return `<tr><td class="fw-700">${cls}</td>${cells}<td class="tot-col" id="total-${cls.replace(/\s+/g, '-')}">₹${rowTotal.toLocaleString()}</td></tr>`;
             }).join('');
         }
 
-        window.updateRow = function(cIdx, fIdx, val) {
-            amountsArr[cIdx][fIdx] = parseFloat(val) || 0;
-            const rowTotal = amountsArr[cIdx].reduce((a, b) => a + b, 0);
-            document.getElementById(`total-${cIdx}`).innerText = `₹${rowTotal.toLocaleString()}`;
+        window.updateRow = function(cls, ftId, val) {
+            if (!amountsArr[cls]) amountsArr[cls] = {};
+            amountsArr[cls][ftId] = parseFloat(val) || 0;
+            
+            let rowTotal = 0;
+            feeTypes.forEach(ft => {
+                rowTotal += (amountsArr[cls][ft.id] || 0);
+            });
+            document.getElementById(`total-${cls.replace(/\s+/g, '-')}`).innerText = `₹${rowTotal.toLocaleString()}`;
         };
 
         const modal = document.getElementById('feeTypeModal');
@@ -198,7 +204,7 @@
                 const ft = feeTypes.find(f => f.id === id);
                 document.getElementById('modalTitle').innerText = 'Edit Category';
                 document.getElementById('feeNameInput').value = ft.name;
-                document.getElementById('defaultAmountInput').value = ft.defaultAmount;
+                document.getElementById('defaultAmountInput').value = ft.default_amount || ft.defaultAmount;
             } else {
                 document.getElementById('modalTitle').innerText = 'New Category';
                 document.getElementById('feeNameInput').value = '';
@@ -215,33 +221,111 @@
             const def = parseFloat(document.getElementById('defaultAmountInput').value) || 0;
             if (!name) return;
 
-            if (editingId) {
-                const ft = feeTypes.find(f => f.id === editingId);
-                ft.name = name; ft.defaultAmount = def;
-            } else {
-                const newId = Date.now();
-                feeTypes.push({ id: newId, name, defaultAmount: def });
-                amountsArr.forEach(row => row.push(def));
-            }
-            renderFeeTypes(); renderTable(); modal.classList.remove('open');
+            const url = editingId 
+                ? `{{ url('admin/admission-fee-structure/fee-type') }}/${editingId}`
+                : `{{ route('admin.admission-fee-structure.store-fee-type') }}`;
+            const method = editingId ? 'PUT' : 'POST';
+
+            Swal.fire({ title: 'Saving Category...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ name, default_amount: def })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({ icon: 'success', title: 'Confirmed', text: data.message, timer: 1500, showConfirmButton: false })
+                    .then(() => window.location.reload());
+                } else {
+                    Swal.fire('Error', data.message || 'Check consolidation failed.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Communication with server failed.', 'error');
+            });
         };
 
         window.deleteFeeType = function(id) {
-            if(confirm('Delete this category?')) {
-                const idx = feeTypes.findIndex(f => f.id === id);
-                feeTypes.splice(idx, 1);
-                amountsArr.forEach(row => row.splice(idx, 1));
-                renderFeeTypes(); renderTable();
-            }
+            Swal.fire({
+                title: 'Delete this category?',
+                text: "This will remove this fee type from all classes!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--red)',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`{{ url('admin/admission-fee-structure/fee-type') }}/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            window.location.reload();
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    });
+                }
+            });
         };
 
-        document.getElementById('saveAllBtn').onclick = () => alert('Configured Admission Fee Structure Saved!');
+        document.getElementById('saveAllBtn').onclick = () => {
+            Swal.fire({ title: 'Saving Configuration...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            fetch("{{ route('admin.admission-fee-structure.save-structure') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ amounts: amountsArr })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({ icon: 'success', title: 'Success', text: data.message, timer: 2000, showConfirmButton: false });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Failed to save configuration.', 'error');
+            });
+        };
         
         document.getElementById('historyBtn').onclick = () => {
-             document.getElementById('historyBody').innerHTML = feeTypes.map(ft => `
-                <tr><td>${ft.name}</td><td><span class="badge badge-blue">Active</span></td><td class="text-muted">${lastUpdate[ft.id] || 'N/A'}</td></tr>
-             `).join('');
-             document.getElementById('historyModal').classList.add('open');
+             Swal.fire({ title: 'Loading History...', didOpen: () => Swal.showLoading() });
+             fetch("{{ url('admin/admission-fee-structure?get_history=1') }}")
+                .then(res => res.json())
+                .then(data => {
+                    Swal.close();
+                    if(data.success) {
+                        document.getElementById('historyBody').innerHTML = data.logs.length ? data.logs.map(log => {
+                            const oldV = log.old_values ? Object.entries(log.old_values).map(([k,v]) => `<div style="font-size:0.7rem; word-break: break-all;"><b>${k}:</b> ${v}</div>`).join('') : '-';
+                            const newV = log.new_values ? Object.entries(log.new_values).map(([k,v]) => `<div style="font-size:0.7rem; word-break: break-all;"><b>${k}:</b> ${v}</div>`).join('') : '-';
+                            return `
+                                <tr>
+                                    <td style="width: 120px;"><div class="fw-700">${log.user?.name || 'Admin'}</div></td>
+                                    <td style="width: 100px;"><span class="badge ${log.action === 'created' ? 'badge-green' : 'badge-blue'}">${log.action.toUpperCase()}</span></td>
+                                    <td style="max-width: 200px; font-size: 0.8rem; color: #64748b">${log.reason || 'N/A'}</td>
+                                    <td>${oldV}</td>
+                                    <td><div style="color:var(--blue); font-weight:600">${newV}</div></td>
+                                    <td class="text-muted" style="white-space:nowrap; width: 180px;">${new Date(log.created_at).toLocaleString()}</td>
+                                </tr>
+                            `;
+                        }).join('') : '<tr><td colspan="100%" class="text-center py-5">No modification logs found.</td></tr>';
+                        document.getElementById('historyModal').classList.add('open');
+                    }
+                });
         };
         document.getElementById('closeHistoryModal').onclick = () => document.getElementById('historyModal').classList.remove('open');
 

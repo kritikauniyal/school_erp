@@ -5,12 +5,17 @@
 @section('page-title','Collect Fee')
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
   --blue:#488fe4;--orange:#ff913b;--blu:#e3f0ff;--olt:#fff4ea;
   --bg:#f5f9ff;--dark:#1e293b;--muted:#5f6b7a;--sidebar:#435471;
   --sh:0 4px 18px rgba(0,20,50,.07);
   --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--purple:#7c3aed;
+  --navy: #1e3a5f; --teal: #0891b2; --gold: #92400e; --gray: #475569;
 }
 
 ::-webkit-scrollbar{width:7px;height:7px}
@@ -207,41 +212,75 @@ tbody tr:hover td{background:#f8fbff}
 .pm-sumrow.total-row .psr-v{color:var(--orange);font-size:1.03rem;font-weight:800}
 .pm-sumrow.dues-row .psr-v{color:var(--red)}
 
-/* receipt - exact match to reference */
-.rc-bg{display:none;position:fixed;inset:0;background:rgba(8,18,46,.65);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
-.rc-bg.open{display:flex}
-.rc-m{background:#fff;border-radius:20px;padding:22px;width:min(460px,92vw);box-shadow:0 20px 60px rgba(0,20,60,.25);animation:popIn .25s ease;max-height:92vh;overflow-y:auto}
-.rc-hdr{text-align:center;border-bottom:2px dashed #e0e7f0;padding-bottom:11px;margin-bottom:11px}
-.rc-hdr h2{font-size:.98rem;font-weight:800;color:var(--blue);display:flex;align-items:center;justify-content:center;gap:8px}
-.rc-hdr p{font-size:.71rem;color:var(--muted);margin-top:3px}
-.rcrow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dotted #e0e7f0;font-size:.8rem}
-.rcrow:last-of-type{border-bottom:none}
-.rcrow .rl{color:var(--muted);font-weight:500}
-.rcrow .rv{font-weight:700;color:var(--dark)}
-.rc-lbl{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:9px 0 4px;border-bottom:1px dotted #e0e7f0;margin-bottom:3px}
-.rc-sep{border:none;border-top:2px solid var(--blue);margin:8px 0 3px}
-.rc-total{display:flex;justify-content:space-between;font-size:.84rem;padding:5px 0 3px;font-weight:700;color:var(--dark)}
-.rc-total .rv{color:var(--green);font-size:.95rem}
-.rc-bal{display:flex;justify-content:space-between;font-size:.78rem;padding:3px 0}
-.rc-foot{text-align:center;font-size:.62rem;color:var(--muted);margin-top:10px;line-height:1.5}
-.mxbtn{background:transparent;border:none;color:var(--muted);font-size:.94rem;cursor:pointer;line-height:1}
-.btn-prc{background:var(--blue);color:#fff;border:none;padding:10px;border-radius:24px;font-weight:700;font-size:.79rem;cursor:pointer;transition:.2s;margin-top:12px;width:100%;display:flex;align-items:center;justify-content:center;gap:7px}
-.btn-prc:hover{background:var(--orange)}
+/* RECEIPT CSS */
+.a4-outer{display:flex;justify-content:center;padding: 10px; background: #f0f2f5;}
+.a4{width:210mm;background:#fff;box-shadow:0 10px 44px rgba(0,0,0,.18);padding:10mm 11mm; position: relative;}
+.receipt{width:100%;height:130mm;display:flex;flex-direction:column;overflow:hidden;position:relative;border-radius:6px;}
+.receipt.office{border:2px solid var(--blue)}
+.receipt.guardian{border:2px solid var(--teal)}
+.rc-bar{padding:4px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.office .rc-bar{background:linear-gradient(90deg,var(--navy),var(--blue));border-bottom:1px solid var(--blue);}
+.guardian .rc-bar{background:linear-gradient(90deg,var(--teal),#0e7490);border-bottom:1px solid var(--teal);}
+.rc-bar-label{font-size:7.5pt;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#fff;}
+.rc-bar-rcno{font-size:7pt;font-weight:700;color:rgba(255,255,255,.9);}
+.rc-bar-rcno b{color:#ffe08a;font-weight:800}
+.rc-hdr{padding:7px 12px 6px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.rc-logo{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;}
+.office .rc-logo{border:2.5px solid var(--blue)}
+.guardian .rc-logo{border:2.5px solid var(--teal)}
+.rc-logo img{width:100%;height:100%;object-fit:cover}
+.rc-school{flex:1}
+.rc-sname{font-family:'Playfair Display',serif;font-size:13.5pt;font-weight:800;line-height:1.2;}
+.office .rc-sname{color:var(--navy)}
+.guardian .rc-sname{color:#064e63}
+.rc-saddr{font-size:6.8pt;font-weight:600;color:var(--gray);margin-top:2px;line-height:1.45}
+.rc-grad{width:44px;height:44px;object-fit:contain;flex-shrink:0}
+.rc-session{padding:4px 12px;display:flex;flex-wrap:wrap;gap:0 20px;border-bottom:1.5px solid;flex-shrink:0;}
+.office .rc-session{background:#fff;border-color:#bdd0f4}
+.guardian .rc-session{background:#fff;border-color:#a5d8e6}
+.rc-sess-item{font-size:7.2pt;font-weight:600;color:var(--gray)}
+.rc-sess-item b{font-weight:800}
+.rc-info{display:grid;grid-template-columns:1fr 1fr;flex-shrink:0;border-bottom:1.5px solid}
+.office .rc-info{border-color:#bdd0f4}
+.guardian .rc-info{border-color:#a5d8e6}
+.rc-ic{padding:3.5px 10px;border-bottom:1px solid #dde8f8;border-right:1px solid #dde8f8;display:flex;align-items:baseline;gap:5px;line-height:1.4;background:#fff;}
+.rc-ic:nth-child(even){border-right:none;}
+.rc-lbl{font-size:6.8pt;font-weight:800;white-space:nowrap}
+.office .rc-lbl{color:var(--blue)}
+.guardian .rc-lbl{color:var(--teal)}
+.rc-val{font-size:6.8pt;font-weight:700;color:var(--navy)}
+.rc-tw{flex:1;overflow:hidden;padding:0 0}
+.rc-tbl{width:100%;border-collapse:collapse}
+.rc-tbl thead th{font-size:7pt;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:4.5px 10px;text-align:left;color:#fff;}
+.office .rc-tbl thead tr{background:linear-gradient(90deg,var(--navy),var(--blue))}
+.guardian .rc-tbl thead tr{background:linear-gradient(90deg,#064e63,var(--teal))}
+.rc-tbl tbody td{padding:3.5px 10px;border-bottom:1px solid #e2eaf8;font-size:7.5pt;font-weight:600;color:var(--navy);vertical-align:middle;}
+.rc-tbl tfoot td{padding:4px 10px;font-size:7.8pt;font-weight:700;border-top:1px solid;}
+.rc-tbl .st-row td{border-top:2px solid; color: var(--blue);}
+.rc-tbl .pd-row td{color:var(--green)}
+.rc-tbl .du-row td{color:var(--red)}
+.pd-tag{display:inline;font-size:6pt;font-weight:800;border:1.5px solid var(--green);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px;}
+.du-tag{display:inline;font-size:6pt;font-weight:800;border:1.5px dashed var(--red);color:var(--red);padding:1px 5px;border-radius:3px;margin-left:4px;}
+.rc-ftr{padding:5px 12px 6px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;}
+.rc-sig-line{width:80px;border-bottom:1.5px solid var(--navy);margin:0 auto 2px}
+.rc-sig-lbl{font-size:6pt;font-weight:800;color:var(--navy);text-transform:uppercase;text-align:center}
+.cut{display:flex;align-items:center;gap:8px;margin:6mm 0;font-size:7pt;font-weight:700;color:var(--gray);}
+.cut-line{flex:1;border-top:2px dashed #93a3b8}
+.receipt-modal-header{display: flex;justify-content: space-between;align-items: center;padding: 15px 20px;background: #fff;border-bottom: 1px solid #eee;position: sticky;top: 0;z-index: 100;}
+.receipt-modal-title{ font-size: 1.2rem; font-weight: 700; color: var(--navy); }
+.receipt-actions{ display: flex; gap: 10px; }
+.receipt-btn{padding: 8px 16px;border-radius: 6px;border: none;font-weight: 600;cursor: pointer;display: flex;align-items: center;gap: 8px;}
+.btn-print-receipt{ background: var(--blue); color: #fff; }
+.btn-wa-receipt{ background: #25d366; color: #fff; }
+.receipt-container{ max-height: 80vh; overflow-y: auto; padding: 20px; background: #f4f6f9; }
 
-/* SweetAlert2 z-index fix — appears above all modals */
-.swal2-container{ z-index:999999!important; }
-
-/* Print layout */
 @media print{
-  body > *:not(#rcBg){ display:none!important; }
-  #rcBg{ display:flex!important; position:static!important; background:none!important; padding:0!important; backdrop-filter:none!important; }
-  .rc-m{ box-shadow:none!important; border:none!important; width:100%!important; max-width:100%!important; }
-  .mxbtn, .btn-prc{ display:none!important; }
-}
-
-@media(max-width:768px){
-    .due-bg, .fp-bg, .pm-bg, .rc-bg { padding: 8px; }
-    .fp-box { width: 100% !important; border-radius: 18px; }
+  @page{size:A4;margin:10mm 11mm}
+  body > * { display: none !important; }
+  body > #receiptModal { display: block !important; position: absolute; left: 0; top: 0; }
+  .receipt-modal-header { display: none !important; }
+  .a4-outer { background: #fff; padding: 0; }
+  .a4 { box-shadow: none; width: auto; padding: 0; }
 }
 </style>
 @endpush
@@ -263,7 +302,7 @@ tbody tr:hover td{background:#f8fbff}
         <!-- CLASS PANEL -->
         <div id="classPanel">
             <div class="fr">
-                <div class="fg"><label>Class *</label><select id="classSelect"><option value="">-- Select Class --</option>@foreach($globalClasses as $class)<option value="{{ $class->id }}">{{ $class->name }}</option>@endforeach</select></div>
+                <div class="fg"><label>Class *</label><select id="classSelect" onchange="fetchSections(this.value)"><option value="">-- Select Class --</option>@foreach($globalClasses as $class)<option value="{{ $class->id }}">{{ $class->name }}</option>@endforeach</select></div>
                 <div class="fg"><label>Section</label><select id="sectionSelect"><option value="">-- All Sections --</option>@foreach($sections as $section)<option value="{{ $section->id }}">{{ $section->name }}</option>@endforeach</select></div>
                 <button class="sbtn" onclick="searchByClass()"><i class="fas fa-search"></i> Search</button>
             </div>
@@ -372,15 +411,14 @@ tbody tr:hover td{background:#f8fbff}
 
             <div class="msec">
                 <div class="msec-hdr">
-                    <h3><i class="fas fa-calendar-alt"></i> Month-wise Fee Details — All 12 Months</h3>
-                    <div class="msec-hint"><i class="fas fa-info-circle" style="color:var(--orange)"></i> Check rows to select multiple months for bulk payment</div>
+                    <h3><i class="fas fa-calendar-alt"></i> Month-wise Fee Details</h3>
                 </div>
                 <div class="tw">
                     <table class="mt">
                         <thead>
                             <tr>
                                 <th style="width:40px; text-align:center;"><div class="mchk" id="hallChk" onclick="toggleSelectAll()"></div></th>
-                                <th>#</th><th>Month</th><th>Fee Types</th><th>Total Fee</th><th>Fine</th><th>Net Payable</th><th>Paid</th><th>Balance</th><th>Pay. Date</th><th>Status</th><th>Actions</th>
+                                <th>#</th><th>Month</th><th>Total Fee</th><th>Fine</th><th>Net Payable</th><th>Status</th><th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="monthBody"></tbody>
@@ -398,79 +436,50 @@ tbody tr:hover td{background:#f8fbff}
                 <button class="m-close" onclick="closePm()"><i class="fas fa-times"></i></button>
             </div>
             <div class="pm-body">
-                <!-- Student mini info -->
                 <div class="pm-stu" id="pmStuInfo"></div>
-
-                <!-- Month list (for multi-month) -->
-                <div id="pmMultiList" style="display:none; margin-bottom:14px;">
-                    <div class="pm-months-header">Selected Months</div>
-                    <div class="pm-months-list" id="pmMonthList"></div>
-                </div>
-
-                <!-- Fee type selector -->
                 <div class="ft-section">
                     <div class="ft-section-label"><i class="fas fa-tags"></i> Select Fee Type(s) to Collect</div>
                     <div class="ft-grid" id="ftGrid"></div>
                 </div>
-
                 <hr class="pm-divider">
-
-                <!-- Summary -->
                 <div class="pm-sumrow"><span class="psr-l">Sub Total</span><span class="psr-v" id="pmSubTotal">₹0</span></div>
-                <div class="pm-sumrow"><span class="psr-l">Discount / Concession</span><span class="psr-v" style="color:var(--green)">₹0</span></div>
-                <div class="pm-sumrow total-row">
-                    <span class="psr-l"><i class="fas fa-shield-check"></i> Total Payable</span>
-                    <span class="psr-v" id="pmTotal">₹0</span>
-                </div>
-                <div class="pm-sumrow dues-row" style="border-bottom:none">
-                    <span class="psr-l">Dues After Payment</span>
-                    <span class="psr-v" id="pmDuesAfter">₹0</span>
-                </div>
-
+                <div class="pm-sumrow total-row"><span class="psr-l">Total Payable</span><span class="psr-v" id="pmTotal">₹0</span></div>
+                <div class="pm-sumrow dues-row" style="border-bottom:none"><span class="psr-l">Dues After Payment</span><span class="psr-v" id="pmDuesAfter">₹0</span></div>
                 <hr class="pm-divider">
-
-                <!-- Pay amount -->
-                <div class="pf">
-                    <label>Pay Amount (₹)</label>
-                    <input type="number" id="pmAmt" oninput="_updateDues()" placeholder="Enter amount to pay">
-                </div>
-
-                <!-- Payment mode -->
+                <div class="pf"><label>Pay Amount (₹)</label><input type="number" id="pmAmt" oninput="_updateDues()" placeholder="Enter amount to pay"></div>
                 <div class="pf">
                     <label>Payment Mode</label>
                     <div class="pay-mode-btns">
                         <button class="pmode-btn active" id="pmModeOnline" onclick="setPayMode('Online',this)"><i class="fas fa-globe"></i> Online</button>
-                        <button class="pmode-btn" id="pmModeCash" onclick="setPayMode('Cash',this)"><i class="fas fa-money-bill-wave"></i> Offline / Cash</button>
+                        <button class="pmode-btn" id="pmModeCash" onclick="setPayMode('Cash',this)"><i class="fas fa-money-bill-wave"></i> Cash</button>
                     </div>
                     <input type="hidden" id="pmMode" value="Online">
                 </div>
-
-                <!-- Ref / Remark -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                     <div class="pf"><label>Ref / Trans No.</label><input type="text" id="pmRef" placeholder="UPI Ref / Cheque No."></div>
                     <div class="pf"><label>Remark</label><input type="text" id="pmRmk" placeholder="Optional remark"></div>
                 </div>
-
-                <button class="btn-pay-now" onclick="confirmPay()">
-                    <i class="fas fa-check-circle"></i> Pay Now
-                </button>
+                <button class="btn-pay-now" onclick="confirmPay()"><i class="fas fa-check-circle"></i> Pay Now</button>
             </div>
         </div>
     </div>
 
-    <!-- RECEIPT MODAL — exact match to reference -->
-    <div class="rc-bg" id="rcBg">
-        <div class="rc-m">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">Payment Receipt</div>
-                <button class="mxbtn" onclick="closeRc()"><i class="fas fa-times"></i></button>
+    <!-- RECEIPT MODAL -->
+    <div id="receiptModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:999999; align-items:center; justify-content:center;">
+        <div style="width: 90vw; max-width: 220mm; background: #fff; border-radius: 10px; overflow: hidden; position: relative;">
+            <div class="receipt-modal-header">
+                <div class="receipt-modal-title"><i class="fas fa-receipt"></i> Official Payment Receipt</div>
+                <div class="receipt-actions">
+                    <button class="receipt-btn btn-wa-receipt" id="waReceiptBtn" onclick="shareReceiptWithWA()"><i class="fab fa-whatsapp"></i> WhatsApp + PDF</button>
+                    <button class="receipt-btn btn-print-receipt" onclick="printReceipt()"><i class="fas fa-print"></i> Print Receipt</button>
+                    <button class="receipt-btn" onclick="closeReceipt()" style="background:#eee;">Close</button>
+                </div>
             </div>
-            <div class="rc-hdr">
-                <h2><i class="fas fa-school" style="color:var(--orange)"></i> Smart School ERP</h2>
-                <p>Fee Payment Receipt</p>
+            <div class="receipt-container">
+                <div class="a4-outer">
+                    <div class="a4" id="receiptContent"></div>
+                </div>
             </div>
-            <div id="rcContent"></div>
-            <button class="btn-prc" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
         </div>
     </div>
 </div>
@@ -479,524 +488,342 @@ tbody tr:hover td{background:#f8fbff}
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-      const BASE_URL = "{{ url('/') }}";
+const BASE_URL = "{{ url('/') }}";
 let curMode='class', stu=null, monthData=null, pmMonths=[], payMode='Online';
 
+function fetchSections(classId) {
+    const sectionSelect = document.getElementById('sectionSelect');
+    sectionSelect.innerHTML = '<option value="">-- Loading --</option>';
+    if(!classId) { sectionSelect.innerHTML = '<option value="">-- All Sections --</option>'; return; }
+    fetch(`${BASE_URL}/admin/collect-fee?get_sections=1&class_id=${classId}`)
+        .then(r => r.json()).then(data => {
+            let h = '<option value="">-- All Sections --</option>';
+            data.forEach(s => { h += `<option value="${s.id}">${s.name}</option>`; });
+            sectionSelect.innerHTML = h;
+        });
+}
+
 function switchMode(m){
-  curMode=m;
-  document.querySelectorAll('.mcard').forEach(c=>c.classList.remove('mac'));
-  const card = document.getElementById(m+'Card');
-  if(card) card.classList.add('mac');
-  
-  document.getElementById('classPanel').style.display = m==='class'?'block':'none';
-  document.getElementById('directPanel').style.display = m==='direct'?'block':'none';
-  document.getElementById('emptyHint').style.display = 'none';
+    curMode=m;
+    document.querySelectorAll('.mcard').forEach(c=>c.classList.remove('mac'));
+    const card = document.getElementById(m+'Card');
+    if(card) card.classList.add('mac');
+    document.getElementById('classPanel').style.display = m==='class'?'block':'none';
+    document.getElementById('directPanel').style.display = m==='direct'?'block':'none';
 }
 
 function searchByClass(){
-  const cid=document.getElementById('classSelect').value;
-  const sid=document.getElementById('sectionSelect').value;
-  if(!cid) return Swal.fire('Error','Please select a Class','error');
-  
-  Swal.showLoading();
-  fetch('{{ route("admin.collect-fee.index") }}?class='+cid+'&section='+sid, {
-    headers: {'X-Requested-With': 'XMLHttpRequest'}
-  })
-  .then(r=>r.json()).then(res=>{
-    Swal.close();
-    if(!res.success) return;
-    let h='';
-    res.data.forEach((s,i)=>{
-      const name = (s.name||'').toUpperCase();
-      const father = (s.father||'').toUpperCase();
-      h+=`<tr><td>${i+1}</td><td>${s.sid||''}</td><td>${s.adm||''}</td><td>${s.roll||''}</td>
-      <td><b>${name}</b></td><td>${s.cls||''}</td><td>${s.sec||''}</td>
-      <td>${father}</td><td>${s.mob||''}</td>
-      <td><span class="dbadge" onclick="showDues(${s.id},'${name}')"><i class="fas fa-circle-exclamation"></i> ₹${(s.dues||0).toLocaleString()}</span></td>
-      <td><button class="cbtn" onclick="openPanel(${s.id})"><span class="rs-ico">Rs</span> Collect Fee</button></td></tr>`;
+    const cid=document.getElementById('classSelect').value, sid=document.getElementById('sectionSelect').value;
+    if(!cid) return Swal.fire('Error','Select a Class','error');
+    Swal.showLoading();
+    fetch('{{ route("admin.collect-fee.index") }}?class='+cid+'&section='+sid, { headers: {'X-Requested-With': 'XMLHttpRequest'} })
+    .then(r=>r.json()).then(res=>{
+        Swal.close();
+        let h='';
+        res.data.forEach((s,i)=>{
+            h+=`<tr><td>${i+1}</td><td>${s.sid}</td><td>${s.adm}</td><td>${s.roll}</td><td><b>${s.name}</b></td><td>${s.cls}</td><td>${s.sec}</td><td>${s.father}</td><td>${s.mob}</td><td><span class="dbadge" onclick="showDues(${s.id},'${s.name}')">₹${s.dues.toLocaleString()}</span></td><td><button class="cbtn" onclick="openPanel(${s.id})">Collect Fee</button></td></tr>`;
+        });
+        document.getElementById('stbodyClass').innerHTML = h;
+        document.getElementById('resultsClass').style.display = 'block';
     });
-    document.getElementById('stbodyClass').innerHTML = h;
-    document.getElementById('footerInfoClass').innerText = `Showing 1-${res.data.length} of ${res.data.length} entries`;
-    document.getElementById('resultsClass').style.display = 'block';
-    document.getElementById('emptyHint').style.display = 'none';
-  }).catch(e=>Swal.fire('Error','Failed to load data','error'));
 }
 
 function searchDirect(){
-  const val=document.getElementById('directInput').value;
-  if(!val) return Swal.fire('Wait','Enter Admission No / Name','info');
-  
-  Swal.showLoading();
-  fetch('{{ route("admin.collect-fee.index") }}?keyword='+encodeURIComponent(val), {
-    headers: {'X-Requested-With': 'XMLHttpRequest'}
-  })
-  .then(r=>r.json()).then(res=>{
-    Swal.close();
-    if(!res.success) return;
-    let h='';
-    res.data.forEach((s,i)=>{
-      const name = (s.name||'').toUpperCase();
-      const father = (s.father||'').toUpperCase();
-      h+=`<tr><td>${i+1}</td><td>${s.sid||''}</td><td>${s.adm||''}</td><td>${s.roll||''}</td>
-      <td><b>${name}</b></td><td>${s.cls||''}</td><td>${s.sec||''}</td>
-      <td>${father}</td><td>${s.mob||''}</td>
-      <td><span class="dbadge" onclick="showDues(${s.id},'${name}')"><i class="fas fa-circle-exclamation"></i> ₹${(s.dues||0).toLocaleString()}</span></td>
-      <td><button class="cbtn" onclick="openPanel(${s.id})"><span class="rs-ico">Rs</span> Collect Fee</button></td></tr>`;
+    const val=document.getElementById('directInput').value;
+    if(!val) return Swal.fire('Wait','Enter Admission No / Name','info');
+    Swal.showLoading();
+    fetch('{{ route("admin.collect-fee.index") }}?keyword='+encodeURIComponent(val), { headers: {'X-Requested-With': 'XMLHttpRequest'} })
+    .then(r=>r.json()).then(res=>{
+        Swal.close();
+        let h='';
+        res.data.forEach((s,i)=>{
+            h+=`<tr><td>${i+1}</td><td>${s.sid}</td><td>${s.adm}</td><td>${s.roll}</td><td><b>${s.name}</b></td><td>${s.cls}</td><td>${s.sec}</td><td>${s.father}</td><td>${s.mob}</td><td><span class="dbadge" onclick="showDues(${s.id},'${s.name}')">₹${s.dues.toLocaleString()}</span></td><td><button class="cbtn" onclick="openPanel(${s.id})">Collect Fee</button></td></tr>`;
+        });
+        document.getElementById('stbodyDirect').innerHTML = h;
+        document.getElementById('resultsDirect').style.display = 'block';
     });
-    document.getElementById('stbodyDirect').innerHTML = h;
-    document.getElementById('footerInfoDirect').innerText = `Showing 1-${res.data.length} of ${res.data.length} entries`;
-    document.getElementById('resultsDirect').style.display = 'block';
-    document.getElementById('emptyHint').style.display = 'none';
-  }).catch(e=>Swal.fire('Error','Search failed','error'));
 }
 
 function showDues(id, name){
-  document.getElementById('dueStudName').innerText = name;
-  document.getElementById('dueBody').innerHTML = '<p style="text-align:center;padding:20px;color:#5f6b7a">Loading dues...</p>';
-  document.getElementById('dueBg').classList.add('open');
-  
-  fetch(`${BASE_URL}/admin/collect-fee/details/${id}`)
-  .then(r=>r.json()).then(res=>{
-    let h='', tot=0;
-    res.months.forEach(m=>{
-      if(m.balance > 0){
-        tot += m.balance;
-        h+=`<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #f0f4ff;">
-          <span><b>${m.month}</b></span><span style="color:#ef4444;font-weight:700">₹${m.balance.toLocaleString()}</span></div>`;
-      }
+    document.getElementById('dueStudName').innerText = name;
+    document.getElementById('dueBg').classList.add('open');
+    fetch(`${BASE_URL}/admin/collect-fee/details/${id}`).then(r=>r.json()).then(res=>{
+        let h='', tot=0;
+        res.months.forEach(m=>{ if(m.balance>0){ tot+=m.balance; h+=`<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;"><span><b>${m.month}</b></span><span style="color:#ef4444;font-weight:700">₹${m.balance.toLocaleString()}</span></div>`; } });
+        document.getElementById('dueBody').innerHTML = h || 'No pending dues';
+        document.getElementById('dueTotAmt').innerText = tot.toLocaleString();
+        document.getElementById('dueStudName').setAttribute('data-id', id);
     });
-    document.getElementById('dueBody').innerHTML = h || '<p style="text-align:center;padding:20px;color:#22c55e">No Pending Dues!</p>';
-    document.getElementById('dueTotAmt').innerText = tot.toLocaleString();
-    document.getElementById('dueStudName').setAttribute('data-id', id);
-  });
 }
-
 function closeDuePop(){ document.getElementById('dueBg').classList.remove('open'); }
 function closeDueAndOpen(){ const id=document.getElementById('dueStudName').getAttribute('data-id'); closeDuePop(); openPanel(id); }
 
 function openPanel(id){
-  Swal.showLoading();
-  fetch(`${BASE_URL}/admin/collect-fee/details/${id}`)
-  .then(r=>r.json()).then(res=>{
-    Swal.close();
-    monthData = res;
-    stu = res.student;
-    pmMonths = [];
-    document.getElementById('stuStrip').innerHTML = `
-      <div class="sic"><span class="sl">Student Name</span><span class="sv" style="color:var(--dark)">${stu.name}</span></div>
-      <div class="sic"><span class="sl">STD ID</span><span class="sv" style="color:var(--blue)">${stu.sid||'SID21'}</span></div>
-      <div class="sic"><span class="sl">ADM NO</span><span class="sv" style="color:var(--orange); font-weight:800">${stu.adm}</span></div>
-      <div class="sic"><span class="sl">LEDGER</span><span class="sv">${stu.ledger||'L012'}</span></div>
-      <div class="sic"><span class="sl">ROLL NO</span><span class="sv">${stu.roll||'22'}</span></div>
-      <div class="sic"><span class="sl">CLASS / SEC</span><span class="sv">${stu.cls} - ${stu.sec}</span></div>
-      <div class="sic"><span class="sl">FATHER</span><span class="sv">${stu.father||'N/A'}</span></div>
-      <div class="sic"><span class="sl">MOBILE</span><span class="sv">${stu.mob}</span></div>
-    `;
-    renderMonthTable();
-    document.getElementById('fpBg').classList.add('open');
-  });
+    Swal.showLoading();
+    fetch(`${BASE_URL}/admin/collect-fee/details/${id}`).then(r=>r.json()).then(res=>{
+        Swal.close();
+        monthData = res; stu = res.student; pmMonths = [];
+        document.getElementById('stuStrip').innerHTML = `<div class="sic"><span class="sl">Name</span><span class="sv">${stu.name}</span></div><div class="sic"><span class="sl">ADM NO</span><span class="sv">${stu.adm}</span></div><div class="sic"><span class="sl">CLASS</span><span class="sv">${stu.cls} - ${stu.sec}</span></div>`;
+        renderMonthTable(); document.getElementById('fpBg').classList.add('open');
+    });
 }
-
 function closePanel(){ document.getElementById('fpBg').classList.remove('open'); }
 
 function renderMonthTable(){
-  let h='';
-  monthData.months.forEach((m, i)=>{
-    const isPaid = m.status.toLowerCase()==='paid';
-    const rowCls = pmMonths.includes(i)?'row-sel':(isPaid?'row-paid-sel':'');
-    const checkedClass = pmMonths.includes(i)?'checked-due':(isPaid?'checked-paid':'');
-    
-    const ftHtml = m.comps.map(c => {
-      let cls = 'ft-default';
-      const n = c.name.toLowerCase();
-      if(n.includes('tuition')) cls = 'ft-tui';
-      else if(n.includes('transport')) cls = 'ft-tra';
-      else if(n.includes('hostel')) cls = 'ft-hos';
-      else if(n.includes('lab')) cls = 'ft-lab';
-      else if(n.includes('sport')) cls = 'ft-spo';
-      return `<span class="ft-badge ${cls}">${c.name}</span>`;
-    }).join('');
-    
-    h+=`<tr class="${rowCls}">
-      <td style="text-align:center"><div class="mchk ${checkedClass}" onclick="toggleRow(${i})"></div></td>
-      <td>${i+1}</td><td><b>${m.month}</b></td><td><div class="ft-badges">${ftHtml}</div></td>
-      <td style="color:var(--muted)">₹${m.fee.toLocaleString()}</td>
-      <td style="color:${m.fine>0?'var(--orange)':'#cbd5e1'}">₹${m.fine}</td>
-      <td style="font-weight:800; color:var(--dark)">₹${m.net.toLocaleString()}</td>
-      <td style="font-weight:800; color:${m.paid>0?'var(--green)':'#cbd5e1'}">₹${m.paid.toLocaleString()}</td>
-      <td style="font-weight:800; color:${m.balance>0?'var(--red)':'var(--green)'}">₹${m.balance.toLocaleString()}</td>
-      <td style="color:var(--muted); font-size:0.7rem">${m.paidDate||'—'}</td>
-      <td><span class="ss ${m.status.toLowerCase()}">${m.status.toUpperCase()}</span></td>
-      <td>
-        <div class="ais">
-          ${!isPaid ? `<button class="ib b-pay" onclick="openPay(${i})" title="Collect Fee">Rs</button>` : ''}
-          <button class="ib b-view" onclick="openReceipt(${i})" title="View Details"><i class="fas fa-eye"></i></button>
-          <button class="ib b-print" onclick="window.print()" title="Print Receipt"><i class="fas fa-print"></i></button>
-          <button class="ib b-wa" onclick="alert('Send via WhatsApp')" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
-          <button class="ib b-tag" onclick="alert('Manage Discounts')" title="Discount"><i class="fas fa-tag"></i></button>
-          <button class="ib b-hist" onclick="alert('View History')" title="History"><i class="fas fa-history"></i></button>
-        </div>
-      </td>
-    </tr>`;
-  });
-  document.getElementById('monthBody').innerHTML = h;
-  updateMsBar();
+    let h='';
+    monthData.months.forEach((m, i)=>{
+        const status = m.status.toLowerCase();
+        const isPaid = status==='paid';
+        const chkCls = pmMonths.includes(i)?'checked-due':(isPaid?'checked-paid':'');
+        
+        h+=`<tr>
+            <td style="text-align:center"><div class="mchk ${chkCls}" onclick="toggleRow(${i})"></div></td>
+            <td>${i+1}</td>
+            <td><b>${m.month}</b></td>
+            <td>₹${m.fee.toLocaleString()}</td>
+            <td>₹${m.fine}</td>
+            <td>₹${m.net.toLocaleString()}</td>
+            <td><span class="ss ${status}">${m.status.toUpperCase()}</span></td>
+            <td>
+                <div class="ais">
+                    ${isPaid ? '' : `<button class="ib b-pay" onclick="openPay(${i})" title="Collect Fee"><i class="fa-solid fa-indian-rupee-sign"></i></button>`}
+                    <button class="ib b-view" onclick="openReceipt(${i})" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="ib b-print" onclick="openReceipt(${i}, true)" title="Print"><i class="fas fa-print"></i></button>
+                    <button class="ib b-wa" onclick="whatsappReceipt(${i})" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                    <button class="ib b-tag" onclick="alert('Discount for '+monthData.months[${i}].month)" title="Discount"><i class="fas fa-tag"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    });
+    document.getElementById('monthBody').innerHTML = h; updateMsBar();
 }
 
 function toggleRow(i){
-  const m = monthData.months[i];
-  if(m.status.toLowerCase()==='paid') return; // can't reselect paid
-  const idx = pmMonths.indexOf(i);
-  if(idx>-1) pmMonths.splice(idx,1); else pmMonths.push(i);
-  renderMonthTable();
+    if(monthData.months[i].status.toLowerCase()==='paid') return;
+    const idx = pmMonths.indexOf(i); if(idx>-1) pmMonths.splice(idx,1); else pmMonths.push(i);
+    renderMonthTable();
 }
 
 function toggleSelectAll(){
-  const allDue = monthData.months.map((m,i)=>m.status!=='Paid'?i:null).filter(v=>v!==null);
-  if(pmMonths.length === allDue.length) pmMonths = []; else pmMonths = [...allDue];
-  renderMonthTable();
+    const allDue = monthData.months.map((m,i)=>m.status!=='Paid'?i:null).filter(v=>v!==null);
+    if(pmMonths.length === allDue.length) pmMonths = []; else pmMonths = [...allDue];
+    renderMonthTable();
 }
-
 function clearSelection(){ pmMonths=[]; renderMonthTable(); }
 function selectAllDue(){ toggleSelectAll(); }
 
 function updateMsBar(){
-  const bar=document.getElementById('msBar'), count=document.getElementById('msCount'), total=document.getElementById('msTotal');
-  if(pmMonths.length>0){
-    bar.classList.add('visible');
-    count.innerText = pmMonths.length;
-    let sum=0; pmMonths.forEach(i=>sum+=monthData.months[i].balance);
-    total.innerText = '₹'+sum;
-  } else bar.classList.remove('visible');
+    const bar=document.getElementById('msBar');
+    if(pmMonths.length>0){ bar.classList.add('visible'); document.getElementById('msCount').innerText = pmMonths.length; let sum=0; pmMonths.forEach(i=>sum+=monthData.months[i].balance); document.getElementById('msTotal').innerText = '₹'+sum; }
+    else bar.classList.remove('visible');
 }
 
-function openPay(i){
-  const m=monthData.months[i];
-  if(m.status.toLowerCase()==='paid') return Swal.fire('Info','This month is already fully paid.','info');
-  pmMonths = [i];
-  _openPayModal(pmMonths);
-}
-
-function openMultiPay(){
-  if(pmMonths.length===0) return;
-  _openPayModal(pmMonths);
-}
+function openPay(i){ pmMonths=[i]; _openPayModal(pmMonths); }
+function openMultiPay(){ if(pmMonths.length>0) _openPayModal(pmMonths); }
 
 function _openPayModal(monthIndices){
-  // Title
-  if(monthIndices.length===1){
-    document.getElementById('pmTitle').innerHTML = '<i class="fas fa-rupee-sign"></i> Collect Fee \u2014 '+monthData.months[monthIndices[0]].month+' 2025';
-  } else {
-    document.getElementById('pmTitle').innerHTML = '<i class="fas fa-rupee-sign"></i> Collect '+monthIndices.length+' Months';
-  }
-
-  // Student mini info - horizontal like reference
-  document.getElementById('pmStuInfo').innerHTML = [
-    {l:'Name', v:stu.name},
-    {l:'Adm No.', v:stu.adm},
-    {l:'Class', v:stu.cls+' \u2013 '+stu.sec},
-    {l:'Mobile', v:stu.mob}
-  ].map(c=>`<div class="pm-stu-field"><span class="psl">${c.l}</span><span class="psv">${c.v}</span></div>`).join('');
-
-  // Multi month list
-  const ml=document.getElementById('pmMultiList');
-  if(monthIndices.length>1){
-    ml.style.display='';
-    document.getElementById('pmMonthList').innerHTML=monthIndices.map(i=>{
-      const m=monthData.months[i];
-      return `<div class="pm-mrow"><span class="pmn">${m.month} 2025</span><span class="pma">\u20b9${m.balance.toLocaleString()}</span></div>`;
-    }).join('');
-  } else { ml.style.display='none'; }
-
-  // Aggregate fee types across selected months - FIX for repeating balance bug
-  const ftMap={};
-  monthIndices.forEach(mi=>{
-    const m=monthData.months[mi];
-    (m.comps||[]).forEach(c=>{
-      const key=c.name;
-      if(!ftMap[key]) ftMap[key]={name:c.name, total:0, paid:0, balance:0};
-      ftMap[key].total  += Number(c.total)||0;
-      ftMap[key].paid   += Number(c.paid)||0;
-      ftMap[key].balance += Number(c.balance)||0;
+    const ftMap={};
+    monthIndices.forEach(mi=>{
+        monthData.months[mi].comps.forEach(c=>{ 
+            if(!ftMap[c.name]) ftMap[c.name]={name:c.name, bal:0}; 
+            ftMap[c.name].bal += Number(c.balance) || 0; 
+        });
     });
-  });
-
-  // Icon map
-  function getFtStyle(name){
-    const n=name.toLowerCase();
-    if(n.includes('tuition')||n.includes('tui')) return {ico:'fa-book',clr:'#3b82f6',bg:'#eff6ff'};
-    if(n.includes('transport')) return {ico:'fa-bus',clr:'#f59e0b',bg:'#fffbeb'};
-    if(n.includes('hostel'))    return {ico:'fa-bed',clr:'#8b5cf6',bg:'#faf5ff'};
-    if(n.includes('lab')||n.includes('lib')) return {ico:'fa-flask',clr:'#f97316',bg:'#fff7ed'};
-    if(n.includes('sport'))     return {ico:'fa-futbol',clr:'#22c55e',bg:'#f0fdf4'};
-    if(n.includes('exam'))      return {ico:'fa-file-alt',clr:'#10b981',bg:'#f0fdf4'};
-    return {ico:'fa-coins',clr:'#488fe4',bg:'#eff6ff'};
-  }
-
-  let subTotal=0;
-  const grid=document.getElementById('ftGrid');
-  grid.innerHTML=Object.values(ftMap).map(f=>{
-    const isPaid=f.balance<=0;
-    const status=isPaid?'paid':(f.paid>0?'partial':'due');
-    const {ico,clr,bg}=getFtStyle(f.name);
-    if(!isPaid) subTotal+=f.balance;
-    const badgeCls=isPaid?'paid-f':(f.paid>0?'partial-f':'due-f');
-    const badgeTxt=isPaid?'Paid':(f.paid>0?'Partial':'Due');
-    const key=f.name.replace(/[\s\/]/g,'_');
-    return `<div class="ft-item${isPaid?'':' selected'}" id="fti-${key}" onclick="toggleFt('${key}',${f.balance})" ${isPaid?'style="opacity:.6;pointer-events:none"':''}>
-      <div class="ft-left">
-        <div class="ft-chk" id="ftchk-${key}"></div>
-        <div class="ft-icon" style="background:${bg};color:${clr}"><i class="fas ${ico}"></i></div>
-        <div class="ft-info">
-          <div class="ft-name">${f.name}</div>
-          <div class="ft-desc">Balance: \u20b9${f.balance.toLocaleString()} | Paid: \u20b9${f.paid.toLocaleString()}</div>
-        </div>
-      </div>
-      <div class="ft-right">
-        <div class="ft-amt">\u20b9${f.balance.toLocaleString()}</div>
-        <span class="ft-paid-badge ${badgeCls}">${badgeTxt}</span>
-      </div>
-    </div>`;
-  }).join('');
-
-  window._pmFtMap=ftMap;
-  document.getElementById('pmSubTotal').innerText='\u20b9'+subTotal.toLocaleString();
-  document.getElementById('pmTotal').innerText='\u20b9'+subTotal.toLocaleString();
-  document.getElementById('pmAmt').value=subTotal;
-  _updateDues();
-  document.getElementById('pmRef').value='';
-  const rmk=document.getElementById('pmRmk'); if(rmk) rmk.value='';
-  document.querySelectorAll('.pmode-btn').forEach(b=>b.classList.remove('active'));
-  const online=document.getElementById('pmModeOnline'); if(online) online.classList.add('active');
-  document.getElementById('pmMode').value='Online';
-  payMode='Online';
-  document.getElementById('pmBg').classList.add('open');
+    window._pmFtMap = ftMap;
+    let sub=0, grid=document.getElementById('ftGrid');
+    grid.innerHTML = Object.values(ftMap).map(f=>{
+        sub += f.bal; 
+        const k=f.name.replace(/[\s\/]/g,'_');
+        return `<div class="ft-item selected" id="fti-${k}" onclick="toggleFt('${k}')"><div class="ft-left"><div class="ft-chk"></div><div class="ft-name">${f.name}</div></div><div class="ft-right"><div class="ft-amt">₹${f.bal.toLocaleString()}</div></div></div>`;
+    }).join('');
+    document.getElementById('pmSubTotal').innerText='₹'+sub.toLocaleString();
+    document.getElementById('pmTotal').innerText='₹'+sub.toLocaleString();
+    document.getElementById('pmAmt').value=sub;
+    document.getElementById('pmBg').classList.add('open');
+    _updateDues();
 }
 
-function toggleFt(key){
-  const el=document.getElementById('fti-'+key);
-  if(!el) return;
-  el.classList.toggle('selected');
-  let sub=0;
-  Object.values(window._pmFtMap||{}).forEach(f=>{
-    const k=f.name.replace(/[\s\/]/g,'_');
-    const el2=document.getElementById('fti-'+k);
-    if(el2&&el2.classList.contains('selected')) sub+=Number(f.balance)||0;
-  });
-  document.getElementById('pmSubTotal').innerText='\u20b9'+sub.toLocaleString();
-  document.getElementById('pmTotal').innerText='\u20b9'+sub.toLocaleString();
-  document.getElementById('pmAmt').value=sub;
-  _updateDues();
+function toggleFt(k){
+    document.getElementById('fti-'+k).classList.toggle('selected');
+    let sub = 0; 
+    Object.values(window._pmFtMap).forEach(f=>{ 
+        const key = f.name.replace(/[\s\/]/g,'_');
+        if(document.getElementById('fti-'+key).classList.contains('selected')) sub += Number(f.bal) || 0; 
+    });
+    document.getElementById('pmSubTotal').innerText='₹'+sub.toLocaleString(); 
+    document.getElementById('pmTotal').innerText='₹'+sub.toLocaleString(); 
+    document.getElementById('pmAmt').value=sub; 
+    _updateDues();
 }
 
 function closePm(){ document.getElementById('pmBg').classList.remove('open'); }
-function setPayMode(m, el){
-  payMode=m; document.getElementById('pmMode').value=m;
-  document.querySelectorAll('.pmode-btn').forEach(btn=>btn.classList.remove('active'));
-  el.classList.add('active');
-}
-function _updateDues(){
-  const totText=document.getElementById('pmTotal').innerText||'0';
-  const tot=Number(totText.replace(/[^0-9.]/g,''))||0;
-  const pay=Number(document.getElementById('pmAmt').value)||0;
-  document.getElementById('pmDuesAfter').innerText='\u20b9'+Math.max(0,tot-pay).toLocaleString();
-}
-function updatePmDues(){ _updateDues(); }
+function setPayMode(m, el){ payMode=m; document.querySelectorAll('.pmode-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+function _updateDues(){ const t=Number(document.getElementById('pmTotal').innerText.replace(/[^0-9.]/g,''))||0, p=Number(document.getElementById('pmAmt').value)||0; document.getElementById('pmDuesAfter').innerText='₹'+Math.max(0,t-p).toLocaleString(); }
 
 function confirmPay(){
-  const payAmt = parseFloat(document.getElementById('pmAmt').value);
-  if(!payAmt || payAmt <= 0) return Swal.fire('Error','Enter a valid amount','error');
-  
-  const rc = 'RC'+Math.floor(Math.random()*90000+10000);
-  const today = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  const ftMap = window._pmFtMap||{};
-  
-  // Get selected fee type keys
-  const selKeys = Object.values(ftMap).filter(f=>{
-    const k=f.name.replace(/[\s\/]/g,'_');
-    const el=document.getElementById('fti-'+k);
-    return el && el.classList.contains('selected');
-  }).map(f=>f.name);
-
-  if(selKeys.length===0) return Swal.fire('Info','Please select at least one fee type','info');
-
-  Swal.fire({
-    title: 'Confirm Payment?',
-    text: `Collect ₹${payAmt.toLocaleString()} via ${payMode}?`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor: '#488fe4',
-    confirmButtonText: 'Yes, Confirm'
-  }).then(result => {
-    if(!result.isConfirmed) return;
-    Swal.showLoading();
+    if(!stu || !stu.id) return Swal.fire('Error', 'Student session expired. Please reopen the panel.', 'error');
     
-    // Try backend payment
+    const amt=parseFloat(document.getElementById('pmAmt').value);
+    if(!amt || amt <= 0) return Swal.fire('Wait', 'Enter a valid payment amount', 'info');
+
+    const ref = document.getElementById('pmRef').value;
+    const rmk = document.getElementById('pmRmk').value;
+    const mode = document.getElementById('pmMode').value || payMode;
+
+    Swal.showLoading();
     fetch(`${BASE_URL}/admin/collect-fee/pay/${stu.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify({
-        amount: payAmt,
-        payment_mode: payMode,
-        months: pmMonths,
-        fee_types: selKeys,
-        reference_no: document.getElementById('pmRef').value,
-        remark: (document.getElementById('pmRmk')||{}).value||'',
-        _token: '{{ csrf_token() }}'
-      })
-    })
-    .then(r => r.json())
-    .then(res => {
-      Swal.close();
-      // Whether backend succeeds or fails, process locally for UI
-      _processPaymentLocally(payAmt, rc, today, selKeys);
-    })
-    .catch(err => {
-      Swal.close();
-      // On error, still process locally so UI works
-      _processPaymentLocally(payAmt, rc, today, selKeys);
+        method:'POST', 
+        headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
+        body: JSON.stringify({
+            amount: amt, 
+            payment_mode: mode, 
+            reference_no: ref, 
+            remark: rmk, 
+            months: pmMonths 
+        })
+    }).then(r=>r.json()).then(res=>{
+        Swal.close();
+        if(res.success){
+            closePm();
+            Swal.fire('Success', 'Payment collected successfully', 'success').then(() => {
+                showReceipt(res);
+                if(curMode==='class') searchByClass(); else searchDirect();
+            });
+        } else {
+            Swal.fire('Error', res.message || 'Payment processing failed', 'error');
+        }
+    }).catch(err => {
+        Swal.close();
+        Swal.fire('Error', 'Network error or server timeout', 'error');
+        console.error(err);
     });
-  });
 }
 
-function _processPaymentLocally(payAmt, rc, today, selKeys){
-  // Update monthData in memory
-  pmMonths.forEach(mi=>{
-    const m = monthData.months[mi];
-    let monthPaid = 0;
-    m.comps.forEach(c=>{
-      if(!selKeys.includes(c.name)) return;
-      const pay = Math.min(Number(c.balance)||0, payAmt);
-      c.paid = (Number(c.paid)||0) + pay;
-      c.balance = Math.max(0, (Number(c.balance)||0) - pay);
-      c.status = c.balance<=0 ? 'paid' : c.paid>0 ? 'partial' : 'due';
-      monthPaid += pay;
-    });
-    m.paid = (Number(m.paid)||0) + monthPaid;
-    m.balance = m.comps.reduce((a,c)=>a+(Number(c.balance)||0),0);
-  m.status = m.balance<=0 ? 'Paid' : m.paid>0 ? 'Partial' : 'Due';
-    if(m.balance<=0){
-      m.paidDate = today;
-      m.receiptNo = rc;
-    }
-    m.selected = false;
-  });
-  
-  closePm();
-  pmMonths=[]; // reset
-  renderMonthTable();
-  updateMsBar();
-  
-  // Build and show receipt
-  _showReceipt(rc, today, payAmt);
-}
-
-function _buildReceiptHTML(rc, today, totalPaid, compRows, balanceDue, mode){
-  var rows = [
-    '<div class="rcrow"><span class="rl">Receipt No.</span><span class="rv" style="color:var(--blue)">'+rc+'</span></div>',
-    '<div class="rcrow"><span class="rl">Pay. Date</span><span class="rv">'+today+'</span></div>',
-    '<div class="rcrow"><span class="rl">Student</span><span class="rv">'+(stu?stu.name:'')+'</span></div>',
-    '<div class="rcrow"><span class="rl">Adm No.</span><span class="rv">'+(stu?stu.adm:'')+'</span></div>',
-    '<div class="rcrow"><span class="rl">Class / Section</span><span class="rv">'+(stu?stu.cls+' \u2013 '+stu.sec:'')+'</span></div>',
-    (mode?'<div class="rcrow"><span class="rl">Payment Mode</span><span class="rv">'+mode+'</span></div>':''),
-    '<div class="rc-lbl">Fee Breakdown</div>',
-    compRows,
-    '<hr class="rc-sep">',
-    '<div class="rc-total"><span>Total Paid</span><span class="rv">\u20b9'+Number(totalPaid).toLocaleString()+'</span></div>',
-    '<div class="rc-bal"><span style="color:#5f6b7a">Balance Due</span><span style="color:'+(Number(balanceDue)>0?'var(--red)':'var(--green)')+';">\u20b9'+Number(balanceDue).toLocaleString()+'</span></div>',
-    '<div class="rc-foot">Computer generated receipt &middot; Smart School ERP</div>'
-  ];
-  return rows.filter(Boolean).join('');
-}
-
-function _showReceipt(rc, today, totalPaid){
-  var ftMap = window._pmFtMap||{};
-  var compRows = Object.values(ftMap).filter(function(f){
-    var k = f.name.replace(/[\s\/]/g,'_');
-    var el = document.getElementById('fti-'+k);
-    return el && el.classList.contains('selected');
-  }).map(function(f){
-    // Show amount paid (total - remaining balance after payment)
-    var paid = Number(f.balance||0); // f.balance at time of payment = amount that was cleared
-    return '<div class="rcrow"><span class="rl">'+f.name+'</span><span class="rv" style="color:var(--green)">\u20b9'+paid.toLocaleString()+'</span></div>';
-  }).join('');
-
-  var remBal = 0;
-  var months = (window._lastPmMonths||pmMonths||[]);
-  months.forEach(function(mi){
-    var m = monthData && monthData.months ? monthData.months[mi] : null;
-    if(m) remBal += Number(m.balance)||0;
-  });
-
-  document.getElementById('rcContent').innerHTML = _buildReceiptHTML(rc, today, totalPaid, compRows||'', remBal, payMode);
-  document.getElementById('rcBg').classList.add('open');
-}
-
-function openReceipt(i){
-  var m = monthData && monthData.months ? monthData.months[i] : null;
-  if(!m || m.status.toLowerCase()==='due') return Swal.fire('Info','No payment recorded for this month yet.','info');
-
-  var rc = m.receiptNo || '\u2014';
-  var paidDate = m.paidDate || new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var compRows = (m.comps||[]).map(function(f){
-    var paid = Number(f.paid)||0;
-    var clr = f.status==='paid'?'var(--green)':f.status==='partial'?'#f59e0b':'var(--muted)';
-    return '<div class="rcrow"><span class="rl">'+f.name+'</span><span class="rv" style="color:'+clr+'">\u20b9'+paid.toLocaleString()+(f.status!=='paid'?' (Partial)':'')+'</span></div>';
-  }).join('');
-  var fineLine = m.fine>0 ? '<div class="rcrow"><span class="rl">Late Fine</span><span class="rv">\u20b9'+m.fine+'</span></div>' : '';
-
-  document.getElementById('rcContent').innerHTML = _buildReceiptHTML(
-    rc, paidDate, Number(m.paid)||0,
-    compRows+fineLine,
-    Number(m.balance)||0,
-    ''
-  );
-  document.getElementById('rcBg').classList.add('open');
-}
-function closeRc(){ document.getElementById('rcBg').classList.remove('open'); }
-
-function filterRows(tid, val){
-  const rows = document.querySelectorAll(`#${tid} tr`);
-  val = val.toLowerCase();
-  rows.forEach(r=>{
-    r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none';
-  });
-}
-
-function exportTable(type, tid){
-  if(type==='csv'){
-    let csv = [];
-    const rows = document.querySelectorAll(`#${tid} tr`);
-    rows.forEach(r => {
-      if (r.style.display !== 'none') {
-        let row = [];
-        const cells = r.querySelectorAll('td');
-        cells.forEach((c, idx) => {
-          if (idx < 9) row.push('"' + c.innerText.trim().replace(/"/g, '""') + '"');
+function openReceipt(i, autoPrint=false){
+    const m = monthData.months[i];
+    if(!m || m.status.toLowerCase()==='due') return;
+    
+    Swal.showLoading();
+    fetch(`${BASE_URL}/admin/collect-fee/get-receipt/latest?student_id=${stu.id}`)
+        .then(r=>r.json()).then(res=>{
+            Swal.close();
+            if(res.success) {
+                showReceipt(res);
+                if(autoPrint) setTimeout(()=>window.print(), 800);
+            }
+            else Swal.fire('Info', 'Receipt details for older payments are being archived.', 'info');
         });
-        if (row.length > 0) csv.push(row.join(','));
-      }
-    });
-    const blob = new Blob([csv.join('\n')], {type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download='fee_collection.csv'; a.click();
-  } else if(type==='pdf' || type==='print') {
-      window.print();
-  } else {
-    Swal.fire('Export', type.toUpperCase()+' export triggered', 'info');
-  }
 }
 
-// Move modals to body to avoid transform/z-index issues with sidebar
+function whatsappReceipt(i){
+    const m = monthData.months[i];
+    if(!m || m.status.toLowerCase()==='due') return;
+    
+    Swal.showLoading();
+    fetch(`${BASE_URL}/admin/collect-fee/get-receipt/latest?student_id=${stu.id}`)
+        .then(r=>r.json()).then(res=>{
+            Swal.close();
+            if(res.success) {
+                renderReceiptHTML(res);
+                shareReceiptWithWA();
+            }
+        });
+}
+
+function showReceipt(data){ renderReceiptHTML(data); document.getElementById('receiptModal').style.display='flex'; }
+function closeReceipt(){ 
+    document.getElementById('receiptModal').style.display='none'; 
+    // Ensure the monthly list panel stays open
+    document.getElementById('fpBg').classList.add('open');
+}
+function renderReceiptHTML(data){
+    const p=data.payment, s=data.student;
+    const school={
+        name: '{{ env("SCHOOL_NAME", "Hazrat Ali Academy") }}',
+        addr: '{{ env("SCHOOL_ADDRESS", "Chandwara Branch Muslim Club Campus, Pakki Sarai Chandwara, Muzaffarpur") }}',
+        phone: '{{ env("SCHOOL_PHONE", "9102277998, 9835281616") }}',
+        udise: '10140614302',
+        session: '2025-2026',
+        logo: 'https://decentdemo.in/school/images/school-logo.png',
+        grad: 'https://cdn-icons-png.flaticon.com/128/3048/3048127.png'
+    };
+    const R = (n) => {
+        const val = parseFloat(n) || 0;
+        return '₹' + val.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    };
+    const ic = (l,v)=>`<div class="rc-ic"><span class="rc-lbl">${l} :</span><span class="rc-val">${v||'—'}</span></div>`;
+    const buildHalf = (t) => {
+        const isOff = t==='office';
+        const amtVal = parseFloat(p.amount) || 0;
+        return `<div class="receipt ${t}">
+            <div class="rc-bar"><span class="rc-bar-label">${isOff?'🏫  FOR OFFICE COPY':'👤  FOR GUARDIAN COPY'}</span><span class="rc-bar-rcno">Receipt No. : <b>${p.transaction_id || ('RC-'+p.id)}</b></span></div>
+            <div class="rc-hdr">
+                <div class="rc-logo"><img src="${school.logo}" onerror="this.src='https://via.placeholder.com/80'"></div>
+                <div class="rc-school"><div class="rc-sname">${school.name}</div><div class="rc-saddr">${school.addr}<br>${school.phone}</div></div>
+                <img src="${school.grad}" class="rc-grad">
+            </div>
+            <div class="rc-session">
+                <span class="rc-sess-item">Session : <b>${school.session}</b></span>
+                <span class="rc-sess-item">Payment Date : <b>${new Date(p.created_at).toLocaleDateString('en-GB')}</b></span>
+                <span class="rc-sess-item">Mode : <b>${p.gateway || 'N/A'}</b></span>
+            </div>
+            <div class="rc-info">
+                ${ic('UDISE No.', school.udise)}
+                ${ic('Reg. No.', s.registration_no || 'N/A')}
+                ${ic('Name', s.student_name)}
+                ${ic("Father's Name", s.parent ? s.parent.father_name : 'N/A')}
+                ${ic('Class', s.class_info ? s.class_info.name : (s.class_name||''))}
+                ${ic('Section', s.section ? s.section.name : 'N/A')}
+                ${ic('Std. ID', 'SID'+s.id)}
+                ${ic('Roll No.', s.roll_no || 'N/A')}
+                ${ic('Adm. No.', s.admission_no)}
+                ${ic('Address', s.address || 'N/A')}
+            </div>
+            <div class="rc-tw">
+                <table class="rc-tbl">
+                    <thead><tr><th>S.No.</th><th>Particular / Description</th><th>Amount</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Fee Collection Month: ${new Date(p.created_at).toLocaleString('default', { month: 'long' })}</td><td>${R(amtVal)}</td></tr>
+                        <tr class="emp"><td></td><td>&nbsp;</td><td></td></tr>
+                        <tr class="emp"><td></td><td>&nbsp;</td><td></td></tr>
+                        <tr class="emp"><td></td><td>&nbsp;</td><td></td></tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="st-row"><td colspan="2">Sub Total</td><td>${R(amtVal)}</td></tr>
+                        <tr class="pd-row"><td colspan="2">Paid &nbsp;<span class="pd-tag">PAID</span></td><td>${R(amtVal)}</td></tr>
+                        <tr class="du-row"><td colspan="2">Dues &nbsp;<span class="du-tag">DUE</span></td><td>${R(0)}</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="rc-ftr">
+                <div class="rc-fnote"><b>${school.name}</b> · Computer generated receipt<br>UDISE : ${school.udise} &nbsp;·&nbsp; ${school.phone}</div>
+                <div><div class="rc-sig-line"></div><div class="rc-sig-lbl">Signature & Stamp</div></div>
+            </div>
+        </div>`;
+    };
+    document.getElementById('receiptContent').innerHTML = buildHalf('office') + '<div class="cut"><div class="cut-line"></div><i class="fas fa-cut"></i><span>CUT HERE &nbsp;·&nbsp; GUARDIAN COPY BELOW</span><div class="cut-line"></div></div>' + buildHalf('guardian');
+}
+
+async function shareReceiptWithWA(){
+    const btn = document.getElementById('waReceiptBtn');
+    btn.disabled=true; btn.innerHTML='Generating...';
+    try{
+        const canvas = await html2canvas(document.getElementById('receiptContent'),{scale:2});
+        const pdfData = new jspdf.jsPDF('p','mm','a4');
+        pdfData.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,(canvas.height*210)/canvas.width);
+        const file = new File([pdfData.output('blob')], 'Receipt.pdf', {type:'application/pdf'});
+        if(navigator.share) await navigator.share({files:[file], text:'School Fee Receipt'});
+        else window.open(URL.createObjectURL(pdfData.output('blob')),'_blank');
+    }catch(e){alert('Error: '+e.message)} finally{btn.disabled=false; btn.innerHTML='WhatsApp + PDF';}
+}
+
+// Move modals to body
 window.addEventListener('DOMContentLoaded', () => {
-  ['dueBg', 'fpBg', 'pmBg', 'rcBg'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) document.body.appendChild(el);
+  ['dueBg', 'fpBg', 'pmBg', 'receiptModal'].forEach(id => {
+    const el = document.getElementById(id); if(el) document.body.appendChild(el);
   });
 });
 </script>

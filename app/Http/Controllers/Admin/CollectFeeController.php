@@ -13,6 +13,10 @@ class CollectFeeController extends Controller
 {
     public function index(Request $request)
     {
+        
+        if ($request->has('get_sections')) {
+            return $this->getSections($request->class_id);
+        }
         $query = Student::with(['classInfo', 'section', 'parent', 'studentFees']);
 
         if ($request->filled('keyword')) {
@@ -26,24 +30,41 @@ class CollectFeeController extends Controller
         }
 
         if ($request->filled('class')) {
-            $query->where('class_id', $request->class);
+            $classId = $request->class;
+            $classObj = \App\Models\SchoolClass::find($classId);
+            $query->where(function($q) use ($classId, $classObj) {
+                $q->where('class_id', $classId);
+                if ($classObj) {
+                    $q->orWhere('class_id', $classObj->name);
+                }
+            });
         }
 
         if ($request->filled('section')) {
-            $query->where('section_id', $request->section);
+            $sectionId = $request->section;
+            $sectionObj = \App\Models\Section::find($sectionId);
+            $query->where(function($q) use ($sectionId, $sectionObj) {
+                $q->where('section_id', $sectionId);
+                if ($sectionObj) {
+                    $q->orWhere('section_id', $sectionObj->name);
+                }
+            });
         }
 
         if ($request->ajax() || $request->wantsJson()) {
             $students = $query->get()->map(function($student) {
-                // Calculation of total dues (naively for now, matching the controller's existing logic if any)
-                $monthlyTotal = $student->studentFees->sum('total');
-                $totalBilled = $monthlyTotal * 12; // Adjusted to a full session
-                $totalPaid = \App\Models\Payment::where('student_id', $student->id)->where('status', 'success')->where('is_cancelled', false)->sum('amount');
+                // Calculation of total dues
+                $monthlyTotal = $student->studentFees ? $student->studentFees->sum('total') : 0;
+                $totalBilled = $monthlyTotal * 12;
+                $totalPaid = \App\Models\Payment::where('student_id', $student->id)
+                    ->where('status', 'success')
+                    ->where('is_cancelled', false)
+                    ->sum('amount');
                 $dues = max(0, $totalBilled - $totalPaid);
 
                 return [
                     'id' => $student->id,
-                    'sid' => 'SID' . $student->id,
+                    'sid' => 'SID' . str_pad($student->id, 5, '0', STR_PAD_LEFT),
                     'adm' => $student->admission_no,
                     'ledger' => $student->ledger_no ?? 'L' . str_pad($student->id, 3, '0', STR_PAD_LEFT),
                     'roll' => $student->roll_no ?? 'N/A',
@@ -52,9 +73,10 @@ class CollectFeeController extends Controller
                     'sec' => $student->section->name ?? 'N/A',
                     'father' => strtoupper($student->parent->father_name ?? 'N/A'),
                     'mob' => $student->mobile ?? 'N/A',
-                    'dues' => $dues,
+                    'dues' => (float)$dues,
                 ];
             });
+           
             return response()->json(['success' => true, 'data' => $students]);
         }
 
@@ -84,6 +106,13 @@ class CollectFeeController extends Controller
 
         return view('pages.fee.collect-fee', compact('students', 'sections', 'globalClasses'));
     }
+
+    public function getSections($classId)
+    {
+        $sections = Section::where('class_id', $classId)->get();
+        return response()->json($sections);
+    }
+
     public function getStudentFeeDetails($id)
     {
         $student = Student::with(['classInfo', 'section', 'parent', 'studentFees'])->find($id);
@@ -166,6 +195,29 @@ class CollectFeeController extends Controller
         ]);
     }
 
+    public function getReceipt(Request $request, $paymentId)
+    {
+        if ($paymentId === 'latest') {
+            $payment = \App\Models\Payment::where('student_id', $request->student_id)
+                ->where('status', 'success')
+                ->where('is_cancelled', false)
+                ->latest()
+                ->first();
+        } else {
+            $payment = \App\Models\Payment::find($paymentId);
+        }
+
+        if (!$payment) return response()->json(['success' => false, 'message' => 'Payment not found']);
+
+        $student = Student::with(['classInfo', 'section', 'parent'])->find($payment->student_id);
+        
+        return response()->json([
+            'success' => true,
+            'payment' => $payment,
+            'student' => $student
+        ]);
+    }
+
     public function pay(Request $request, $id)
     {
         try {
@@ -179,12 +231,10 @@ class CollectFeeController extends Controller
             $payment = new \App\Models\Payment();
             $payment->student_id = $student->id;
             $payment->amount = $request->amount;
-            $payment->payment_mode = $request->payment_mode;
-            $payment->reference_no = $request->reference_no;
-            $payment->remark = $request->remark;
+            $payment->gateway = $request->payment_mode;
+            $payment->transaction_id = $request->reference_no;
             $payment->status = 'success';
             $payment->is_cancelled = false;
-            $payment->payment_date = now();
             $payment->save();
 
             try {
@@ -196,7 +246,9 @@ class CollectFeeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Payment successful'
+                'message' => 'Payment successful',
+                'payment' => $payment,
+                'student' => $student->load(['classInfo', 'section', 'parent'])
             ]);
         } catch (\Exception $e) {
             return response()->json([
